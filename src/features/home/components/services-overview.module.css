@@ -1,0 +1,63 @@
+.sectionGlow {
+  background:
+    radial-gradient(
+      circle at 85% 12%,
+      hsl(217 91% 60% / 0.08),
+      transparent 24rem
+    ),
+    radial-gradient(
+      circle at 8% 70%,
+      hsl(var(--foreground) / 0.04),
+      transparent 28rem
+    );
+}
+
+.featuredGrid {
+  background-image:
+    linear-gradient(hsl(var(--primary-foreground) / 0.06) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      hsl(var(--primary-foreground) / 0.06) 1px,
+      transparent 1px
+    );
+  background-size: 2.25rem 2.25rem;
+  -webkit-mask-image: linear-gradient(to left, black, transparent 92%);
+  mask-image: linear-gradient(to left, black, transparent 92%);
+}
+
+.featuredGlow {
+  background: radial-gradient(
+    circle,
+    hsl(var(--primary-foreground) / 0.12),
+    transparent 68%
+  );
+}
+
+.flowLine {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--primary-foreground) / 0.16),
+    hsl(var(--primary-foreground) / 0.72),
+    hsl(var(--primary-foreground) / 0.16)
+  );
+  background-size: 200% 100%;
+  animation: flow 3.5s linear infinite;
+}
+
+@keyframes flow {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowLine {
+    animation: none;
+  }
+
+  .interactiveCard:hover,
+  .interactiveCard:hover .interactiveIcon,
+  .interactiveLink:hover .interactiveArrow {
+    transform: none;
+  }
+}

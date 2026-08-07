@@ -14,6 +14,7 @@
 - [x] Footer
 - [x] Homepage hero (Sprint 4A)
 - [x] Homepage trust and social proof (Sprint 4B)
+- [x] Homepage services overview (Sprint 4C)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
