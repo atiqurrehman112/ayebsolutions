@@ -2,6 +2,9 @@
 
 import { ThemeProvider } from "next-themes";
 
+import { Toaster } from "@/components/ui/feedback";
+import { TooltipProvider } from "@/components/ui/overlays";
+
 interface ProvidersProps {
   readonly children: React.ReactNode;
 }
@@ -12,9 +15,14 @@ export function Providers({ children }: ProvidersProps) {
       attribute="class"
       defaultTheme="system"
       enableSystem
+      enableColorScheme
+      storageKey="ayeb-theme"
       disableTransitionOnChange
     >
-      {children}
+      <TooltipProvider delayDuration={300}>
+        {children}
+        <Toaster />
+      </TooltipProvider>
     </ThemeProvider>
   );
 }

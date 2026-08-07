@@ -5,6 +5,8 @@ import { GeistSans } from "geist/font/sans";
 import "@/app/globals.css";
 import { SiteShell } from "@/components/layout/site-shell";
 import { Providers } from "@/components/providers/providers";
+import { StructuredData } from "@/components/seo/structured-data";
+import { company } from "@/config/company";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
@@ -35,6 +37,7 @@ export const metadata: Metadata = {
     description: siteConfig.description,
   },
   icons: { icon: "/favicon.svg" },
+  formatDetection: { email: false, address: false, telephone: false },
 };
 
 export const viewport: Viewport = {
@@ -58,6 +61,18 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <Providers>
           <SiteShell>{children}</SiteShell>
         </Providers>
+        <StructuredData
+          data={{
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: company.name,
+            legalName: company.legalName,
+            url: company.url,
+            email: company.email,
+            description: company.description,
+            areaServed: "Worldwide",
+          }}
+        />
       </body>
     </html>
   );

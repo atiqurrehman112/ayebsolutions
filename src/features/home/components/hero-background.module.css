@@ -1,0 +1,172 @@
+.background {
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      hsl(var(--primary) / 0.1),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 82% 28%,
+      hsl(217 91% 60% / 0.13),
+      transparent 32%
+    ),
+    radial-gradient(circle at 55% 88%, hsl(271 81% 56% / 0.08), transparent 36%);
+}
+
+.grid {
+  background-image:
+    linear-gradient(hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--foreground) / 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black 10%, transparent 88%);
+}
+
+.glowPrimary,
+.glowSecondary {
+  filter: blur(70px);
+  will-change: transform;
+}
+
+.glowPrimary {
+  animation: drift-primary 14s ease-in-out infinite alternate;
+}
+
+.glowSecondary {
+  animation: drift-secondary 18s ease-in-out infinite alternate;
+}
+
+.particle {
+  animation: particle-float 7s ease-in-out infinite;
+  box-shadow: 0 0 20px hsl(var(--foreground) / 0.22);
+}
+
+.particle:nth-child(2) {
+  animation-delay: -1.6s;
+}
+.particle:nth-child(3) {
+  animation-delay: -3.1s;
+}
+.particle:nth-child(4) {
+  animation-delay: -4.7s;
+}
+.particle:nth-child(5) {
+  animation-delay: -5.8s;
+}
+
+.visual {
+  animation: visual-float 8s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.shine::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(
+    110deg,
+    transparent 25%,
+    hsl(var(--foreground) / 0.05) 45%,
+    transparent 65%
+  );
+  transform: translateX(-100%);
+  animation: shine 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.statusPulse {
+  animation: status-pulse 2.4s ease-in-out infinite;
+}
+
+.scrollDot {
+  animation: scroll-dot 1.8s ease-in-out infinite;
+}
+
+@keyframes drift-primary {
+  from {
+    transform: translate3d(-4%, -3%, 0) scale(0.96);
+  }
+  to {
+    transform: translate3d(6%, 5%, 0) scale(1.08);
+  }
+}
+
+@keyframes drift-secondary {
+  from {
+    transform: translate3d(5%, 4%, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(-5%, -4%, 0) scale(0.94);
+  }
+}
+
+@keyframes particle-float {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-14px);
+    opacity: 0.8;
+  }
+}
+
+@keyframes visual-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateX(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotateX(0.5deg);
+  }
+}
+
+@keyframes shine {
+  0%,
+  60% {
+    transform: translateX(-100%);
+  }
+  85%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 hsl(142 71% 45% / 0.35);
+  }
+  50% {
+    opacity: 0.75;
+    box-shadow: 0 0 0 5px transparent;
+  }
+}
+
+@keyframes scroll-dot {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glowPrimary,
+  .glowSecondary,
+  .particle,
+  .visual,
+  .shine::after,
+  .statusPulse,
+  .scrollDot {
+    animation: none;
+  }
+}

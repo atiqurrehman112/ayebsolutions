@@ -9,9 +9,10 @@
 
 ## UI
 
-- [ ] Design system
-- [ ] Navigation
-- [ ] Footer
+- [x] Design system
+- [x] Navigation
+- [x] Footer
+- [x] Homepage hero (Sprint 4A)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
