@@ -4,6 +4,7 @@ import { StructuredData } from "@/components/seo/structured-data";
 import { company } from "@/config/company";
 import {
   HeroSection,
+  PortfolioPreviewSection,
   ServicesOverviewSection,
   TrustSocialProofSection,
 } from "@/features/home";
@@ -36,6 +37,7 @@ export default function HomePage() {
       <HeroSection />
       <TrustSocialProofSection />
       <ServicesOverviewSection />
+      <PortfolioPreviewSection />
       <StructuredData
         data={{
           "@context": "https://schema.org",
