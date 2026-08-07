@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { StructuredData } from "@/components/seo/structured-data";
 import { company } from "@/config/company";
 import {
+  AutomationShowcaseSection,
   HeroSection,
   PortfolioPreviewSection,
   ServicesOverviewSection,
@@ -38,6 +39,7 @@ export default function HomePage() {
       <TrustSocialProofSection />
       <ServicesOverviewSection />
       <PortfolioPreviewSection />
+      <AutomationShowcaseSection />
       <StructuredData
         data={{
           "@context": "https://schema.org",
