@@ -35,7 +35,7 @@ const navigation: readonly AdminNavigationItem[] = [
     href: "/admin/portfolio",
     icon: FolderKanban,
   },
-  { label: "Blog", href: "/admin/blog", icon: BookOpen, status: "Future" },
+  { label: "Blog", href: "/admin/blog", icon: BookOpen },
   {
     label: "Services",
     href: "/admin/services",
