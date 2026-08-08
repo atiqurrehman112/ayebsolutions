@@ -22,6 +22,7 @@
 - [x] Homepage frequently asked questions (Sprint 4H)
 - [x] Homepage final conversion CTA (Sprint 4I)
 - [x] Services landing page (Sprint 5A)
+- [x] Web development service page (Sprint 5B)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
