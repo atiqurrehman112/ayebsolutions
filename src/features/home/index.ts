@@ -1,4 +1,5 @@
 export * from "./components/automation-showcase";
+export * from "./components/faq-showcase";
 export * from "./components/hero-section";
 export * from "./components/industries-showcase";
 export * from "./components/portfolio-preview";

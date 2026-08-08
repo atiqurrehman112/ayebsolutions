@@ -19,6 +19,7 @@
 - [x] Homepage interactive AI automation showcase (Sprint 4E)
 - [x] Homepage development process and why choose Ayeb (Sprint 4F)
 - [x] Homepage industries showcase (Sprint 4G)
+- [x] Homepage frequently asked questions (Sprint 4H)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
