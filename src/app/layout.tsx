@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
+import { Analytics } from "@vercel/analytics/next";
 
 import "@/app/globals.css";
 import { SiteShell } from "@/components/layout/site-shell";
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             areaServed: "Worldwide",
           }}
         />
+        <Analytics />
       </body>
     </html>
   );
