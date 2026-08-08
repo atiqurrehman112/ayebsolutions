@@ -32,12 +32,13 @@
 - [x] Portfolio project pages (Sprint 6B)
 - [x] About page (Sprint 6C)
 - [x] Contact page and static lead-capture UI (Sprint 6D)
+- [x] Blog and insights landing page (Sprint 6E)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
 - [ ] Portfolio
 - [ ] Case Studies
-- [ ] Blog
+- [x] Blog
 - [ ] Careers
 - [x] Contact
 
