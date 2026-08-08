@@ -12,7 +12,7 @@
 
 - `src/app`: routing, layouts, metadata routes, and global styles.
 - `src/features`: vertically sliced product capabilities. Features may depend on shared code but must not depend on each other implicitly.
-- `src/features/home`: homepage sections and presentation. Sprint 4A provides the hero, Sprint 4B provides trust and social proof, Sprint 4C provides the services overview, Sprint 4D provides the portfolio and case-study preview, Sprint 4E provides the interactive AI automation showcase, and Sprint 4F provides the development process, engineering approach, and quality-practices presentation. Each composition is exposed through the feature's public barrel; client state is isolated to established interaction primitives such as the workflow explorer and accessible disclosure system.
+- `src/features/home`: homepage sections and presentation. Sprint 4A provides the hero, Sprint 4B provides trust and social proof, Sprint 4C provides the services overview, Sprint 4D provides the portfolio and case-study preview, Sprint 4E provides the interactive AI automation showcase, Sprint 4F provides the development process, engineering approach, and quality-practices presentation, and Sprint 4G provides industry solution areas, industry benefits, and technology mapping. Each composition is exposed through the feature's public barrel; client state is isolated to established interaction primitives such as the workflow explorer and accessible disclosure system.
 - `src/components/ui`: shadcn/ui primitives.
 - `src/components/cards`: compositional and domain-neutral card patterns.
 - `src/components/layout`: reusable application shells and structural components.
