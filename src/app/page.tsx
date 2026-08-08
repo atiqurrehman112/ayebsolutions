@@ -6,6 +6,7 @@ import {
   AutomationShowcaseSection,
   HeroSection,
   PortfolioPreviewSection,
+  ProcessShowcaseSection,
   ServicesOverviewSection,
   TrustSocialProofSection,
 } from "@/features/home";
@@ -40,6 +41,7 @@ export default function HomePage() {
       <ServicesOverviewSection />
       <PortfolioPreviewSection />
       <AutomationShowcaseSection />
+      <ProcessShowcaseSection />
       <StructuredData
         data={{
           "@context": "https://schema.org",
