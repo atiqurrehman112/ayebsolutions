@@ -24,6 +24,7 @@
 - [x] Services landing page (Sprint 5A)
 - [x] Web development service page (Sprint 5B)
 - [x] AI automation service page (Sprint 5C)
+- [x] Custom SaaS service page (Sprint 5D)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
