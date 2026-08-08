@@ -26,6 +26,7 @@
 - [x] AI automation service page (Sprint 5C)
 - [x] Custom SaaS service page (Sprint 5D)
 - [x] UI/UX design service page (Sprint 5E)
+- [x] API integration service page (Sprint 5F)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
