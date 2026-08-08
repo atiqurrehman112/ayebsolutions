@@ -21,6 +21,7 @@
 - [x] Homepage industries showcase (Sprint 4G)
 - [x] Homepage frequently asked questions (Sprint 4H)
 - [x] Homepage final conversion CTA (Sprint 4I)
+- [x] Services landing page (Sprint 5A)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
