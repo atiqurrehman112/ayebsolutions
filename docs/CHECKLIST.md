@@ -19,6 +19,15 @@
 - [x] Homepage interactive AI automation showcase (Sprint 4E)
 - [x] Homepage development process and why choose Ayeb (Sprint 4F)
 - [x] Homepage industries showcase (Sprint 4G)
+- [x] Homepage frequently asked questions (Sprint 4H)
+- [x] Homepage final conversion CTA (Sprint 4I)
+- [x] Services landing page (Sprint 5A)
+- [x] Web development service page (Sprint 5B)
+- [x] AI automation service page (Sprint 5C)
+- [x] Custom SaaS service page (Sprint 5D)
+- [x] UI/UX design service page (Sprint 5E)
+- [x] API integration service page (Sprint 5F)
+- [x] Maintenance and support service page (Sprint 5G)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions

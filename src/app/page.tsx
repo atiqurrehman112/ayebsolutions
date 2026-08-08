@@ -4,6 +4,8 @@ import { StructuredData } from "@/components/seo/structured-data";
 import { company } from "@/config/company";
 import {
   AutomationShowcaseSection,
+  FaqShowcaseSection,
+  FinalCtaSection,
   HeroSection,
   IndustriesShowcaseSection,
   PortfolioPreviewSection,
@@ -44,6 +46,8 @@ export default function HomePage() {
       <AutomationShowcaseSection />
       <ProcessShowcaseSection />
       <IndustriesShowcaseSection />
+      <FaqShowcaseSection />
+      <FinalCtaSection />
       <StructuredData
         data={{
           "@context": "https://schema.org",
