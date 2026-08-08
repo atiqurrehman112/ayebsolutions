@@ -34,6 +34,7 @@
 - [x] Contact page and static lead-capture UI (Sprint 6D)
 - [x] Blog and insights landing page (Sprint 6E)
 - [x] Individual blog article pages (Sprint 6F)
+- [x] Admin shell and static authentication preview (Sprint 7A)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
