@@ -40,7 +40,6 @@ const navigation: readonly AdminNavigationItem[] = [
     label: "Services",
     href: "/admin/services",
     icon: BriefcaseBusiness,
-    status: "Future",
   },
   {
     label: "Testimonials",

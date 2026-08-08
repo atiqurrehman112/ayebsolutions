@@ -37,6 +37,7 @@
 - [x] Admin shell and static authentication preview (Sprint 7A)
 - [x] Static admin portfolio management preview (Sprint 7B)
 - [x] Static admin blog management preview (Sprint 7C)
+- [x] Static admin services management preview (Sprint 7D)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
@@ -52,7 +53,7 @@
 - [ ] Dashboard
 - [x] Blog management preview (frontend only)
 - [x] Portfolio management preview (frontend only)
-- [ ] Services management
+- [x] Services management preview (frontend only)
 - [ ] Testimonials
 - [ ] Media library
 - [ ] SEO settings
