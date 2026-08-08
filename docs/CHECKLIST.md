@@ -31,6 +31,7 @@
 - [x] Portfolio landing page (Sprint 6A)
 - [x] Portfolio project pages (Sprint 6B)
 - [x] About page (Sprint 6C)
+- [x] Contact page and static lead-capture UI (Sprint 6D)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
@@ -38,7 +39,7 @@
 - [ ] Case Studies
 - [ ] Blog
 - [ ] Careers
-- [ ] Contact
+- [x] Contact
 
 ## CMS
 
