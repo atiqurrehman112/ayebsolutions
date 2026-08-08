@@ -28,6 +28,7 @@
 - [x] UI/UX design service page (Sprint 5E)
 - [x] API integration service page (Sprint 5F)
 - [x] Maintenance and support service page (Sprint 5G)
+- [x] Portfolio landing page (Sprint 6A)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
