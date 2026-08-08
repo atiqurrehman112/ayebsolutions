@@ -27,6 +27,7 @@
 - [x] Custom SaaS service page (Sprint 5D)
 - [x] UI/UX design service page (Sprint 5E)
 - [x] API integration service page (Sprint 5F)
+- [x] Maintenance and support service page (Sprint 5G)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
