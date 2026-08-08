@@ -2,7 +2,15 @@ import type { Metadata } from "next";
 
 import { StructuredData } from "@/components/seo/structured-data";
 import { company } from "@/config/company";
-import { HeroSection, TrustSocialProofSection } from "@/features/home";
+import {
+  AutomationShowcaseSection,
+  HeroSection,
+  IndustriesShowcaseSection,
+  PortfolioPreviewSection,
+  ProcessShowcaseSection,
+  ServicesOverviewSection,
+  TrustSocialProofSection,
+} from "@/features/home";
 
 const title = "AI Automation & Premium Web Solutions";
 const description =
@@ -31,6 +39,11 @@ export default function HomePage() {
     <>
       <HeroSection />
       <TrustSocialProofSection />
+      <ServicesOverviewSection />
+      <PortfolioPreviewSection />
+      <AutomationShowcaseSection />
+      <ProcessShowcaseSection />
+      <IndustriesShowcaseSection />
       <StructuredData
         data={{
           "@context": "https://schema.org",

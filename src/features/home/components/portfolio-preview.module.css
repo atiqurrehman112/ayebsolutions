@@ -1,0 +1,60 @@
+.sectionBackground {
+  background:
+    linear-gradient(hsl(var(--border) / 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.22) 1px, transparent 1px),
+    radial-gradient(
+      circle at 18% 10%,
+      hsl(262 83% 58% / 0.07),
+      transparent 26rem
+    ),
+    radial-gradient(
+      circle at 85% 64%,
+      hsl(217 91% 60% / 0.07),
+      transparent 30rem
+    );
+  background-size:
+    3rem 3rem,
+    3rem 3rem,
+    auto,
+    auto;
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 90%);
+  mask-image: linear-gradient(to bottom, black, transparent 90%);
+}
+
+.visualNoise {
+  background-image: radial-gradient(
+    hsl(var(--foreground) / 0.08) 0.65px,
+    transparent 0.65px
+  );
+  background-size: 5px 5px;
+}
+
+.flowPulse {
+  animation: flow-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes flow-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scaleX(0.72);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowPulse {
+    animation: none;
+    opacity: 0.7;
+    transform: none;
+  }
+
+  .interactiveCard:hover,
+  .interactiveCard:hover .interactiveVisual,
+  .interactiveLink:hover .interactiveArrow {
+    transform: none;
+  }
+}
