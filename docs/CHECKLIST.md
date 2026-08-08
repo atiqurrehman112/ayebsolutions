@@ -29,6 +29,7 @@
 - [x] API integration service page (Sprint 5F)
 - [x] Maintenance and support service page (Sprint 5G)
 - [x] Portfolio landing page (Sprint 6A)
+- [x] Portfolio project pages (Sprint 6B)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions

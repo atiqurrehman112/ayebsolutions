@@ -58,5 +58,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.9,
     },
+    ...[
+      "school-operations-portal",
+      "ai-lead-routing-workflow",
+      "auction-marketplace-architecture",
+      "support-knowledge-assistant",
+      "commerce-analytics-workspace",
+      "saas-crm-workspace",
+      "accessible-booking-experience",
+      "api-operations-console",
+    ].map((slug) => ({
+      url: `${siteConfig.url}/portfolio/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
   ];
 }
