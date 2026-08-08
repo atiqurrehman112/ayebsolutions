@@ -30,6 +30,7 @@
 - [x] Maintenance and support service page (Sprint 5G)
 - [x] Portfolio landing page (Sprint 6A)
 - [x] Portfolio project pages (Sprint 6B)
+- [x] About page (Sprint 6C)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
