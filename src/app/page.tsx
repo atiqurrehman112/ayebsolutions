@@ -5,6 +5,7 @@ import { company } from "@/config/company";
 import {
   AutomationShowcaseSection,
   FaqShowcaseSection,
+  FinalCtaSection,
   HeroSection,
   IndustriesShowcaseSection,
   PortfolioPreviewSection,
@@ -46,6 +47,7 @@ export default function HomePage() {
       <ProcessShowcaseSection />
       <IndustriesShowcaseSection />
       <FaqShowcaseSection />
+      <FinalCtaSection />
       <StructuredData
         data={{
           "@context": "https://schema.org",

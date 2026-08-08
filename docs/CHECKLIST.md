@@ -20,6 +20,7 @@
 - [x] Homepage development process and why choose Ayeb (Sprint 4F)
 - [x] Homepage industries showcase (Sprint 4G)
 - [x] Homepage frequently asked questions (Sprint 4H)
+- [x] Homepage final conversion CTA (Sprint 4I)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
