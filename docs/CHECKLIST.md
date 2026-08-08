@@ -23,6 +23,7 @@
 - [x] Homepage final conversion CTA (Sprint 4I)
 - [x] Services landing page (Sprint 5A)
 - [x] Web development service page (Sprint 5B)
+- [x] AI automation service page (Sprint 5C)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions

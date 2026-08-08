@@ -57,6 +57,10 @@ import {
 import { Badge } from "@/components/ui/status";
 import { company } from "@/config/company";
 import { cn } from "@/lib/utils";
+import {
+  ServiceFinalCta,
+  ServiceSectionIntroduction,
+} from "./service-page-shared";
 import styles from "./web-development-page.module.css";
 
 interface IconContent {
@@ -526,32 +530,6 @@ const webDevelopmentFaqs = [
   },
 ] as const;
 
-function SectionIntroduction({
-  eyebrow,
-  title,
-  description,
-  id,
-}: {
-  readonly eyebrow: string;
-  readonly title: string;
-  readonly description: string;
-  readonly id: string;
-}) {
-  return (
-    <Fade>
-      <div className="max-w-3xl">
-        <Eyebrow className="mb-4 text-xs">{eyebrow}</Eyebrow>
-        <h2 id={id} className="text-balance text-headline font-bold">
-          {title}
-        </h2>
-        <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
-          {description}
-        </p>
-      </div>
-    </Fade>
-  );
-}
-
 function CodeEditorVisual() {
   const codeLines = [
     ["01", "export default function Experience() {"],
@@ -720,7 +698,7 @@ function WhyCustomSection() {
       <Container className="max-w-[100rem]">
         <div className="grid gap-12 lg:grid-cols-[0.68fr_1.32fr] lg:gap-16">
           <div className="lg:sticky lg:top-32 lg:self-start">
-            <SectionIntroduction
+            <ServiceSectionIntroduction
               eyebrow="Why custom"
               id="why-custom-heading"
               title="A website should fit your business—not force your business into a theme."
@@ -771,7 +749,7 @@ function WebsiteTypesSection() {
       className="scroll-mt-28 border-b bg-muted/[0.12] py-20 sm:py-24 lg:py-30"
     >
       <Container className="max-w-[100rem]">
-        <SectionIntroduction
+        <ServiceSectionIntroduction
           eyebrow="What we build"
           id="website-types-heading"
           title="Different products need different web architecture."
@@ -839,7 +817,7 @@ function IncludedFeaturesSection() {
     >
       <Container className="max-w-[100rem]">
         <div className="grid gap-12 lg:grid-cols-[0.62fr_1.38fr] lg:gap-16">
-          <SectionIntroduction
+          <ServiceSectionIntroduction
             eyebrow="Included by design"
             id="included-features-heading"
             title="The foundations a modern website should not treat as extras."
@@ -878,7 +856,7 @@ function TechnologySection() {
       )}
     >
       <Container className="relative max-w-[100rem]">
-        <SectionIntroduction
+        <ServiceSectionIntroduction
           eyebrow="Technology stack"
           id="web-tech-heading"
           title="Modern tools, each with a defined responsibility."
@@ -924,7 +902,7 @@ function DevelopmentProcessSection() {
       className="border-b py-20 sm:py-24 lg:py-30"
     >
       <Container className="max-w-[100rem]">
-        <SectionIntroduction
+        <ServiceSectionIntroduction
           eyebrow="Development process"
           id="web-process-heading"
           title="Eight visible stages from first question to maintained product."
@@ -1067,7 +1045,7 @@ function ExampleProjectsSection() {
       className="border-b bg-muted/[0.12] py-20 sm:py-24 lg:py-30"
     >
       <Container className="max-w-[100rem]">
-        <SectionIntroduction
+        <ServiceSectionIntroduction
           eyebrow="Engineering studies"
           id="demo-projects-heading"
           title="Examples built to explore real product patterns."
@@ -1136,7 +1114,7 @@ function PerformanceSection() {
       <Container className="max-w-[100rem]">
         <div className="grid gap-12 lg:grid-cols-[0.62fr_1.38fr] lg:gap-16">
           <div>
-            <SectionIntroduction
+            <ServiceSectionIntroduction
               eyebrow="Production quality"
               id="performance-heading"
               title="Quality is a system of decisions, not a score badge."
@@ -1181,7 +1159,7 @@ function WebDevelopmentFaq() {
       className="border-b bg-muted/[0.12] py-20 sm:py-24 lg:py-30"
     >
       <Container size="content">
-        <SectionIntroduction
+        <ServiceSectionIntroduction
           eyebrow="Web development FAQ"
           id="web-faq-heading"
           title="Clear answers before technical discovery begins."
@@ -1215,69 +1193,6 @@ function WebDevelopmentFaq() {
             </AccordionItem>
           ))}
         </Accordion>
-      </Container>
-    </section>
-  );
-}
-
-function FinalCta() {
-  return (
-    <section
-      aria-labelledby="web-final-heading"
-      className="py-20 sm:py-24 lg:py-30"
-    >
-      <Container className="max-w-[100rem]">
-        <Fade>
-          <div
-            className={cn(
-              "relative overflow-hidden rounded-2xl p-6 text-primary-foreground shadow-elevated sm:p-10 lg:p-14",
-              styles.finalPanel,
-            )}
-          >
-            <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
-              <div>
-                <Eyebrow className="mb-3 text-xs text-primary-foreground/55">
-                  Plan the right foundation
-                </Eyebrow>
-                <h2
-                  id="web-final-heading"
-                  className="text-balance text-3xl font-bold tracking-tight sm:text-4xl"
-                >
-                  Ready to build a web experience that belongs to your business?
-                </h2>
-                <p className="mt-4 max-w-2xl text-base leading-relaxed text-primary-foreground/70 sm:text-lg">
-                  Tell us what the website needs to achieve. We&apos;ll begin by
-                  clarifying users, content, constraints, and the most useful
-                  path forward.
-                </p>
-              </div>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Button
-                  asChild
-                  size="lg"
-                  variant="secondary"
-                  className="group h-12 rounded-lg px-6"
-                >
-                  <Link href="/book-consultation">
-                    Book Consultation
-                    <ArrowRight
-                      className="size-4 transition-transform group-hover:translate-x-1"
-                      aria-hidden="true"
-                    />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="h-12 rounded-lg border-primary-foreground/25 bg-transparent px-6 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
-                >
-                  <Link href="/contact">Contact Us</Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Fade>
       </Container>
     </section>
   );
@@ -1331,7 +1246,13 @@ function WebDevelopmentPage() {
       <ExampleProjectsSection />
       <PerformanceSection />
       <WebDevelopmentFaq />
-      <FinalCta />
+      <ServiceFinalCta
+        id="web-final-heading"
+        eyebrow="Plan the right foundation"
+        title="Ready to build a web experience that belongs to your business?"
+        description="Tell us what the website needs to achieve. We'll begin by clarifying users, content, constraints, and the most useful path forward."
+        panelClassName={styles.finalPanel}
+      />
       <StructuredData data={serviceSchema} />
       <StructuredData data={webPageSchema} />
       <StructuredData data={faqSchema} />
