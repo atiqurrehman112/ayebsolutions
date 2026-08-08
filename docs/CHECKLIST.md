@@ -35,6 +35,7 @@
 - [x] Blog and insights landing page (Sprint 6E)
 - [x] Individual blog article pages (Sprint 6F)
 - [x] Admin shell and static authentication preview (Sprint 7A)
+- [x] Static admin portfolio management preview (Sprint 7B)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
@@ -49,7 +50,7 @@
 - [ ] Authentication
 - [ ] Dashboard
 - [ ] Blog management
-- [ ] Portfolio management
+- [x] Portfolio management preview (frontend only)
 - [ ] Services management
 - [ ] Testimonials
 - [ ] Media library
