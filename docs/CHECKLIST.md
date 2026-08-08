@@ -33,6 +33,7 @@
 - [x] About page (Sprint 6C)
 - [x] Contact page and static lead-capture UI (Sprint 6D)
 - [x] Blog and insights landing page (Sprint 6E)
+- [x] Individual blog article pages (Sprint 6F)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions

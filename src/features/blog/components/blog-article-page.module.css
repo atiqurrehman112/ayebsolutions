@@ -1,0 +1,181 @@
+.hero {
+  max-width: 100%;
+  background:
+    radial-gradient(
+      circle at 82% 18%,
+      hsl(var(--primary) / 0.1),
+      transparent 32rem
+    ),
+    linear-gradient(to bottom, hsl(var(--muted) / 0.2), transparent 62%);
+}
+
+.hero::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.25;
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.55) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.55) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+.heroMeta {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 0.25rem);
+  background: hsl(var(--border));
+  box-shadow: var(--shadow-soft);
+}
+
+.heroMeta > div {
+  padding: 1rem 1.1rem;
+  background: hsl(var(--card) / 0.9);
+}
+
+.heroMeta dt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.7rem;
+}
+
+.heroMeta dd {
+  margin-top: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.summary {
+  margin-top: 2rem;
+  border-left: 2px solid hsl(var(--primary));
+  padding-left: 1.25rem;
+  color: hsl(var(--foreground));
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  line-height: 1.75;
+}
+
+.prose {
+  display: grid;
+  gap: 1.35rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+
+.prose p {
+  max-width: 48rem;
+}
+
+.contents {
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 0.25rem);
+  padding: 1.25rem;
+  background: hsl(var(--card));
+}
+
+.pointList {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.pointList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  background: hsl(var(--muted) / 0.2);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.pointList svg {
+  margin-top: 0.12rem;
+  color: hsl(var(--primary));
+}
+
+.takeaways,
+.finalCta {
+  position: relative;
+  overflow: hidden;
+  background: hsl(var(--primary));
+}
+
+.takeaways::before,
+.finalCta::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(hsl(var(--primary-foreground) / 0.14) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      hsl(var(--primary-foreground) / 0.14) 1px,
+      transparent 1px
+    );
+  background-size: 3rem 3rem;
+  mask-image: radial-gradient(circle at 72% 50%, black, transparent 72%);
+}
+
+.relatedCard {
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 0.25rem);
+  padding: 1.5rem;
+  background: hsl(var(--card));
+}
+
+.relatedArticle {
+  min-width: 0;
+  transition:
+    border-color 250ms ease,
+    transform 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.relatedArticle:hover {
+  border-color: hsl(var(--primary) / 0.4);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-3px);
+}
+
+.disclosure[open] {
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .contents {
+    position: sticky;
+    top: 8rem;
+  }
+
+  .pointList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .relatedArticle,
+  .relatedArticle svg,
+  .disclosure svg {
+    transition: none;
+  }
+
+  .relatedArticle:hover {
+    transform: none;
+  }
+}

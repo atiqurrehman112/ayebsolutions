@@ -91,5 +91,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    ...[
+      "why-custom-software-beats-off-the-shelf-tools",
+      "how-ai-automation-saves-business-hours",
+      "designing-accessible-web-applications",
+      "api-integration-best-practices",
+      "choosing-the-right-tech-stack",
+      "building-scalable-saas-products",
+      "improving-website-performance",
+      "planning-a-successful-digital-project",
+    ].map((slug) => ({
+      url: `${siteConfig.url}/blog/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
   ];
 }
