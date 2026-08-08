@@ -12,7 +12,7 @@
 
 - `src/app`: routing, layouts, metadata routes, and global styles.
 - `src/features`: vertically sliced product capabilities. Features may depend on shared code but must not depend on each other implicitly.
-- `src/features/home`: homepage sections and presentation. Sprint 4A exposes only the server-rendered hero through its public barrel.
+- `src/features/home`: homepage sections and presentation. Sprint 4A provides the hero; Sprint 4B adds the server-rendered trust and social-proof composition. Both are exposed through the feature's public barrel.
 - `src/components/ui`: shadcn/ui primitives.
 - `src/components/cards`: compositional and domain-neutral card patterns.
 - `src/components/layout`: reusable application shells and structural components.

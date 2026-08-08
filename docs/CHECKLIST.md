@@ -13,6 +13,7 @@
 - [x] Navigation
 - [x] Footer
 - [x] Homepage hero (Sprint 4A)
+- [x] Homepage trust and social proof (Sprint 4B)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
