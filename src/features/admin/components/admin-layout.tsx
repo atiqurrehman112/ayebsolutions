@@ -45,7 +45,6 @@ const navigation: readonly AdminNavigationItem[] = [
     label: "Testimonials",
     href: "/admin/testimonials",
     icon: MessageSquareQuote,
-    status: "Future",
   },
   { label: "Media", href: "/admin/media", icon: MenuSquare, status: "Future" },
   {
