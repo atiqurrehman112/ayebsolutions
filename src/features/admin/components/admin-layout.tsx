@@ -14,6 +14,8 @@ import Link from "next/link";
 
 import { Logo } from "@/components/brand/logo";
 import { Badge } from "@/components/ui/status";
+import { signOut } from "@/lib/auth/auth";
+import { getCurrentUser } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
 import styles from "./admin-layout.module.css";
 
@@ -59,7 +61,13 @@ const navigation: readonly AdminNavigationItem[] = [
   },
 ] as const;
 
-function AdminLayout({ children }: AdminLayoutProps) {
+async function AdminLayout({ children }: AdminLayoutProps) {
+  const isConfigured = Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
+  const user = isConfigured ? await getCurrentUser() : null;
+
   return (
     <div className={styles.workspace}>
       <aside className={styles.sidebar} aria-label="Admin workspace">
@@ -86,17 +94,25 @@ function AdminLayout({ children }: AdminLayoutProps) {
           </ul>
         </nav>
         <div className={styles.sidebarFooter}>
-          <p>
-            Static workspace preview. Authentication, authorization, and CMS
-            data are not connected.
-          </p>
-          <Link
-            href="/admin/login"
-            className={cn("focus-ring", styles.logoutLink)}
-          >
-            <LogOut className="size-4" aria-hidden="true" />
-            Logout
-          </Link>
+          {user ? (
+            <>
+              <p>
+                Signed in as <strong>{user.email ?? "Authorized user"}</strong>
+                <span className={styles.roleLabel}>{user.role}</span>
+              </p>
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className={cn("focus-ring", styles.logoutLink)}
+                >
+                  <LogOut className="size-4" aria-hidden="true" />
+                  Sign out
+                </button>
+              </form>
+            </>
+          ) : (
+            <p>Sign in with an authorized account to access this workspace.</p>
+          )}
         </div>
       </aside>
 
@@ -109,7 +125,9 @@ function AdminLayout({ children }: AdminLayoutProps) {
             <p className="mt-1 text-sm font-semibold">Content operations</p>
           </div>
           <div className="flex items-center gap-3">
-            <Badge variant="warning">Not connected</Badge>
+            <Badge variant={user ? "success" : "warning"}>
+              {user ? "Authenticated" : "Secure access"}
+            </Badge>
             <Link
               href="/"
               className="focus-ring hidden rounded-md text-sm font-semibold sm:inline-flex"

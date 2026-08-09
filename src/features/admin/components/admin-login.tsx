@@ -3,18 +3,24 @@ import {
   KeyRound,
   LockKeyhole,
   Mail,
-  ShieldAlert,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/status";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/status";
+import { signIn } from "@/lib/auth/auth";
+import { AuthFeedback } from "./auth-feedback";
 import styles from "./admin-login.module.css";
 
 const controlClass =
   "focus-ring h-12 w-full rounded-md border border-input bg-background px-11 pr-3 text-sm text-foreground shadow-xs placeholder:text-muted-foreground";
 
-function AdminLogin() {
+interface AdminLoginProps {
+  readonly error?: string;
+}
+
+function AdminLogin({ error }: AdminLoginProps) {
   return (
     <div className={styles.page}>
       <section
@@ -22,28 +28,24 @@ function AdminLogin() {
         className={styles.loginPanel}
       >
         <div className="max-w-xl">
-          <Badge variant="outline">Static authentication preview</Badge>
+          <Badge variant="outline">Protected administration</Badge>
           <h1
             id="admin-login-title"
             className="mt-6 text-balance text-[clamp(2.5rem,6vw,5rem)] font-bold leading-[0.98] tracking-tight"
           >
-            A deliberate entry point for future administration.
+            Secure access to the Ayeb workspace.
           </h1>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            The interface establishes accessible authentication structure
-            without accepting credentials, creating a session, or implying that
-            the admin area is protected.
+            Sign in with an authorized Supabase account. Sessions are managed
+            with secure cookies and every administration route is protected.
           </p>
           <div className={styles.notice} role="note">
-            <ShieldAlert className="size-5 shrink-0" aria-hidden="true" />
+            <ShieldCheck className="size-5 shrink-0" aria-hidden="true" />
             <div>
-              <strong>
-                Authentication will be implemented in a later sprint.
-              </strong>
+              <strong>Authentication is active.</strong>
               <p>
-                Do not enter real credentials. This page has no authentication,
-                submission, validation, API, storage, cookie, or session
-                behavior.
+                Access is limited to provisioned accounts. Registration is not
+                available from this website.
               </p>
             </div>
           </div>
@@ -56,7 +58,7 @@ function AdminLogin() {
                 Admin access
               </span>
               <h2 className="mt-2 text-2xl font-bold tracking-tight">
-                Sign in preview
+                Sign in
               </h2>
             </div>
             <span className="grid size-11 place-items-center rounded-xl bg-primary text-primary-foreground">
@@ -64,14 +66,21 @@ function AdminLogin() {
             </span>
           </div>
 
-          <form aria-describedby="authentication-notice" className="mt-7">
-            <p
-              id="authentication-notice"
-              className="text-sm leading-6 text-muted-foreground"
-            >
-              Fields are present for interface review only. Values remain in the
-              browser and are not processed by Ayeb Solutions.
-            </p>
+          <form action={signIn} className="mt-7">
+            {error ? (
+              <AuthFeedback
+                variant="error"
+                title={
+                  error === "configuration"
+                    ? "Authentication is not configured"
+                    : "Sign in was unsuccessful"
+                }
+              >
+                {error === "configuration"
+                  ? "Add the required Supabase environment variables before signing in."
+                  : "Check your email and password, then try again."}
+              </AuthFeedback>
+            ) : null}
             <div className="mt-6 grid gap-5">
               <div className="grid gap-2">
                 <label htmlFor="admin-email" className="text-sm font-medium">
@@ -86,8 +95,8 @@ function AdminLogin() {
                     id="admin-email"
                     name="email"
                     type="email"
+                    required
                     autoComplete="username"
-                    aria-describedby="authentication-notice"
                     className={controlClass}
                   />
                 </div>
@@ -105,38 +114,19 @@ function AdminLogin() {
                     id="admin-password"
                     name="password"
                     type="password"
+                    required
                     autoComplete="current-password"
-                    aria-describedby="authentication-notice"
                     className={controlClass}
                   />
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <input
-                  id="remember-admin"
-                  name="remember"
-                  type="checkbox"
-                  className="focus-ring mt-0.5 size-4 rounded border-input accent-primary"
-                />
-                <label htmlFor="remember-admin" className="text-sm leading-6">
-                  <span className="font-medium">Remember me</span>
-                  <span className="block text-xs text-muted-foreground">
-                    Visual preference only; nothing is persisted.
-                  </span>
-                </label>
-              </div>
             </div>
-            <Button
-              type="button"
-              size="lg"
-              className="mt-7 h-12 w-full"
-              aria-describedby="authentication-notice"
-            >
-              Login unavailable
+            <Button type="submit" size="lg" className="mt-7 h-12 w-full">
+              Sign In
             </Button>
-            <p className="mt-3 text-center text-xs leading-5 text-muted-foreground">
-              This control intentionally performs no action in Sprint 7A.
-            </p>
+            <button type="button" disabled className={styles.forgotPassword}>
+              Forgot Password <span>Coming later</span>
+            </button>
           </form>
 
           <div className="mt-7 border-t pt-6">

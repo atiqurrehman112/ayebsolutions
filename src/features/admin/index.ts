@@ -8,3 +8,4 @@ export * from "./components/admin-testimonials";
 export * from "./components/admin-media";
 export * from "./components/admin-contact-leads";
 export * from "./components/admin-settings";
+export * from "./components/auth-feedback";

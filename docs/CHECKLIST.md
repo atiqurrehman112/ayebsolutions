@@ -42,6 +42,7 @@
 - [x] Static admin media library preview (Sprint 7F)
 - [x] Static admin contact leads management preview (Sprint 7G)
 - [x] Static admin settings management preview (Sprint 7H)
+- [x] Supabase admin authentication foundation (Sprint 8A)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
@@ -53,7 +54,7 @@
 
 ## CMS
 
-- [ ] Authentication
+- [x] Authentication foundation (Supabase Auth)
 - [ ] Dashboard
 - [x] Blog management preview (frontend only)
 - [x] Portfolio management preview (frontend only)
