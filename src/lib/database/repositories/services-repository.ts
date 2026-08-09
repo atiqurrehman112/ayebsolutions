@@ -7,6 +7,22 @@ import type {
 import type { DatabaseClient } from "../client";
 import { ContentRepository, type PaginationOptions } from "./base-repository";
 
+export type ServiceSort =
+  "display-asc" | "display-desc" | "title-asc" | "title-desc" | "updated-desc";
+export interface ServiceQueryOptions extends PaginationOptions {
+  readonly categoryId?: string;
+  readonly featured?: boolean;
+  readonly query?: string;
+  readonly sort?: ServiceSort;
+  readonly status?: ContentStatus;
+}
+function normalizeSearchTerm(query: string) {
+  return query
+    .trim()
+    .replace(/[,%().]/g, " ")
+    .replace(/\s+/g, " ");
+}
+
 export class ServicesRepository extends ContentRepository<
   ServiceRow,
   ServiceInsert,
@@ -56,7 +72,7 @@ export class ServicesRepository extends ContentRepository<
     this.throwIfError(error);
   }
   async search(query: string) {
-    const term = query.trim().replaceAll(",", "");
+    const term = normalizeSearchTerm(query);
     if (!term) return this.findAll();
     const { data, error } = await this.client
       .from("services")
@@ -77,6 +93,45 @@ export class ServicesRepository extends ContentRepository<
       .range(from, to);
     this.throwIfError(error);
     return this.paginateResult(data ?? [], count, page, pageSize);
+  }
+  async findPage(options: ServiceQueryOptions = {}) {
+    const { page, pageSize, from, to } = this.getRange(options);
+    const term = options.query ? normalizeSearchTerm(options.query) : "";
+    let request = this.client.from("services").select("*", { count: "exact" });
+    if (term)
+      request = request.or(
+        `title.ilike.%${term}%,summary.ilike.%${term}%,description.ilike.%${term}%`,
+      );
+    if (options.status) request = request.eq("status", options.status);
+    if (options.categoryId)
+      request = request.eq("category_id", options.categoryId);
+    if (options.featured !== undefined)
+      request = request.eq("is_featured", options.featured);
+    const sort = options.sort ?? "display-asc";
+    if (sort === "display-asc")
+      request = request.order("sort_order", { ascending: true });
+    if (sort === "display-desc")
+      request = request.order("sort_order", { ascending: false });
+    if (sort === "title-asc")
+      request = request.order("title", { ascending: true });
+    if (sort === "title-desc")
+      request = request.order("title", { ascending: false });
+    if (sort === "updated-desc")
+      request = request.order("updated_at", { ascending: false });
+    request = request.order("id", { ascending: true });
+    const { data, count, error } = await request.range(from, to);
+    this.throwIfError(error);
+    return this.paginateResult(data ?? [], count, page, pageSize);
+  }
+  async findCategories() {
+    const { data, error } = await this.client
+      .from("categories")
+      .select("id,name,slug")
+      .eq("kind", "service")
+      .neq("status", "archived")
+      .order("name");
+    this.throwIfError(error);
+    return data ?? [];
   }
   setStatus(id: string, status: ContentStatus) {
     return this.update(id, { status });

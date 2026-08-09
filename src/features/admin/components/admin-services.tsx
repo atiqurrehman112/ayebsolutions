@@ -1,624 +1,313 @@
-import {
-  Archive,
-  ArrowDown,
-  ArrowRight,
-  CheckCircle2,
-  ChevronDown,
-  Eye,
-  FileInput,
-  FilePlus2,
-  FileText,
-  Link2,
-  Megaphone,
-  Pencil,
-  RotateCcw,
-  Search,
-  ShieldAlert,
-  Sparkles,
-} from "lucide-react";
-
+import Link from "next/link";
+import { Search, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
-import { cn } from "@/lib/utils";
+import type { PaginatedResult } from "@/lib/database/repositories/base-repository";
+import type { ServiceSort } from "@/lib/database/repositories/services-repository";
+import type { CategoryRow, ContentStatus, ServiceRow } from "@/types/database";
+import { ServiceDialog } from "./service-dialog";
+import { ServiceRowActions } from "./service-row-actions";
 import styles from "./admin-services.module.css";
 
-type ServiceVisibility = "Public" | "Planned";
-
-interface ServiceRow {
-  readonly title: string;
-  readonly category: string;
-  readonly visibility: ServiceVisibility;
-  readonly seo: "Prepared" | "Planned";
-  readonly slug: string;
+export interface ServiceFilters {
+  readonly category?: string;
+  readonly featured?: string;
+  readonly pageSize: number;
+  readonly query?: string;
+  readonly sort: ServiceSort;
+  readonly status?: ContentStatus;
+}
+interface Props {
+  readonly services: PaginatedResult<ServiceRow>;
+  readonly canDelete: boolean;
+  readonly canEdit: boolean;
+  readonly categories: readonly Pick<CategoryRow, "id" | "name" | "slug">[];
+  readonly filters: ServiceFilters;
+}
+const statuses: Readonly<Record<ContentStatus, string>> = {
+  archived: "Archived",
+  draft: "Draft",
+  published: "Published",
+  review: "In review",
+};
+const sorts: readonly (readonly [ServiceSort, string])[] = [
+  ["display-asc", "Display order"],
+  ["display-desc", "Display order, descending"],
+  ["title-asc", "Title, A–Z"],
+  ["title-desc", "Title, Z–A"],
+  ["updated-desc", "Recently updated"],
+];
+function pageHref(filters: ServiceFilters, page: number) {
+  const p = new URLSearchParams();
+  if (filters.query) p.set("q", filters.query);
+  if (filters.status) p.set("status", filters.status);
+  if (filters.category) p.set("category", filters.category);
+  if (filters.featured) p.set("featured", filters.featured);
+  p.set("sort", filters.sort);
+  p.set("pageSize", String(filters.pageSize));
+  p.set("page", String(page));
+  return `/admin/services?${p.toString()}`;
 }
 
-const services: readonly ServiceRow[] = [
-  {
-    title: "Web Development",
-    category: "Engineering",
-    visibility: "Public",
-    seo: "Prepared",
-    slug: "web-development",
-  },
-  {
-    title: "AI Automation",
-    category: "Automation",
-    visibility: "Public",
-    seo: "Prepared",
-    slug: "ai-automation",
-  },
-  {
-    title: "Custom SaaS Development",
-    category: "Product Development",
-    visibility: "Public",
-    seo: "Prepared",
-    slug: "custom-saas",
-  },
-  {
-    title: "UI/UX Design",
-    category: "Design",
-    visibility: "Public",
-    seo: "Prepared",
-    slug: "ui-ux-design",
-  },
-  {
-    title: "API Integration",
-    category: "Systems",
-    visibility: "Public",
-    seo: "Prepared",
-    slug: "api-integration",
-  },
-  {
-    title: "Maintenance & Support",
-    category: "Operations",
-    visibility: "Public",
-    seo: "Prepared",
-    slug: "maintenance-support",
-  },
-  {
-    title: "Consulting & Strategy",
-    category: "Advisory",
-    visibility: "Planned",
-    seo: "Planned",
-    slug: "consulting-strategy",
-  },
-] as const;
-
-const readiness = [
-  ["Services", "Configured", "Public and planned service records represented"],
-  ["Categories", "Available", "Service groupings are prepared"],
-  ["SEO", "Ready", "Publication fields are represented"],
-  ["Visibility", "Configured", "Public and planned states remain explicit"],
-  ["Publishing", "Planned", "No publishing workflow is connected"],
-  ["Content Quality", "Ready", "Review criteria are visible"],
-] as const;
-
-const structure = [
-  "Hero",
-  "Benefits",
-  "Features",
-  "Process",
-  "FAQ",
-  "CTA",
-] as const;
-
-const workflow = [
-  ["Planning", "Define audience, scope, intent, and the service relationship."],
-  ["Writing", "Develop useful, specific copy around the service and process."],
-  ["Review", "Check accuracy, clarity, consistency, and accessibility."],
-  ["SEO", "Prepare metadata, headings, links, and structured context."],
-  ["Approval", "Record accountable review before changing visibility."],
-  ["Publish", "Release through a controlled and verified workflow."],
-] as const;
-
-const seoChecks = [
-  "Meta Title",
-  "Meta Description",
-  "Canonical",
-  "Open Graph",
-  "Twitter",
-  "Schema",
-  "Headings",
-  "Internal Links",
-  "Accessibility",
-  "Performance",
-] as const;
-
-const qualityChecks = [
-  "Clear Value Proposition",
-  "Unique Copy",
-  "Proper Headings",
-  "Service CTA",
-  "Internal Linking",
-  "FAQ Included",
-  "Responsive Layout",
-  "Accessibility Verified",
-] as const;
-
-const relationships = [
-  ["Primary Service", "Web Development", "Current content record"],
-  ["Related Services", "UI/UX + API Integration", "Contextual pathways"],
-  ["Blog Articles", "Relevant insights", "Editorial support"],
-  ["Portfolio Projects", "Related work", "Delivery context"],
-  ["Contact CTA", "Book Consultation", "Conversion pathway"],
-] as const;
-
-const nativeControlClass =
-  "focus-ring h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs placeholder:text-muted-foreground";
-
-function AdminServices() {
+export function AdminServices({
+  services,
+  canDelete,
+  canEdit,
+  categories,
+  filters,
+}: Props) {
+  const categoryNames = new Map(
+    categories.map((category) => [category.id, category.name]),
+  );
+  const formatter = new Intl.DateTimeFormat("en", {
+    dateStyle: "medium",
+    timeZone: "UTC",
+  });
+  const filtered = Boolean(
+    filters.query || filters.status || filters.category || filters.featured,
+  );
   return (
-    <div className="mx-auto max-w-[100rem]">
+    <main className={styles.page}>
+      <header className={styles.hero}>
+        <div>
+          <span className={styles.eyebrow}>Offer management</span>
+          <h1>Services Management</h1>
+          <p>
+            Maintain the service catalogue, publication state, display priority,
+            and discoverability from one workspace.
+          </p>
+        </div>
+        {canEdit ? (
+          <ServiceDialog categories={categories} mode="create" />
+        ) : null}
+      </header>
+      <section aria-label="Service summary" className={styles.summary}>
+        <article>
+          <span>Matching services</span>
+          <strong>{services.count}</strong>
+        </article>
+        <article>
+          <span>Current page</span>
+          <strong>
+            {services.totalPages
+              ? `${services.page} / ${services.totalPages}`
+              : "—"}
+          </strong>
+        </article>
+        <article>
+          <span>Access</span>
+          <strong>{canEdit ? "Content editor" : "Read only"}</strong>
+        </article>
+      </section>
       <section
-        aria-labelledby="services-management-title"
-        className={styles.hero}
+        aria-labelledby="service-library-heading"
+        className={styles.panel}
       >
-        <div className="max-w-4xl">
-          <div className="flex flex-wrap gap-2">
-            <Badge>Services CMS</Badge>
-            <Badge variant="outline">Static preview</Badge>
-          </div>
-          <h1
-            id="services-management-title"
-            className="mt-6 text-balance text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[0.98] tracking-tight"
-          >
-            Services Management
-          </h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">
-            Manage the services displayed across the public website. This
-            interface previews the future CMS; editing, publishing, and
-            synchronization are not available in this sprint.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button type="button" disabled className="min-h-11">
-              <FilePlus2 className="size-4" aria-hidden="true" />
-              Add Service
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              disabled
-              className="min-h-11"
-            >
-              <FileInput className="size-4" aria-hidden="true" />
-              Import Services
-            </Button>
-          </div>
-        </div>
-        <div className={styles.heroNotice} role="note">
-          <ShieldAlert className="size-5 shrink-0" aria-hidden="true" />
+        <div className={styles.panelHeading}>
           <div>
-            <strong>Service management is currently a preview.</strong>
-            <p>
-              Database integration, publishing workflows, and live editing will
-              be implemented in a future sprint.
-            </p>
+            <span className={styles.eyebrow}>Service catalogue</span>
+            <h2 id="service-library-heading">Find and manage services</h2>
           </div>
+          {!canEdit ? <p>Your viewer role has read-only access.</p> : null}
         </div>
-      </section>
-
-      <section aria-labelledby="service-readiness-heading" className="mt-8">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <span className={styles.eyebrow}>Service readiness</span>
-            <h2 id="service-readiness-heading" className={styles.sectionTitle}>
-              Structured for future management
-            </h2>
-          </div>
-          <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-            Qualitative labels describe interface preparation only—not database
-            totals, publishing activity, or synchronization state.
-          </p>
-        </div>
-        <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {readiness.map(([label, value, description]) => (
-            <div key={label} className={styles.statCard}>
-              <dt>{label}</dt>
-              <dd>{value}</dd>
-              <p>{description}</p>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section aria-labelledby="services-index-heading" className="mt-14">
-        <span className={styles.eyebrow}>Service index</span>
-        <h2 id="services-index-heading" className={styles.sectionTitle}>
-          Public and planned service records
-        </h2>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">
-          Six records map to existing public detail pages. Consulting &amp;
-          Strategy remains explicitly planned and is not presented as a live
-          route.
-        </p>
-
-        <div className={styles.filters} aria-label="Static service filters">
-          <div className={styles.searchField}>
-            <label htmlFor="service-search">Search</label>
-            <div className="relative">
-              <Search
-                className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden="true"
-              />
+        <form className={styles.filters} method="get" role="search">
+          <label className={styles.search}>
+            <span>Search services</span>
+            <div>
+              <Search aria-hidden="true" />
               <input
-                id="service-search"
+                defaultValue={filters.query}
+                name="q"
+                placeholder="Title, summary, or description"
                 type="search"
-                placeholder="Search services"
-                aria-describedby="service-filter-notice"
-                className={cn(nativeControlClass, "pl-10")}
               />
             </div>
-          </div>
-          <StaticSelect
-            id="service-category"
-            label="Category"
-            options={[
-              "All categories",
-              "Engineering",
-              "Automation",
-              "Design",
-              "Systems",
-            ]}
-          />
-          <StaticSelect
-            id="service-status"
+          </label>
+          <Filter
             label="Status"
-            options={["All statuses", "Configured", "Planned"]}
+            name="status"
+            options={Object.entries(statuses)}
+            value={filters.status}
           />
-          <StaticSelect
-            id="service-featured"
+          <label>
+            <span>Category</span>
+            <select defaultValue={filters.category ?? ""} name="category">
+              <option value="">All categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Filter
             label="Featured"
-            options={["All services", "Featured", "Standard"]}
-          />
-          <StaticSelect
-            id="service-sort"
-            label="Sort"
+            name="featured"
             options={[
-              "Configured order",
-              "Service name",
-              "Category",
-              "Visibility",
+              ["true", "Featured"],
+              ["false", "Not featured"],
             ]}
+            value={filters.featured}
           />
-          <Button
-            type="button"
-            variant="outline"
-            disabled
-            className="h-11 self-end"
-          >
-            <RotateCcw className="size-4" aria-hidden="true" />
-            Reset
-          </Button>
-          <p id="service-filter-notice">
-            Filters are presentation-only and do not search, sort, reset, or
-            query service records.
-          </p>
-        </div>
-
-        <div className={styles.indexLayout}>
-          <div className={styles.tableFrame}>
+          <Filter
+            label="Sort"
+            name="sort"
+            options={sorts}
+            value={filters.sort}
+          />
+          <label>
+            <span>Per page</span>
+            <select defaultValue={String(filters.pageSize)} name="pageSize">
+              {[25, 50, 100].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className={styles.filterActions}>
+            <Button type="submit">Apply</Button>
+            <Button asChild variant="ghost">
+              <Link href="/admin/services">Reset</Link>
+            </Button>
+          </div>
+        </form>
+        {services.data.length ? (
+          <div className={styles.tableWrap}>
             <table>
-              <caption>Static services management preview</caption>
+              <caption className="sr-only">
+                Services matching the current filters
+              </caption>
               <thead>
                 <tr>
                   <th scope="col">Service</th>
                   <th scope="col">Category</th>
-                  <th scope="col">Visibility</th>
-                  <th scope="col">SEO</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Featured</th>
+                  <th scope="col">Order</th>
                   <th scope="col">Updated</th>
                   <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {services.map((service) => (
-                  <tr key={service.slug}>
+                {services.data.map((service) => (
+                  <tr key={service.id}>
                     <th scope="row">
-                      <span>{service.title}</span>
-                      <code>/{service.slug}</code>
+                      <strong>{service.title}</strong>
+                      <span>/{service.slug}</span>
+                      <small>
+                        {service.icon || "No icon"}
+                        {service.keywords.length
+                          ? ` · ${service.keywords.slice(0, 2).join(" · ")}`
+                          : ""}
+                      </small>
                     </th>
-                    <td>{service.category}</td>
                     <td>
-                      <span
-                        className={cn(
-                          styles.state,
-                          service.visibility === "Planned" && styles.planned,
-                        )}
-                      >
-                        <span aria-hidden="true" />
-                        {service.visibility}
-                      </span>
+                      {service.category_id
+                        ? (categoryNames.get(service.category_id) ??
+                          "Uncategorized")
+                        : "Uncategorized"}
                     </td>
                     <td>
-                      <Badge variant="outline">{service.seo}</Badge>
+                      <Badge variant="outline">
+                        {statuses[service.status]}
+                      </Badge>
                     </td>
-                    <td>Not connected</td>
+                    <td>{service.is_featured ? "Yes" : "No"}</td>
+                    <td>{service.sort_order}</td>
                     <td>
-                      <div className={styles.actions}>
-                        <DisabledAction
-                          icon={Eye}
-                          label={`Preview ${service.title}, unavailable`}
-                        />
-                        <DisabledAction
-                          icon={Pencil}
-                          label={`Edit ${service.title}, unavailable`}
-                        />
-                        <DisabledAction
-                          icon={Archive}
-                          label={`Archive ${service.title}, unavailable`}
-                        />
-                      </div>
+                      <time dateTime={service.updated_at}>
+                        {formatter.format(new Date(service.updated_at))}
+                      </time>
+                    </td>
+                    <td>
+                      <ServiceRowActions
+                        canDelete={canDelete}
+                        canEdit={canEdit}
+                        categories={categories}
+                        service={service}
+                      />
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-
-          <aside
-            aria-labelledby="service-preview-heading"
-            className={styles.previewPanel}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <Badge variant="secondary">Selected Service</Badge>
-              <Megaphone
-                className="size-5 text-muted-foreground"
-                aria-hidden="true"
-              />
-            </div>
-            <h2
-              id="service-preview-heading"
-              className="mt-5 text-2xl font-bold tracking-tight"
-            >
-              Web Development
-            </h2>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground">
-              Custom websites and applications designed around business goals,
-              user needs, performance, accessibility, and maintainable delivery.
-            </p>
-            <dl className={styles.previewDetails}>
-              <PreviewDetail term="Category" detail="Engineering" />
-              <PreviewDetail
-                term="Target Audience"
-                detail="Organizations planning a custom web product"
-              />
-              <PreviewDetail term="Primary CTA" detail="Book Consultation" />
-              <PreviewDetail
-                term="Related Services"
-                detail="UI/UX Design, API Integration"
-              />
-              <PreviewDetail term="SEO Status" detail="Prepared" />
-              <PreviewDetail term="Slug" detail="web-development" code />
-              <PreviewDetail
-                term="Canonical URL"
-                detail="/services/web-development"
-                code
-              />
-              <PreviewDetail term="Open Graph" detail="Prepared" />
-              <PreviewDetail term="Schema" detail="Prepared" />
-              <PreviewDetail
-                term="Public URL Preview"
-                detail="/services/web-development"
-                code
-              />
-            </dl>
-          </aside>
-        </div>
-      </section>
-
-      <section aria-labelledby="structure-preview-heading" className="mt-14">
-        <div className={styles.structurePanel}>
-          <div className={styles.structureHeader}>
-            <div>
-              <Badge variant="warning">Preview Only</Badge>
-              <span>Content editing is disabled.</span>
-            </div>
-            <FileText
-              className="size-5 text-muted-foreground"
-              aria-hidden="true"
-            />
-          </div>
-          <div className={styles.structureCanvas}>
-            <div>
-              <span className={styles.eyebrow}>Service structure preview</span>
-              <h2
-                id="structure-preview-heading"
-                className={styles.sectionTitle}
-              >
-                A reusable conversion narrative
-              </h2>
-              <p>
-                Each block has a clear purpose, reading order, and relationship
-                to the service promise.
-              </p>
-            </div>
-            <ol className={styles.structureFlow}>
-              {structure.map((item, index) => (
-                <li key={item}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{item}</strong>
-                  {index < structure.length - 1 ? (
-                    <ArrowRight aria-hidden="true" />
-                  ) : null}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.reviewGrid}>
-        <div
-          className={styles.workflowPanel}
-          aria-labelledby="service-workflow-heading"
-        >
-          <span className={styles.eyebrow}>Publishing workflow</span>
-          <h2 id="service-workflow-heading" className={styles.sectionTitle}>
-            Deliberate review before visibility
-          </h2>
-          <ol className={styles.workflow}>
-            {workflow.map(([title, description], index) => (
-              <li key={title}>
-                <span className={styles.stepNumber}>
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3>{title}</h3>
-                  <p>{description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <div className={styles.seoPanel} aria-labelledby="service-seo-heading">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <span className={styles.inverseEyebrow}>SEO checklist</span>
-              <h2 id="service-seo-heading">Publication foundations</h2>
-            </div>
-            <Sparkles
-              className="size-6 text-primary-foreground/60"
-              aria-hidden="true"
-            />
-          </div>
-          <ul>
-            {seoChecks.map((item) => (
-              <li key={item}>
-                <span>{item}</span>
-                <strong>
-                  <CheckCircle2 aria-hidden="true" />
-                  Prepared
-                </strong>
-              </li>
-            ))}
-          </ul>
-          <p>
-            Checklist labels describe preview fields, not an automated audit or
-            publishing result.
-          </p>
-        </div>
-      </section>
-
-      <section aria-labelledby="service-quality-heading" className="mt-14">
-        <span className={styles.eyebrow}>Content quality</span>
-        <h2 id="service-quality-heading" className={styles.sectionTitle}>
-          Review criteria for useful service content
-        </h2>
-        <ul className={styles.qualityGrid}>
-          {qualityChecks.map((item) => (
-            <li key={item}>
-              <CheckCircle2 aria-hidden="true" />
-              <span>{item}</span>
-              <Badge variant="outline">Ready</Badge>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section
-        aria-labelledby="service-relationships-heading"
-        className="mt-14 pb-8"
-      >
-        <div className={styles.relationshipPanel}>
-          <div className={styles.relationshipIntro}>
-            <span className={styles.eyebrow}>Service relationships</span>
-            <h2
-              id="service-relationships-heading"
-              className={styles.sectionTitle}
-            >
-              One service, connected content paths
-            </h2>
+        ) : (
+          <div className={styles.empty}>
+            <Settings2 aria-hidden="true" />
+            <h3>No services yet</h3>
             <p>
-              This static map previews how a future CMS could make related
-              content visible without implying a live data relationship.
+              {filtered
+                ? "No services match these filters. Reset them to view the full catalogue."
+                : "Create your first service to begin the catalogue."}
             </p>
+            {canEdit && !filtered ? (
+              <ServiceDialog categories={categories} mode="create" />
+            ) : (
+              <Button asChild variant="outline">
+                <Link href="/admin/services">Reset filters</Link>
+              </Button>
+            )}
           </div>
-          <div className={styles.relationshipMap}>
-            {relationships.map(([type, label, context], index) => (
-              <div key={type} className={styles.relationshipNode}>
-                <span>{type}</span>
-                <strong>{label}</strong>
-                <small>{context}</small>
-                {index < relationships.length - 1 ? (
-                  <ArrowDown aria-hidden="true" />
-                ) : null}
-              </div>
-            ))}
-          </div>
-          <div className={styles.relationshipLegend} role="note">
-            <Link2 aria-hidden="true" />
-            <p>
-              <strong>Relationship preview only.</strong> No content graph,
-              synchronized record, or database relationship exists in this
-              sprint.
-            </p>
-          </div>
-        </div>
+        )}
+        {services.totalPages > 1 ? (
+          <nav aria-label="Service pagination" className={styles.pagination}>
+            <Button
+              asChild={services.page > 1}
+              disabled={services.page <= 1}
+              variant="outline"
+            >
+              {services.page > 1 ? (
+                <Link href={pageHref(filters, services.page - 1)}>
+                  Previous
+                </Link>
+              ) : (
+                <span>Previous</span>
+              )}
+            </Button>
+            <span>
+              Page {services.page} of {services.totalPages}
+            </span>
+            <Button
+              asChild={services.page < services.totalPages}
+              disabled={services.page >= services.totalPages}
+              variant="outline"
+            >
+              {services.page < services.totalPages ? (
+                <Link href={pageHref(filters, services.page + 1)}>Next</Link>
+              ) : (
+                <span>Next</span>
+              )}
+            </Button>
+          </nav>
+        ) : null}
       </section>
-    </div>
+    </main>
   );
 }
-
-function StaticSelect({
-  id,
+function Filter({
   label,
+  name,
   options,
+  value,
 }: {
-  readonly id: string;
   readonly label: string;
-  readonly options: readonly string[];
+  readonly name: string;
+  readonly options: readonly (readonly [string, string])[];
+  readonly value?: string;
 }) {
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <div className="relative">
-        <select
-          id={id}
-          defaultValue={options[0]}
-          aria-describedby="service-filter-notice"
-          className={cn(nativeControlClass, "appearance-none pr-10")}
-        >
-          {options.map((option) => (
-            <option key={option}>{option}</option>
-          ))}
-        </select>
-        <ChevronDown
-          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-          aria-hidden="true"
-        />
-      </div>
-    </div>
+    <label>
+      <span>{label}</span>
+      <select defaultValue={value ?? ""} name={name}>
+        <option value="">All</option>
+        {options.map(([key, text]) => (
+          <option key={key} value={key}>
+            {text}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
-
-function DisabledAction({
-  icon: Icon,
-  label,
-}: {
-  readonly icon: typeof Eye;
-  readonly label: string;
-}) {
-  return (
-    <button type="button" disabled aria-label={label}>
-      <Icon aria-hidden="true" />
-    </button>
-  );
-}
-
-function PreviewDetail({
-  term,
-  detail,
-  code = false,
-}: {
-  readonly term: string;
-  readonly detail: string;
-  readonly code?: boolean;
-}) {
-  return (
-    <div>
-      <dt>{term}</dt>
-      <dd>{code ? <code>{detail}</code> : detail}</dd>
-    </div>
-  );
-}
-
-export { AdminServices };

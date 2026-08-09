@@ -55,6 +55,10 @@ The `/admin/portfolio` route is a database-backed Server Component. It delegates
 
 The `/admin/blog` route follows the same persistence boundary: the Server Component loads paginated articles and category options through `BlogRepository`, while accessible article and lifecycle dialogs are the only client boundaries. `src/lib/actions/blog.ts` validates form data with the shared Blog Zod contracts, verifies role capabilities, calls the repository, and revalidates the admin index, public Blog index, and affected old/new article slugs. Blog search uses a database-maintained search projection covering title, excerpt, content, and tag keywords; author-role filtering resolves authenticated profile ownership on the server. Editors create, edit, review, publish, unpublish, archive, and restore; permanent deletion remains administrator-only under both application checks and RLS.
 
+## Sprint 8E services integration
+
+The `/admin/services` route is a database-backed Server Component that delegates filtered, sorted, count-aware pagination and category retrieval to `ServicesRepository`. `src/lib/actions/services.ts` is the sole mutation boundary: it reuses the service Zod contracts, checks role capabilities, delegates writes and lifecycle transitions to the repository, and revalidates the admin catalogue, public Services index, and affected old/new service slugs. Accessible create/edit and row lifecycle dialogs are narrow client boundaries. Existing feature and technology arrays are preserved by the editor even though their dedicated editing experience remains outside this sprint. Editors manage content and publication states, administrators may also permanently delete, viewers remain read-only, and RLS remains authoritative.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

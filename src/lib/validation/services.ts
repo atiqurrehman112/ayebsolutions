@@ -15,6 +15,8 @@ export const serviceSchema = z.strictObject({
   summary: summarySchema,
   description: z.string().trim().min(20).max(20_000),
   category_id: identifierSchema.nullable().optional(),
+  icon: z.string().trim().min(2).max(100).nullable().optional(),
+  keywords: z.array(z.string().trim().min(1).max(80)).max(30).default([]),
   features: z.array(z.string().trim().min(1).max(180)).max(50).default([]),
   technologies: z.array(z.string().trim().min(1).max(80)).max(30).default([]),
   status: contentStatusSchema.default("draft"),

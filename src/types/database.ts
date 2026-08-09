@@ -94,6 +94,8 @@ export interface ServiceRow extends AuditColumns, Record<string, unknown> {
   readonly summary: string;
   readonly description: string;
   readonly category_id: string | null;
+  readonly icon: string | null;
+  readonly keywords: readonly string[];
   readonly features: readonly string[];
   readonly technologies: readonly string[];
   readonly status: ContentStatus;
