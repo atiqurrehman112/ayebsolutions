@@ -5,3 +5,4 @@ export * from "./components/admin-portfolio";
 export * from "./components/admin-blog";
 export * from "./components/admin-services";
 export * from "./components/admin-testimonials";
+export * from "./components/admin-media";

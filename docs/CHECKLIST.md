@@ -39,6 +39,7 @@
 - [x] Static admin blog management preview (Sprint 7C)
 - [x] Static admin services management preview (Sprint 7D)
 - [x] Static admin testimonials management preview (Sprint 7E)
+- [x] Static admin media library preview (Sprint 7F)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
@@ -56,7 +57,7 @@
 - [x] Portfolio management preview (frontend only)
 - [x] Services management preview (frontend only)
 - [x] Testimonials management preview (frontend only)
-- [ ] Media library
+- [x] Media library preview (frontend only)
 - [ ] SEO settings
 - [ ] Team management
 
