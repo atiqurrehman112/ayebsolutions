@@ -23,6 +23,10 @@
 - `src/lib/supabase`: Supabase browser, server, and middleware adapters. Browser code receives only the public project URL and anonymous key. Server and middleware clients use `@supabase/ssr` cookie adapters; middleware refreshes authentication cookies before route decisions. The service-role key is server-only configuration and is not consumed by Sprint 8A.
 - `src/lib/auth`: authentication use cases and policy. `session.ts` maps verified Supabase users into the shared auth contract; `auth.ts` owns sign-in, sign-out, and `requireAdmin`; `permissions.ts` maps the `admin`, `editor`, and `viewer` roles from protected `app_metadata` into immutable capabilities. Unknown or absent roles receive viewer permissions.
 - `src/middleware.ts`: protects `/admin/:path*`, redirects guests to `/admin/login`, redirects authenticated users away from the login route, and leaves public routes outside its matcher. It also supplies the matched admin path to the nested layout so the login route can omit authenticated workspace chrome without client-side path detection. Content persistence, CRUD, uploads, lead storage, and settings writes remain explicitly outside Sprint 8A.
+- `supabase/migrations`: the authoritative PostgreSQL CMS schema. Sprint 8B defines twelve normalized tables, enum contracts, foreign keys, constraints, indexes, timestamp/profile triggers, role helper functions, and Row Level Security policies. Schema changes must be forward-only migrations; Prisma is not part of the CMS persistence boundary.
+- `supabase/seed.sql`: development-only, idempotent internal content. Seed records use explicit internal concept, prototype, draft, and configuration labels and must never be applied to production.
+- `src/lib/database`: the typed database access boundary. `client.ts` binds the Supabase SSR client to the generated-style `Database` contract; repositories expose consistent query and lifecycle methods without being consumed by UI in Sprint 8B. RLS remains the final authorization boundary regardless of repository caller.
+- `src/lib/validation`: Zod schemas for portfolio, blog, services, testimonials, contact leads, and settings. Validation contracts operate before future repository calls and do not perform persistence themselves.
 - `src/components/ui`: shadcn/ui primitives.
 - `src/components/cards`: compositional and domain-neutral card patterns.
 - `src/components/layout`: reusable application shells and structural components.
@@ -38,7 +42,7 @@
 - `src/config`: immutable application configuration.
 - `src/types`: genuinely shared TypeScript contracts.
 - `src/config/design-tokens.ts`: runtime-safe token values shared with animation code.
-- `prisma`: database schema and migrations.
+- `supabase`: PostgreSQL migrations and development-only seed data.
 - `public`: static assets organized by asset type.
 
 ## Adding a feature
