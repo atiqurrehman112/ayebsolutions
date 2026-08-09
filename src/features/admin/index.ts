@@ -6,3 +6,4 @@ export * from "./components/admin-blog";
 export * from "./components/admin-services";
 export * from "./components/admin-testimonials";
 export * from "./components/admin-media";
+export * from "./components/admin-contact-leads";

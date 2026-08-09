@@ -49,9 +49,8 @@ const navigation: readonly AdminNavigationItem[] = [
   { label: "Media", href: "/admin/media", icon: MenuSquare },
   {
     label: "Contact Leads",
-    href: "/admin/leads",
+    href: "/admin/contact-leads",
     icon: Mail,
-    status: "Future",
   },
   {
     label: "Settings",
