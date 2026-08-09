@@ -41,6 +41,7 @@
 - [x] Static admin testimonials management preview (Sprint 7E)
 - [x] Static admin media library preview (Sprint 7F)
 - [x] Static admin contact leads management preview (Sprint 7G)
+- [x] Static admin settings management preview (Sprint 7H)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions

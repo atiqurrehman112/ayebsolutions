@@ -56,7 +56,6 @@ const navigation: readonly AdminNavigationItem[] = [
     label: "Settings",
     href: "/admin/settings",
     icon: Settings,
-    status: "Future",
   },
 ] as const;
 
