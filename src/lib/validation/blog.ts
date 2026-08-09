@@ -25,6 +25,8 @@ export const blogArticleSchema = z.strictObject({
     .optional(),
   difficulty: z.string().trim().min(2).max(80).nullable().optional(),
   keywords: z.array(z.string().trim().min(1).max(80)).max(30).default([]),
+  is_featured: z.boolean().default(false),
+  search_text: z.string().optional(),
   status: contentStatusSchema.default("draft"),
   published_at: z.iso.datetime().nullable().optional(),
   meta_title: z.string().trim().max(70).nullable().optional(),

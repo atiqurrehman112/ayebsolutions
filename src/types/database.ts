@@ -80,6 +80,8 @@ export interface BlogArticleRow extends AuditColumns, Record<string, unknown> {
   readonly reading_time_minutes: number | null;
   readonly difficulty: string | null;
   readonly keywords: readonly string[];
+  readonly is_featured: boolean;
+  readonly search_text: string;
   readonly status: ContentStatus;
   readonly published_at: string | null;
   readonly meta_title: string | null;

@@ -45,6 +45,7 @@
 - [x] Supabase admin authentication foundation (Sprint 8A)
 - [x] Supabase CMS database foundation (Sprint 8B)
 - [x] Portfolio CRUD integration with role-aware lifecycle actions (Sprint 8C)
+- [x] Blog CRUD integration with editorial workflow and server-side discovery (Sprint 8D)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
@@ -59,7 +60,7 @@
 - [x] Authentication foundation (Supabase Auth)
 - [x] Database foundation, RLS, repositories, and validation (Supabase PostgreSQL)
 - [ ] Dashboard
-- [x] Blog management preview (frontend only)
+- [x] Blog management (Supabase CRUD integration)
 - [x] Portfolio management (Supabase CRUD integration)
 - [x] Services management preview (frontend only)
 - [x] Testimonials management preview (frontend only)

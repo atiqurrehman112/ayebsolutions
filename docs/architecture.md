@@ -51,6 +51,10 @@
 
 The `/admin/portfolio` route is a database-backed Server Component. It delegates paginated search and filtering to `PortfolioRepository`; interactive create, edit, lifecycle, and delete controls are narrow Client Components. `src/lib/actions/portfolio.ts` validates every mutation with Zod, checks authenticated role permissions, calls the repository, and revalidates both admin and public portfolio paths. Editors manage content, administrators may also permanently delete, viewers remain read-only, and PostgreSQL RLS remains the final authorization boundary.
 
+## Sprint 8D blog integration
+
+The `/admin/blog` route follows the same persistence boundary: the Server Component loads paginated articles and category options through `BlogRepository`, while accessible article and lifecycle dialogs are the only client boundaries. `src/lib/actions/blog.ts` validates form data with the shared Blog Zod contracts, verifies role capabilities, calls the repository, and revalidates the admin index, public Blog index, and affected old/new article slugs. Blog search uses a database-maintained search projection covering title, excerpt, content, and tag keywords; author-role filtering resolves authenticated profile ownership on the server. Editors create, edit, review, publish, unpublish, archive, and restore; permanent deletion remains administrator-only under both application checks and RLS.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries
