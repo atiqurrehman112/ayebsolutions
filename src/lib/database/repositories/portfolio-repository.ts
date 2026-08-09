@@ -7,6 +7,20 @@ import type {
 import type { DatabaseClient } from "../client";
 import { ContentRepository, type PaginationOptions } from "./base-repository";
 
+export interface PortfolioQueryOptions extends PaginationOptions {
+  readonly categoryId?: string;
+  readonly featured?: boolean;
+  readonly query?: string;
+  readonly status?: ContentStatus;
+}
+
+function normalizeSearchTerm(query: string) {
+  return query
+    .trim()
+    .replace(/[,%().]/g, " ")
+    .replace(/\s+/g, " ");
+}
+
 export class PortfolioRepository extends ContentRepository<
   PortfolioProjectRow,
   PortfolioProjectInsert,
@@ -65,7 +79,7 @@ export class PortfolioRepository extends ContentRepository<
   }
 
   async search(query: string) {
-    const term = query.trim().replaceAll(",", "");
+    const term = normalizeSearchTerm(query);
     if (!term) return this.findAll();
     const { data, error } = await this.client
       .from("portfolio_projects")
@@ -87,6 +101,44 @@ export class PortfolioRepository extends ContentRepository<
       .range(from, to);
     this.throwIfError(error);
     return this.paginateResult(data ?? [], count, page, pageSize);
+  }
+
+  async findPage(options: PortfolioQueryOptions = {}) {
+    const { page, pageSize, from, to } = this.getRange(options);
+    const term = options.query ? normalizeSearchTerm(options.query) : "";
+    let request = this.client
+      .from("portfolio_projects")
+      .select("*", { count: "exact" });
+
+    if (term) {
+      request = request.or(
+        `title.ilike.%${term}%,summary.ilike.%${term}%,project_type.ilike.%${term}%`,
+      );
+    }
+    if (options.status) request = request.eq("status", options.status);
+    if (options.categoryId) {
+      request = request.eq("category_id", options.categoryId);
+    }
+    if (options.featured !== undefined) {
+      request = request.eq("is_featured", options.featured);
+    }
+
+    const { data, count, error } = await request
+      .order("updated_at", { ascending: false })
+      .range(from, to);
+    this.throwIfError(error);
+    return this.paginateResult(data ?? [], count, page, pageSize);
+  }
+
+  async findCategories() {
+    const { data, error } = await this.client
+      .from("categories")
+      .select("id,name,slug")
+      .eq("kind", "portfolio")
+      .neq("status", "archived")
+      .order("name");
+    this.throwIfError(error);
+    return data ?? [];
   }
 
   setStatus(id: string, status: ContentStatus) {

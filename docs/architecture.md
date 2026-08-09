@@ -47,6 +47,10 @@
 
 ## Adding a feature
 
+## Sprint 8C portfolio integration
+
+The `/admin/portfolio` route is a database-backed Server Component. It delegates paginated search and filtering to `PortfolioRepository`; interactive create, edit, lifecycle, and delete controls are narrow Client Components. `src/lib/actions/portfolio.ts` validates every mutation with Zod, checks authenticated role permissions, calls the repository, and revalidates both admin and public portfolio paths. Editors manage content, administrators may also permanently delete, viewers remain read-only, and PostgreSQL RLS remains the final authorization boundary.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

@@ -44,6 +44,7 @@
 - [x] Static admin settings management preview (Sprint 7H)
 - [x] Supabase admin authentication foundation (Sprint 8A)
 - [x] Supabase CMS database foundation (Sprint 8B)
+- [x] Portfolio CRUD integration with role-aware lifecycle actions (Sprint 8C)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
@@ -59,7 +60,7 @@
 - [x] Database foundation, RLS, repositories, and validation (Supabase PostgreSQL)
 - [ ] Dashboard
 - [x] Blog management preview (frontend only)
-- [x] Portfolio management preview (frontend only)
+- [x] Portfolio management (Supabase CRUD integration)
 - [x] Services management preview (frontend only)
 - [x] Testimonials management preview (frontend only)
 - [x] Media library preview (frontend only)

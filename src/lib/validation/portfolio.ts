@@ -20,6 +20,7 @@ export const portfolioProjectSchema = z.strictObject({
   project_type: z.string().trim().min(2).max(100),
   technologies: z.array(z.string().trim().min(1).max(80)).max(30).default([]),
   features: z.json().default([]),
+  content: z.json().default({}),
   status: contentStatusSchema.default("draft"),
   is_featured: z.boolean().default(false),
   published_at: z.iso.datetime().nullable().optional(),

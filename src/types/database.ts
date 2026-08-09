@@ -62,6 +62,7 @@ export interface PortfolioProjectRow
   readonly project_type: string;
   readonly technologies: readonly string[];
   readonly features: Json;
+  readonly content: Json;
   readonly status: ContentStatus;
   readonly is_featured: boolean;
   readonly published_at: string | null;
