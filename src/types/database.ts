@@ -143,10 +143,18 @@ export interface ContactLeadRow extends AuditColumns, Record<string, unknown> {
 
 export interface MediaLibraryRow extends AuditColumns, Record<string, unknown> {
   readonly file_name: string;
-  readonly storage_path: string;
+  readonly public_id: string;
+  readonly secure_url: string;
+  readonly resource_type: "image" | "video" | "raw";
+  readonly format: string;
   readonly mime_type: string;
-  readonly file_size_bytes: number;
-  readonly alt_text: string | null;
+  readonly bytes: number;
+  readonly width: number | null;
+  readonly height: number | null;
+  readonly duration: number | null;
+  readonly folder: string;
+  readonly alt: string | null;
+  readonly tags: readonly string[];
   readonly visibility: MediaVisibility;
   readonly usage_locations: readonly string[];
   readonly metadata: Json;
@@ -216,7 +224,14 @@ export type ContactLeadInsert = InsertShape<
 export type ContactLeadUpdate = UpdateShape<ContactLeadRow>;
 export type MediaLibraryInsert = InsertShape<
   MediaLibraryRow,
-  "file_name" | "storage_path" | "mime_type" | "file_size_bytes"
+  | "file_name"
+  | "public_id"
+  | "secure_url"
+  | "resource_type"
+  | "format"
+  | "mime_type"
+  | "bytes"
+  | "folder"
 >;
 export type MediaLibraryUpdate = UpdateShape<MediaLibraryRow>;
 export type SiteSettingInsert = InsertShape<

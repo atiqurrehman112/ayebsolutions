@@ -63,6 +63,10 @@ The `/admin/services` route is a database-backed Server Component that delegates
 
 The `/admin/testimonials` route loads authenticated, paginated moderation data through `TestimonialsRepository`; components never access Supabase directly. The repository owns search, filters, deterministic sorting, CRUD, approval, publication, archive, restore, and featured-placement persistence. `src/lib/actions/testimonials.ts` validates input, checks role permissions, applies consent-aware workflow rules, records approver identity, and revalidates the admin route plus homepage testimonial consumers. Accessible create/edit, lifecycle, featured, and destructive-confirmation controls are the only client boundaries. A database constraint independently prevents publication without approval, verified consent, and a publication timestamp. Administrators may permanently delete, editors manage content and moderation, viewers remain read-only, and RLS remains authoritative.
 
+## Sprint 8G media integration
+
+The `/admin/media` route server-renders paginated Supabase metadata through `MediaRepository`. Cloudinary secrets and binary operations are isolated in `src/lib/cloudinary/media.ts`; browser code never receives credentials. `src/lib/actions/media.ts` is the only upload, replace, rename, and deletion boundary and combines role checks, file/metadata validation, Cloudinary operations, repository persistence, compensating cleanup, and application-wide cache revalidation. Upload and replacement files are limited to an explicit allowlist and 25 MB. Editors and administrators manage media, viewers remain read-only, and the media RLS delete policy intentionally permits content editors for this module.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries
