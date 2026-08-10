@@ -83,6 +83,12 @@ The public `/portfolio` route and `/portfolio/[slug]` detail boundary use `Portf
 
 `src/lib/portfolio/public-portfolio.ts` isolates the anonymous Supabase client and wraps listing, filter, slug, and detail projections in tagged five-minute caches. Dynamic slugs use database-backed `generateStaticParams` plus ISR fallback. Portfolio mutations invalidate the shared `portfolio` tag, listing paths, and both old/new slug paths. The homepage featured-work preview and sitemap consume the same published CMS source; the former static project registries and eight literal route modules no longer exist.
 
+## Sprint 9B dynamic public blog
+
+The public `/blog` index and `/blog/[slug]` detail route use `BlogRepository` as their only persistence boundary. The repository owns published-only ILIKE search, category and keyword-tag filtering, deterministic newest/oldest/featured ordering, bounded pagination, published slug lookup, Media Library projection, related articles, and chronological previous/next navigation. Draft, review, archived, and unknown slugs cannot cross the published query boundary and resolve through `notFound()`.
+
+`src/lib/blog/public-blog.ts` isolates anonymous, RLS-governed reads behind five-minute caches tagged `blog`. Article mutations invalidate that tag plus the index and affected old/new slug paths. The sitemap now derives article URLs and modification dates from published rows. One dynamic template replaced all eight literal article routes and renders body, byline, media, tags, FAQ, newsletter, related, and navigation regions only when their CMS data exists.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

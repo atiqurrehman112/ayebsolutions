@@ -22,6 +22,15 @@
   mask-image: linear-gradient(to bottom, black, transparent 80%);
 }
 
+.filter {
+  display: grid;
+  min-width: 0;
+  gap: 0.45rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
 .editorialIndex {
   position: relative;
   min-width: 0;

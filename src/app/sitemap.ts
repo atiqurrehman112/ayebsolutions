@@ -2,11 +2,13 @@ import type { MetadataRoute } from "next";
 
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
 import { getPublishedPortfolioSlugs } from "@/lib/portfolio/public-portfolio";
+import { getPublishedBlogSlugs } from "@/lib/blog/public-blog";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [settings, portfolioProjects] = await Promise.all([
+  const [settings, portfolioProjects, blogArticles] = await Promise.all([
     getPublicSiteSettings(),
     getPublishedPortfolioSlugs().catch(() => []),
+    getPublishedBlogSlugs().catch(() => []),
   ]);
   const siteUrl = settings.canonical_base_url;
   const entries: MetadataRoute.Sitemap = [
@@ -88,18 +90,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.8,
     },
-    ...[
-      "why-custom-software-beats-off-the-shelf-tools",
-      "how-ai-automation-saves-business-hours",
-      "designing-accessible-web-applications",
-      "api-integration-best-practices",
-      "choosing-the-right-tech-stack",
-      "building-scalable-saas-products",
-      "improving-website-performance",
-      "planning-a-successful-digital-project",
-    ].map((slug) => ({
-      url: `${siteUrl}/blog/${slug}`,
-      lastModified: new Date(),
+    ...blogArticles.map((article) => ({
+      url: `${siteUrl}/blog/${article.slug}`,
+      lastModified: new Date(article.updated_at),
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),

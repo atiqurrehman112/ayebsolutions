@@ -52,6 +52,7 @@
 - [x] Supabase contact-leads CRM and Resend workflow (Sprint 8H)
 - [x] Supabase site-settings CMS and public configuration integration (Sprint 8I)
 - [x] Dynamic public portfolio with Supabase, ISR, filters, and project SEO (Sprint 9A)
+- [x] Dynamic public blog with Supabase, ISR, discovery, and article SEO (Sprint 9B)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions

@@ -98,6 +98,9 @@ export interface BlogArticleRow extends AuditColumns, Record<string, unknown> {
   readonly published_at: string | null;
   readonly meta_title: string | null;
   readonly meta_description: string | null;
+  readonly author_name: string | null;
+  readonly featured_media_id: string | null;
+  readonly faq: Json;
 }
 
 export interface ServiceRow extends AuditColumns, Record<string, unknown> {

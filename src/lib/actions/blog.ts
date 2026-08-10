@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/auth/auth";
@@ -96,6 +96,7 @@ function actionFailure(error: unknown): BlogActionState {
   };
 }
 function revalidateBlog(...slugs: readonly (string | null | undefined)[]) {
+  revalidateTag("blog");
   revalidatePath("/admin/blog");
   revalidatePath("/blog");
   for (const slug of new Set(

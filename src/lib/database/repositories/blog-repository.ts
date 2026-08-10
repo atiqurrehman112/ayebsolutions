@@ -5,6 +5,8 @@ import type {
   AppRole,
   CategoryRow,
   ContentStatus,
+  MediaLibraryRow,
+  TagRow,
 } from "@/types/database";
 import type { DatabaseClient } from "../client";
 import { ContentRepository, type PaginationOptions } from "./base-repository";
@@ -15,6 +17,18 @@ export interface BlogQueryOptions extends PaginationOptions {
   readonly featured?: boolean;
   readonly query?: string;
   readonly status?: ContentStatus;
+}
+export type PublicBlogSort = "featured" | "newest" | "oldest";
+export interface PublicBlogQuery extends PaginationOptions {
+  readonly categoryId?: string;
+  readonly tagId?: string;
+  readonly query?: string;
+  readonly sort?: PublicBlogSort;
+}
+export interface PublicBlogContext {
+  readonly category: Pick<CategoryRow, "id" | "name" | "slug"> | null;
+  readonly featuredMedia: MediaLibraryRow | null;
+  readonly tags: readonly Pick<TagRow, "id" | "name" | "slug">[];
 }
 
 function normalizeSearchTerm(query: string) {
@@ -150,6 +164,148 @@ export class BlogRepository extends ContentRepository<
       .order("name");
     this.throwIfError(error);
     return data ?? [];
+  }
+
+  async findPublishedPage(options: PublicBlogQuery = {}) {
+    const { page, pageSize, from, to } = this.getRange(options);
+    const term = options.query ? normalizeSearchTerm(options.query) : "";
+    let request = this.client
+      .from("blog_articles")
+      .select("*", { count: "exact" })
+      .eq("status", "published");
+    if (term) request = request.ilike("search_text", `%${term}%`);
+    if (options.categoryId)
+      request = request.eq("category_id", options.categoryId);
+    if (options.tagId) request = request.contains("keywords", [options.tagId]);
+    const sort = options.sort ?? "newest";
+    if (sort === "featured")
+      request = request
+        .order("is_featured", { ascending: false })
+        .order("published_at", { ascending: false, nullsFirst: false });
+    else
+      request = request.order("published_at", {
+        ascending: sort === "oldest",
+        nullsFirst: false,
+      });
+    const { data, count, error } = await request
+      .order("id", { ascending: true })
+      .range(from, to);
+    this.throwIfError(error);
+    return this.paginateResult(data ?? [], count, page, pageSize);
+  }
+
+  async findPublishedBySlug(slug: string) {
+    const { data, error } = await this.client
+      .from("blog_articles")
+      .select("*")
+      .eq("slug", slug)
+      .eq("status", "published")
+      .maybeSingle();
+    this.throwIfError(error);
+    return data;
+  }
+
+  async findPublishedSlugs() {
+    const { data, error } = await this.client
+      .from("blog_articles")
+      .select("slug,updated_at")
+      .eq("status", "published")
+      .order("slug");
+    this.throwIfError(error);
+    return data ?? [];
+  }
+
+  async findPublicCategories() {
+    const { data, error } = await this.client
+      .from("categories")
+      .select("id,name,slug")
+      .eq("kind", "blog")
+      .eq("status", "published")
+      .order("name");
+    this.throwIfError(error);
+    return data ?? [];
+  }
+
+  async findPublicTags() {
+    const { data, error } = await this.client
+      .from("blog_articles")
+      .select("keywords")
+      .eq("status", "published")
+      .order("published_at", { ascending: false, nullsFirst: false });
+    this.throwIfError(error);
+    return [...new Set((data ?? []).flatMap((article) => article.keywords))]
+      .sort((left, right) => left.localeCompare(right))
+      .map((name) => ({ id: name, name, slug: name }));
+  }
+
+  async findPublicContext(article: BlogArticleRow): Promise<PublicBlogContext> {
+    const [category, featuredMedia] = await Promise.all([
+      article.category_id
+        ? this.client
+            .from("categories")
+            .select("id,name,slug")
+            .eq("id", article.category_id)
+            .eq("status", "published")
+            .maybeSingle()
+        : Promise.resolve({ data: null, error: null }),
+      article.featured_media_id
+        ? this.client
+            .from("media_library")
+            .select("*")
+            .eq("id", article.featured_media_id)
+            .eq("status", "published")
+            .eq("visibility", "public")
+            .maybeSingle()
+        : Promise.resolve({ data: null, error: null }),
+    ]);
+    this.throwIfError(category.error);
+    this.throwIfError(featuredMedia.error);
+    return {
+      category: category.data,
+      featuredMedia: featuredMedia.data,
+      tags: article.keywords.map((name) => ({ id: name, name, slug: name })),
+    };
+  }
+
+  async findRelated(article: BlogArticleRow) {
+    let request = this.client
+      .from("blog_articles")
+      .select("*")
+      .eq("status", "published")
+      .neq("id", article.id);
+    if (article.category_id)
+      request = request.eq("category_id", article.category_id);
+    const result = await request
+      .order("is_featured", { ascending: false })
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .limit(3);
+    this.throwIfError(result.error);
+    return result.data ?? [];
+  }
+
+  async findAdjacent(article: BlogArticleRow) {
+    if (!article.published_at) return { previous: null, next: null };
+    const [previous, next] = await Promise.all([
+      this.client
+        .from("blog_articles")
+        .select("title,slug")
+        .eq("status", "published")
+        .lt("published_at", article.published_at)
+        .order("published_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      this.client
+        .from("blog_articles")
+        .select("title,slug")
+        .eq("status", "published")
+        .gt("published_at", article.published_at)
+        .order("published_at", { ascending: true })
+        .limit(1)
+        .maybeSingle(),
+    ]);
+    this.throwIfError(previous.error);
+    this.throwIfError(next.error);
+    return { previous: previous.data, next: next.data };
   }
 
   setStatus(id: string, status: ContentStatus) {
