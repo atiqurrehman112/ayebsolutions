@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 import { requireAdmin } from "@/lib/auth/auth";
 import { getPermissions } from "@/lib/auth/permissions";
@@ -92,9 +92,14 @@ function actionFailure(error: unknown): PortfolioActionState {
   };
 }
 
-function revalidatePortfolio() {
+function revalidatePortfolio(...slugs: readonly (string | null | undefined)[]) {
+  revalidateTag("portfolio");
   revalidatePath("/admin/portfolio");
   revalidatePath("/portfolio");
+  for (const slug of new Set(
+    slugs.filter((item): item is string => Boolean(item)),
+  ))
+    revalidatePath(`/portfolio/${slug}`);
 }
 
 export async function createPortfolioProject(
@@ -111,8 +116,8 @@ export async function createPortfolioProject(
   try {
     await requirePortfolioPermission("write");
     const repository = new PortfolioRepository(await createDatabaseClient());
-    await repository.create(parsed.data);
-    revalidatePortfolio();
+    const project = await repository.create(parsed.data);
+    revalidatePortfolio(project.slug);
     return { message: "Project created successfully.", status: "success" };
   } catch (error) {
     return actionFailure(error);
@@ -136,8 +141,9 @@ export async function updatePortfolioProject(
   try {
     await requirePortfolioPermission("write");
     const repository = new PortfolioRepository(await createDatabaseClient());
-    await repository.update(id, parsed.data);
-    revalidatePortfolio();
+    const previous = await repository.findById(id);
+    const project = await repository.update(id, parsed.data);
+    revalidatePortfolio(previous?.slug, project.slug);
     return { message: "Project updated successfully.", status: "success" };
   } catch (error) {
     return actionFailure(error);
@@ -154,13 +160,14 @@ async function runLifecycleAction(
     );
     const repository = new PortfolioRepository(await createDatabaseClient());
 
+    const project = await repository.findById(id);
     if (operation === "delete") await repository.delete(id);
     if (operation === "archive") await repository.archive(id);
     if (operation === "publish") await repository.publish(id);
     if (operation === "restore") await repository.restore(id);
     if (operation === "unpublish") await repository.setStatus(id, "draft");
 
-    revalidatePortfolio();
+    revalidatePortfolio(project?.slug);
     const messages = {
       archive: "Project archived successfully.",
       delete: "Project deleted successfully.",

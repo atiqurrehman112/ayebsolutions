@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { StructuredData } from "@/components/seo/structured-data";
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { getPublishedPortfolioPage } from "@/lib/portfolio/public-portfolio";
 import {
   AutomationShowcaseSection,
   FaqShowcaseSection,
@@ -38,14 +39,21 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const settings = await getPublicSiteSettings();
+  const [settings, portfolio] = await Promise.all([
+    getPublicSiteSettings(),
+    getPublishedPortfolioPage({
+      featured: true,
+      pageSize: 6,
+      sort: "featured",
+    }),
+  ]);
   const description = settings.default_meta_description;
   return (
     <>
       <HeroSection brandName={settings.site_name} />
       <TrustSocialProofSection />
       <ServicesOverviewSection />
-      <PortfolioPreviewSection />
+      <PortfolioPreviewSection projects={portfolio.data} />
       {settings.enable_ai_features ? <AutomationShowcaseSection /> : null}
       <ProcessShowcaseSection />
       <IndustriesShowcaseSection />

@@ -69,6 +69,17 @@ export interface PortfolioProjectRow
   readonly published_at: string | null;
   readonly meta_title: string | null;
   readonly meta_description: string | null;
+  readonly client_goals: readonly string[];
+  readonly results: readonly string[];
+  readonly faq: Json;
+}
+export interface PortfolioProjectMediaRow extends Record<string, unknown> {
+  readonly project_id: string;
+  readonly media_id: string;
+  readonly sort_order: number;
+  readonly caption: string | null;
+  readonly created_at: string;
+  readonly created_by: string | null;
 }
 
 export interface BlogArticleRow extends AuditColumns, Record<string, unknown> {
@@ -270,6 +281,13 @@ export type PortfolioProjectInsert = InsertShape<
   "title" | "slug" | "summary" | "project_type"
 >;
 export type PortfolioProjectUpdate = UpdateShape<PortfolioProjectRow>;
+export type PortfolioProjectMediaInsert = Omit<
+  PortfolioProjectMediaRow,
+  "created_at"
+>;
+export type PortfolioProjectMediaUpdate = Partial<
+  Pick<PortfolioProjectMediaRow, "caption" | "sort_order">
+>;
 export type BlogArticleInsert = InsertShape<
   BlogArticleRow,
   "title" | "slug" | "description" | "excerpt" | "content"
@@ -349,6 +367,11 @@ export interface Database {
         PortfolioProjectRow,
         PortfolioProjectInsert,
         PortfolioProjectUpdate
+      >;
+      portfolio_project_media: TableDefinition<
+        PortfolioProjectMediaRow,
+        PortfolioProjectMediaInsert,
+        PortfolioProjectMediaUpdate
       >;
       blog_articles: TableDefinition<
         BlogArticleRow,

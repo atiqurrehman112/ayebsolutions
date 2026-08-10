@@ -1,9 +1,13 @@
 import type { MetadataRoute } from "next";
 
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { getPublishedPortfolioSlugs } from "@/lib/portfolio/public-portfolio";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const settings = await getPublicSiteSettings();
+  const [settings, portfolioProjects] = await Promise.all([
+    getPublicSiteSettings(),
+    getPublishedPortfolioSlugs().catch(() => []),
+  ]);
   const siteUrl = settings.canonical_base_url;
   const entries: MetadataRoute.Sitemap = [
     {
@@ -60,18 +64,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.9,
     },
-    ...[
-      "school-operations-portal",
-      "ai-lead-routing-workflow",
-      "auction-marketplace-architecture",
-      "support-knowledge-assistant",
-      "commerce-analytics-workspace",
-      "saas-crm-workspace",
-      "accessible-booking-experience",
-      "api-operations-console",
-    ].map((slug) => ({
-      url: `${siteUrl}/portfolio/${slug}`,
-      lastModified: new Date(),
+    ...portfolioProjects.map((project) => ({
+      url: `${siteUrl}/portfolio/${project.slug}`,
+      lastModified: new Date(project.updated_at),
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),

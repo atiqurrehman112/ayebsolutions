@@ -77,6 +77,12 @@ The singleton `site_configuration` table is the typed production configuration s
 
 Public rendering consumes one cached, published settings projection through `getPublicSiteSettings()`. The root layout, metadata defaults, Organization schema, language, logo/favicon/OpenGraph media, header, search, footer, contact/social information, feature-aware sitemap, robots policy, newsletter visibility, homepage AI visibility, and maintenance state share that projection. Immutable source configuration remains only as a fail-safe when Supabase is unconfigured or temporarily unavailable. The cache uses a settings tag and a bounded revalidation interval; successful writes invalidate the tag and application layout.
 
+## Sprint 9A dynamic public portfolio
+
+The public `/portfolio` route and `/portfolio/[slug]` detail boundary use `PortfolioRepository` exclusively. The listing delegates published-only ILIKE search, category/tag filters, deterministic newest/oldest/featured/alphabetical sorting, and bounded pagination to PostgreSQL. Detail reads compose a published project with its category, tags, normalized Media Library gallery, and related published projects. Missing or non-published slugs resolve through `notFound()` and RLS remains authoritative.
+
+`src/lib/portfolio/public-portfolio.ts` isolates the anonymous Supabase client and wraps listing, filter, slug, and detail projections in tagged five-minute caches. Dynamic slugs use database-backed `generateStaticParams` plus ISR fallback. Portfolio mutations invalidate the shared `portfolio` tag, listing paths, and both old/new slug paths. The homepage featured-work preview and sitemap consume the same published CMS source; the former static project registries and eight literal route modules no longer exist.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

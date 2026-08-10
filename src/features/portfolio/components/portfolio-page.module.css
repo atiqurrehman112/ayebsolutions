@@ -46,6 +46,42 @@
     ),
     hsl(var(--background) / 0.76);
 }
+.filter {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+.filter > span {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.filter input,
+.filter select {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.65rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  width: 100%;
+}
+.filter div {
+  position: relative;
+}
+.filter div svg {
+  height: 1rem;
+  left: 0.8rem;
+  position: absolute;
+  top: 0.85rem;
+  width: 1rem;
+}
+.filter div input {
+  padding-left: 2.35rem;
+}
+.filter input:focus-visible,
+.filter select:focus-visible {
+  outline: 3px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
 
 .hoverCard {
   transition:

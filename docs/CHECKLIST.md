@@ -51,10 +51,11 @@
 - [x] Cloudinary and Supabase media-library integration (Sprint 8G)
 - [x] Supabase contact-leads CRM and Resend workflow (Sprint 8H)
 - [x] Supabase site-settings CMS and public configuration integration (Sprint 8I)
+- [x] Dynamic public portfolio with Supabase, ISR, filters, and project SEO (Sprint 9A)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
-- [ ] Portfolio
+- [x] Portfolio
 - [ ] Case Studies
 - [x] Blog
 - [ ] Careers
