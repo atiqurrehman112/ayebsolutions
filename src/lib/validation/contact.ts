@@ -4,11 +4,11 @@ import { requireAtLeastOneField } from "./shared";
 
 export const leadStatusSchema = z.enum([
   "new",
-  "reviewed",
-  "assigned",
-  "proposal",
-  "follow_up",
-  "closed",
+  "contacted",
+  "qualified",
+  "proposal_sent",
+  "won",
+  "lost",
   "archived",
 ]);
 
@@ -24,11 +24,23 @@ export const contactLeadSchema = z.strictObject({
     .array(z.string().trim().min(1).max(120))
     .max(20)
     .default([]),
-  priority: z.enum(["low", "normal", "high"]).default("normal"),
+  priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
   status: leadStatusSchema.default("new"),
   source: z.string().trim().min(2).max(120).default("website"),
   assigned_to: z.uuid().nullable().optional(),
-  internal_notes: z.string().trim().max(10_000).nullable().optional(),
+  notes: z.string().trim().max(10_000).nullable().optional(),
+  subject: z.string().trim().max(240).nullable().optional(),
+  estimated_budget: z.string().trim().max(120).nullable().optional(),
+  last_contacted_at: z.iso.datetime().nullable().optional(),
+  status_changed_at: z.iso.datetime().optional(),
+});
+
+export const leadReplySchema = z.strictObject({
+  id: z.uuid(),
+  subject: z.string().trim().min(2).max(240),
+  body: z.string().trim().min(2).max(10_000),
+  recipient: z.email(),
+  email_type: z.enum(["reply", "acknowledgement", "internal_notification"]),
 });
 
 export const contactLeadUpdateSchema =

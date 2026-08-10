@@ -67,6 +67,10 @@ The `/admin/testimonials` route loads authenticated, paginated moderation data t
 
 The `/admin/media` route server-renders paginated Supabase metadata through `MediaRepository`. Cloudinary secrets and binary operations are isolated in `src/lib/cloudinary/media.ts`; browser code never receives credentials. `src/lib/actions/media.ts` is the only upload, replace, rename, and deletion boundary and combines role checks, file/metadata validation, Cloudinary operations, repository persistence, compensating cleanup, and application-wide cache revalidation. Upload and replacement files are limited to an explicit allowlist and 25 MB. Editors and administrators manage media, viewers remain read-only, and the media RLS delete policy intentionally permits content editors for this module.
 
+## Sprint 8H contact-leads integration
+
+The `/admin/contact-leads` route server-renders count-aware, paginated lead records through `ContactLeadsRepository`. Search, status/priority/assignment/date filters, deterministic sorting, assignee discovery, status history, and email history remain in the repository boundary. `src/lib/actions/contact-leads.ts` is the sole mutation and delivery boundary: it validates input with Zod, applies authenticated role checks, calls the repository, invokes the server-only Resend adapter, records successful delivery history, and revalidates the CRM route. The forward migration normalizes the lifecycle to New, Contacted, Qualified, Proposal Sent, Won, Lost, and Archived while preserving legacy rows through an explicit mapping. Status and email events use append-only related tables so audit history is queryable without rewriting the lead record. Administrators and editors manage, assign, respond, and archive; permanent deletion remains administrator-only; viewers remain read-only; RLS remains authoritative.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

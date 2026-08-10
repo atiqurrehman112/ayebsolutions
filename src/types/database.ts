@@ -2,11 +2,11 @@ export type ContentStatus = "draft" | "review" | "published" | "archived";
 export type ProfileStatus = "active" | "suspended" | "invited";
 export type LeadStatus =
   | "new"
-  | "reviewed"
-  | "assigned"
-  | "proposal"
-  | "follow_up"
-  | "closed"
+  | "contacted"
+  | "qualified"
+  | "proposal_sent"
+  | "won"
+  | "lost"
   | "archived";
 export type AppRole = "admin" | "editor" | "viewer";
 export type CategoryKind = "portfolio" | "blog" | "service";
@@ -131,14 +131,38 @@ export interface ContactLeadRow extends AuditColumns, Record<string, unknown> {
   readonly company: string | null;
   readonly project_type: string;
   readonly budget_range: string | null;
+  readonly estimated_budget: string | null;
+  readonly subject: string | null;
   readonly timeline: string | null;
   readonly message: string;
   readonly interested_services: readonly string[];
   readonly priority: string;
+  readonly priority_rank: number;
   readonly status: LeadStatus;
   readonly source: string;
   readonly assigned_to: string | null;
-  readonly internal_notes: string | null;
+  readonly notes: string | null;
+  readonly last_contacted_at: string | null;
+  readonly status_changed_at: string;
+}
+export interface LeadStatusHistoryRow extends Record<string, unknown> {
+  readonly id: string;
+  readonly lead_id: string;
+  readonly from_status: LeadStatus | null;
+  readonly to_status: LeadStatus;
+  readonly changed_by: string | null;
+  readonly created_at: string;
+}
+export interface LeadEmailHistoryRow extends Record<string, unknown> {
+  readonly id: string;
+  readonly lead_id: string;
+  readonly email_type: string;
+  readonly recipient: string;
+  readonly subject: string;
+  readonly body: string;
+  readonly provider_id: string | null;
+  readonly sent_by: string | null;
+  readonly sent_at: string;
 }
 
 export interface MediaLibraryRow extends AuditColumns, Record<string, unknown> {
@@ -243,6 +267,16 @@ export type ArticleTagInsert = ArticleTagRow;
 export type ArticleTagUpdate = Partial<Pick<ArticleTagRow, "created_by">>;
 export type ProjectTagInsert = ProjectTagRow;
 export type ProjectTagUpdate = Partial<Pick<ProjectTagRow, "created_by">>;
+export type LeadStatusHistoryInsert = Omit<
+  LeadStatusHistoryRow,
+  "id" | "created_at"
+>;
+export type LeadStatusHistoryUpdate = Partial<LeadStatusHistoryInsert>;
+export type LeadEmailHistoryInsert = Omit<
+  LeadEmailHistoryRow,
+  "id" | "sent_at"
+>;
+export type LeadEmailHistoryUpdate = Partial<LeadEmailHistoryInsert>;
 
 interface TableDefinition<Row, Insert, Update> {
   Row: Row;
@@ -277,6 +311,16 @@ export interface Database {
         ContactLeadRow,
         ContactLeadInsert,
         ContactLeadUpdate
+      >;
+      lead_status_history: TableDefinition<
+        LeadStatusHistoryRow,
+        LeadStatusHistoryInsert,
+        LeadStatusHistoryUpdate
+      >;
+      lead_email_history: TableDefinition<
+        LeadEmailHistoryRow,
+        LeadEmailHistoryInsert,
+        LeadEmailHistoryUpdate
       >;
       media_library: TableDefinition<
         MediaLibraryRow,
@@ -322,7 +366,7 @@ export interface Database {
       app_role: AppRole;
       category_kind: CategoryKind;
       content_status: ContentStatus;
-      lead_status: LeadStatus;
+      lead_crm_status: LeadStatus;
       media_visibility: MediaVisibility;
       profile_status: ProfileStatus;
     };
