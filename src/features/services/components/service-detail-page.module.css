@@ -1,0 +1,66 @@
+.hero {
+  background:
+    radial-gradient(
+      circle at 82% 18%,
+      hsl(var(--primary) / 0.1),
+      transparent 32rem
+    ),
+    linear-gradient(to bottom, hsl(var(--muted) / 0.2), transparent 62%);
+}
+.hero::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.25;
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.55) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.55) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+.icon {
+  display: grid;
+  width: 4rem;
+  height: 4rem;
+  place-items: center;
+  border: 1px solid hsl(var(--border));
+  border-radius: 1rem;
+  background: hsl(var(--card));
+  box-shadow: var(--shadow-soft);
+}
+.feature {
+  transition:
+    transform 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+}
+.feature:hover {
+  transform: translateY(-3px);
+  border-color: hsl(var(--primary) / 0.35);
+  box-shadow: var(--shadow-soft);
+}
+.gallery {
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 0.5rem);
+  background: hsl(var(--muted) / 0.2);
+}
+.gallery img {
+  width: 100%;
+  height: auto;
+}
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.finalCta {
+  background: hsl(var(--primary));
+}
+@media (prefers-reduced-motion: reduce) {
+  .feature {
+    transition: none;
+  }
+  .feature:hover {
+    transform: none;
+  }
+}

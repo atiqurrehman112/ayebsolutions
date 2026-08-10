@@ -89,6 +89,12 @@ The public `/blog` index and `/blog/[slug]` detail route use `BlogRepository` as
 
 `src/lib/blog/public-blog.ts` isolates anonymous, RLS-governed reads behind five-minute caches tagged `blog`. Article mutations invalidate that tag plus the index and affected old/new slug paths. The sitemap now derives article URLs and modification dates from published rows. One dynamic template replaced all eight literal article routes and renders body, byline, media, tags, FAQ, newsletter, related, and navigation regions only when their CMS data exists.
 
+## Sprint 9C dynamic public services
+
+The public `/services` listing and `/services/[slug]` detail boundary use `ServicesRepository` exclusively. Published listing queries provide PostgreSQL ILIKE search, category and featured filtering, deterministic display-order/reverse/title sorting, and bounded pagination. Detail reads combine the published service with its published category, ordered public Media Library gallery, and related published services. Draft, review, archived, and unknown slugs resolve through `notFound()`.
+
+`src/lib/services/public-services.ts` contains the anonymous RLS-governed client and five-minute caches tagged `services`. Service mutations invalidate the tag plus listing and affected old/new detail paths. A normalized `service_media` junction keeps gallery order and captions independent of media metadata. Optional subtitle, benefits, process, deliverables, FAQ, and gallery fields render only when populated. The six literal route modules and their duplicated feature implementations were removed; the sitemap now uses published service slugs and modification dates.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

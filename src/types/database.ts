@@ -118,6 +118,20 @@ export interface ServiceRow extends AuditColumns, Record<string, unknown> {
   readonly sort_order: number;
   readonly meta_title: string | null;
   readonly meta_description: string | null;
+  readonly subtitle: string | null;
+  readonly benefits: readonly string[];
+  readonly process: Json;
+  readonly deliverables: readonly string[];
+  readonly faq: Json;
+}
+
+export interface ServiceMediaRow extends Record<string, unknown> {
+  readonly service_id: string;
+  readonly media_id: string;
+  readonly sort_order: number;
+  readonly caption: string | null;
+  readonly created_at: string;
+  readonly created_by: string | null;
 }
 
 export interface TestimonialRow extends AuditColumns, Record<string, unknown> {
@@ -301,6 +315,10 @@ export type ServiceInsert = InsertShape<
   "title" | "slug" | "summary" | "description"
 >;
 export type ServiceUpdate = UpdateShape<ServiceRow>;
+export type ServiceMediaInsert = Omit<ServiceMediaRow, "created_at">;
+export type ServiceMediaUpdate = Partial<
+  Pick<ServiceMediaRow, "caption" | "sort_order">
+>;
 export type TestimonialInsert = InsertShape<
   TestimonialRow,
   "reviewer_name" | "quote"
@@ -382,6 +400,11 @@ export interface Database {
         BlogArticleUpdate
       >;
       services: TableDefinition<ServiceRow, ServiceInsert, ServiceUpdate>;
+      service_media: TableDefinition<
+        ServiceMediaRow,
+        ServiceMediaInsert,
+        ServiceMediaUpdate
+      >;
       testimonials: TableDefinition<
         TestimonialRow,
         TestimonialInsert,

@@ -1,5 +1,7 @@
 import type {
   ContentStatus,
+  CategoryRow,
+  MediaLibraryRow,
   ServiceInsert,
   ServiceRow,
   ServiceUpdate,
@@ -15,6 +17,20 @@ export interface ServiceQueryOptions extends PaginationOptions {
   readonly query?: string;
   readonly sort?: ServiceSort;
   readonly status?: ContentStatus;
+}
+export type PublicServiceSort = Exclude<ServiceSort, "updated-desc">;
+export interface PublicServiceQuery extends PaginationOptions {
+  readonly categoryId?: string;
+  readonly featured?: boolean;
+  readonly query?: string;
+  readonly sort?: PublicServiceSort;
+}
+export interface PublicServiceContext {
+  readonly category: Pick<CategoryRow, "id" | "name" | "slug"> | null;
+  readonly gallery: readonly (MediaLibraryRow & {
+    readonly caption: string | null;
+    readonly sort_order: number;
+  })[];
 }
 function normalizeSearchTerm(query: string) {
   return query
@@ -132,6 +148,104 @@ export class ServicesRepository extends ContentRepository<
       .order("name");
     this.throwIfError(error);
     return data ?? [];
+  }
+  async findPublishedPage(options: PublicServiceQuery = {}) {
+    return this.findPage({ ...options, status: "published" });
+  }
+  async findPublishedBySlug(slug: string) {
+    const { data, error } = await this.client
+      .from("services")
+      .select("*")
+      .eq("slug", slug)
+      .eq("status", "published")
+      .maybeSingle();
+    this.throwIfError(error);
+    return data;
+  }
+  async findPublishedSlugs() {
+    const { data, error } = await this.client
+      .from("services")
+      .select("slug,updated_at")
+      .eq("status", "published")
+      .order("slug");
+    this.throwIfError(error);
+    return data ?? [];
+  }
+  async findPublicCategories() {
+    const { data, error } = await this.client
+      .from("categories")
+      .select("id,name,slug")
+      .eq("kind", "service")
+      .eq("status", "published")
+      .order("name");
+    this.throwIfError(error);
+    return data ?? [];
+  }
+  async findPublicContext(service: ServiceRow): Promise<PublicServiceContext> {
+    const [category, galleryLinks] = await Promise.all([
+      service.category_id
+        ? this.client
+            .from("categories")
+            .select("id,name,slug")
+            .eq("id", service.category_id)
+            .eq("status", "published")
+            .maybeSingle()
+        : Promise.resolve({ data: null, error: null }),
+      this.client
+        .from("service_media")
+        .select("media_id,sort_order,caption")
+        .eq("service_id", service.id)
+        .order("sort_order"),
+    ]);
+    this.throwIfError(category.error);
+    this.throwIfError(galleryLinks.error);
+    const mediaIds = (galleryLinks.data ?? []).map((item) => item.media_id);
+    const media = mediaIds.length
+      ? await this.client
+          .from("media_library")
+          .select("*")
+          .in("id", mediaIds)
+          .eq("status", "published")
+          .eq("visibility", "public")
+      : { data: [], error: null };
+    this.throwIfError(media.error);
+    const mediaById = new Map(
+      (media.data ?? []).map((item) => [item.id, item]),
+    );
+    return {
+      category: category.data,
+      gallery: (galleryLinks.data ?? []).flatMap((link) => {
+        const item = mediaById.get(link.media_id);
+        return item
+          ? [{ ...item, caption: link.caption, sort_order: link.sort_order }]
+          : [];
+      }),
+    };
+  }
+  async findRelated(service: ServiceRow) {
+    let request = this.client
+      .from("services")
+      .select("*")
+      .eq("status", "published")
+      .neq("id", service.id);
+    if (service.category_id)
+      request = request.eq("category_id", service.category_id);
+    const result = await request
+      .order("is_featured", { ascending: false })
+      .order("sort_order")
+      .limit(3);
+    this.throwIfError(result.error);
+    if (result.data?.length || !service.category_id) return result.data ?? [];
+    const fallback = await this.client
+      .from("services")
+      .select("*")
+      .eq("status", "published")
+      .neq("id", service.id)
+      .order("is_featured", { ascending: false })
+      .order("sort_order")
+      .limit(3);
+    this.throwIfError(fallback.error);
+    return fallback.data ?? [];
   }
   setStatus(id: string, status: ContentStatus) {
     return this.update(id, { status });

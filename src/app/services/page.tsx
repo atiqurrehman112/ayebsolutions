@@ -1,26 +1,81 @@
 import type { Metadata } from "next";
-
-import { company } from "@/config/company";
 import { ServicesPage } from "@/features/services";
+import type { PublicServiceSort } from "@/lib/database/repositories/services-repository";
+import {
+  getPublishedServiceFilters,
+  getPublishedServicesPage,
+} from "@/lib/services/public-services";
+import { getPublicSiteSettings } from "@/lib/settings/site-settings";
 
-const title = "Web Development, AI Automation & SaaS Services";
-const description =
-  "Explore Ayeb Solutions services for custom web development, AI automation, SaaS products, UI/UX design, API integration, and ongoing maintenance.";
-
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/services" },
-  openGraph: {
-    type: "website",
-    url: "/services",
+export const revalidate = 300;
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
+  const title = "Digital Services";
+  const description =
+    "Explore published web development, automation, software, design, integration, and support services from Ayeb Solutions.";
+  return {
     title,
     description,
-    siteName: company.name,
-  },
-  twitter: { card: "summary_large_image", title, description },
-};
-
-export default function ServicesRoute() {
-  return <ServicesPage />;
+    alternates: { canonical: "/services" },
+    openGraph: {
+      type: "website",
+      url: "/services",
+      title,
+      description,
+      siteName: settings.site_name,
+    },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
+interface Props {
+  readonly searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+const first = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? value[0] : value;
+const sorts: readonly PublicServiceSort[] = [
+  "display-asc",
+  "display-desc",
+  "title-asc",
+  "title-desc",
+];
+export default async function ServicesRoute({ searchParams }: Props) {
+  const [params, categories, settings] = await Promise.all([
+    searchParams,
+    getPublishedServiceFilters(),
+    getPublicSiteSettings(),
+  ]);
+  const requestedSize = Number(first(params.pageSize));
+  const pageSize = requestedSize === 24 ? 24 : requestedSize === 48 ? 48 : 12;
+  const requestedSort = first(params.sort) as PublicServiceSort;
+  const featuredValue = first(params.featured);
+  const filters = {
+    category: first(params.category) || undefined,
+    featured:
+      featuredValue === "true"
+        ? true
+        : featuredValue === "false"
+          ? false
+          : undefined,
+    pageSize,
+    query: first(params.q)?.trim() || undefined,
+    sort: sorts.includes(requestedSort)
+      ? requestedSort
+      : ("display-asc" as const),
+  };
+  const services = await getPublishedServicesPage({
+    categoryId: filters.category,
+    featured: filters.featured,
+    page: Math.max(1, Number(first(params.page)) || 1),
+    pageSize,
+    query: filters.query,
+    sort: filters.sort,
+  });
+  return (
+    <ServicesPage
+      categories={categories}
+      filters={filters}
+      services={services}
+      siteUrl={settings.site_url}
+    />
+  );
 }

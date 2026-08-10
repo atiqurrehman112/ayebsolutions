@@ -12,8 +12,7 @@
     );
 }
 
-.heroBackground::after,
-.sectionGrid::after {
+.heroBackground::after {
   position: absolute;
   inset: 0;
   background-image:
@@ -24,15 +23,13 @@
   content: "";
 }
 
-.blueprint {
-  background:
-    linear-gradient(145deg, hsl(var(--card) / 0.92), hsl(var(--card) / 0.64)),
-    hsl(var(--background));
-  box-shadow: 0 34px 90px -50px hsl(var(--foreground) / 0.42);
-}
-
-.blueprintPulse {
-  animation: blueprint-pulse 3.4s ease-in-out infinite;
+.filter {
+  display: grid;
+  min-width: 0;
+  gap: 0.45rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 .serviceCard {
@@ -49,16 +46,6 @@
   transform: translateY(-3px);
 }
 
-.processLine {
-  background: linear-gradient(
-    to right,
-    transparent,
-    hsl(var(--foreground) / 0.24) 8%,
-    hsl(var(--foreground) / 0.24) 92%,
-    transparent
-  );
-}
-
 .finalPanel {
   background:
     radial-gradient(
@@ -69,23 +56,7 @@
     hsl(var(--primary));
 }
 
-@keyframes blueprint-pulse {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: scale(0.92);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.04);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .blueprintPulse {
-    animation: none;
-  }
-
   .serviceCard:hover,
   .serviceCard:focus-within {
     transform: none;

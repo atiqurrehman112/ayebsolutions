@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/auth";
 import { getPermissions } from "@/lib/auth/permissions";
@@ -81,6 +81,7 @@ function actionFailure(error: unknown): ServiceActionState {
   };
 }
 function revalidateServices(...slugs: readonly (string | null | undefined)[]) {
+  revalidateTag("services");
   revalidatePath("/admin/services");
   revalidatePath("/services");
   for (const slug of new Set(

@@ -53,6 +53,7 @@
 - [x] Supabase site-settings CMS and public configuration integration (Sprint 8I)
 - [x] Dynamic public portfolio with Supabase, ISR, filters, and project SEO (Sprint 9A)
 - [x] Dynamic public blog with Supabase, ISR, discovery, and article SEO (Sprint 9B)
+- [x] Dynamic public services with Supabase, ISR, filtering, and service SEO (Sprint 9C)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
