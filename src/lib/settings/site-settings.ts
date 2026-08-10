@@ -63,6 +63,29 @@ export const fallbackSiteSettings: PublicSiteSettings = {
   logo: null,
   favicon: null,
   openGraphImage: null,
+  homepage_heading: null,
+  homepage_subheading: null,
+  homepage_badge: null,
+  homepage_primary_cta_label: null,
+  homepage_primary_cta_href: null,
+  homepage_secondary_cta_label: null,
+  homepage_secondary_cta_href: null,
+  homepage_hero_media_id: null,
+  homepage_background_media_id: null,
+  homepage_statistics: [],
+  homepage_trust_indicators: [],
+  homepage_services_limit: 6,
+  homepage_portfolio_limit: 6,
+  homepage_blog_limit: 3,
+  homepage_testimonials_limit: 6,
+  homepage_cta_heading: null,
+  homepage_cta_description: null,
+  homepage_cta_primary_label: null,
+  homepage_cta_primary_href: null,
+  homepage_cta_secondary_label: null,
+  homepage_cta_secondary_href: null,
+  homepageHeroMedia: null,
+  homepageBackgroundMedia: null,
 };
 const loadPublishedSettings = unstable_cache(
   async () => {
@@ -83,6 +106,6 @@ const loadPublishedSettings = unstable_cache(
     }
   },
   ["published-site-settings"],
-  { revalidate: 300, tags: ["site-settings"] },
+  { revalidate: 300, tags: ["site-settings", "settings", "homepage"] },
 );
 export const getPublicSiteSettings = cache(loadPublishedSettings);

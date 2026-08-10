@@ -83,6 +83,8 @@ export class SettingsRepository {
       settings.logo_media_id,
       settings.favicon_media_id,
       settings.open_graph_media_id,
+      settings.homepage_hero_media_id,
+      settings.homepage_background_media_id,
     ].filter((id): id is string => Boolean(id));
     let media: readonly MediaLibraryRow[] = [];
     if (ids.length) {
@@ -106,6 +108,12 @@ export class SettingsRepository {
         : null,
       openGraphImage: settings.open_graph_media_id
         ? (byId.get(settings.open_graph_media_id) ?? null)
+        : null,
+      homepageHeroMedia: settings.homepage_hero_media_id
+        ? (byId.get(settings.homepage_hero_media_id) ?? null)
+        : null,
+      homepageBackgroundMedia: settings.homepage_background_media_id
+        ? (byId.get(settings.homepage_background_media_id) ?? null)
         : null,
     };
   }

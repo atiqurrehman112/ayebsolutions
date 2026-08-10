@@ -61,3 +61,22 @@
     transform: none;
   }
 }
+.serviceCard {
+  transition:
+    transform 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+}
+.serviceCard:hover {
+  border-color: hsl(var(--primary) / 0.35);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-3px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .serviceCard {
+    transition: none;
+  }
+  .serviceCard:hover {
+    transform: none;
+  }
+}

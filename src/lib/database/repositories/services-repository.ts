@@ -152,6 +152,18 @@ export class ServicesRepository extends ContentRepository<
   async findPublishedPage(options: PublicServiceQuery = {}) {
     return this.findPage({ ...options, status: "published" });
   }
+  async findHomepagePublished(limit = 6) {
+    const { data, error } = await this.client
+      .from("services")
+      .select("*")
+      .eq("status", "published")
+      .order("is_featured", { ascending: false })
+      .order("sort_order", { ascending: true })
+      .order("id", { ascending: true })
+      .limit(limit);
+    this.throwIfError(error);
+    return data ?? [];
+  }
   async findPublishedBySlug(slug: string) {
     const { data, error } = await this.client
       .from("services")

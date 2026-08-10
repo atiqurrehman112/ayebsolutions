@@ -30,7 +30,7 @@ export const getPublishedServicesPage = unstable_cache(
     return repo.findPublishedPage(options);
   },
   ["published-services-page"],
-  { revalidate: 300, tags: ["services"] },
+  { revalidate: 300, tags: ["services", "homepage"] },
 );
 
 export const getPublishedServiceFilters = unstable_cache(

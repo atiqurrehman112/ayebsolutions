@@ -29,7 +29,7 @@ export const getPublishedPortfolioPage = unstable_cache(
     return repo.findPublishedPage(options);
   },
   ["published-portfolio-page"],
-  { revalidate: 300, tags: ["portfolio"] },
+  { revalidate: 300, tags: ["portfolio", "homepage"] },
 );
 export const getPublishedPortfolioFilters = unstable_cache(
   async () => {

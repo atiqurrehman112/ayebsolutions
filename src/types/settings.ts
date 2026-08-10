@@ -1,4 +1,4 @@
-import type { ContentStatus, MediaLibraryRow } from "./database";
+import type { ContentStatus, Json, MediaLibraryRow } from "./database";
 
 export interface SettingsLink {
   readonly href: string;
@@ -49,6 +49,27 @@ export interface SiteConfiguration {
   readonly timezone: string;
   readonly whatsapp: string | null;
   readonly working_hours: string | null;
+  readonly homepage_heading: string | null;
+  readonly homepage_subheading: string | null;
+  readonly homepage_badge: string | null;
+  readonly homepage_primary_cta_label: string | null;
+  readonly homepage_primary_cta_href: string | null;
+  readonly homepage_secondary_cta_label: string | null;
+  readonly homepage_secondary_cta_href: string | null;
+  readonly homepage_hero_media_id: string | null;
+  readonly homepage_background_media_id: string | null;
+  readonly homepage_statistics: Json;
+  readonly homepage_trust_indicators: readonly string[];
+  readonly homepage_services_limit: number;
+  readonly homepage_portfolio_limit: number;
+  readonly homepage_blog_limit: number;
+  readonly homepage_testimonials_limit: number;
+  readonly homepage_cta_heading: string | null;
+  readonly homepage_cta_description: string | null;
+  readonly homepage_cta_primary_label: string | null;
+  readonly homepage_cta_primary_href: string | null;
+  readonly homepage_cta_secondary_label: string | null;
+  readonly homepage_cta_secondary_href: string | null;
   readonly x_url: string | null;
   readonly youtube_url: string | null;
 }
@@ -56,4 +77,6 @@ export interface PublicSiteSettings extends SiteConfiguration {
   readonly favicon: MediaLibraryRow | null;
   readonly logo: MediaLibraryRow | null;
   readonly openGraphImage: MediaLibraryRow | null;
+  readonly homepageHeroMedia: MediaLibraryRow | null;
+  readonly homepageBackgroundMedia: MediaLibraryRow | null;
 }

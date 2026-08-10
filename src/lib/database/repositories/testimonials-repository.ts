@@ -133,6 +133,19 @@ export class TestimonialsRepository extends ContentRepository<
     this.throwIfError(error);
     return this.paginateResult(data ?? [], count, page, pageSize);
   }
+  async findPublishedApproved(limit = 6) {
+    const { data, error } = await this.client
+      .from("testimonials")
+      .select("*")
+      .eq("status", "published")
+      .eq("approval_status", "approved")
+      .eq("consent_verified", true)
+      .order("display_order", { ascending: true })
+      .order("id", { ascending: true })
+      .limit(limit);
+    this.throwIfError(error);
+    return data ?? [];
+  }
   approve(id: string, approverId: string) {
     return this.update(id, {
       approval_status: "approved",

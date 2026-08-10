@@ -127,6 +127,8 @@ export async function updateSiteSettings(
       parsed.data,
     );
     revalidateTag("site-settings");
+    revalidateTag("settings");
+    revalidateTag("homepage");
     revalidatePath("/", "layout");
     revalidatePath("/admin/settings");
     return {

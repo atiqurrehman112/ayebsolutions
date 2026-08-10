@@ -1,82 +1,27 @@
 .sectionBackground {
+  position: relative;
+  overflow: hidden;
   background:
     radial-gradient(
-      circle at 16% 18%,
-      hsl(var(--primary-foreground) / 0.16),
+      circle at 82% 20%,
+      hsl(var(--primary-foreground) / 0.12),
       transparent 28rem
-    ),
-    radial-gradient(
-      circle at 88% 76%,
-      hsl(var(--primary-foreground) / 0.09),
-      transparent 30rem
     ),
     hsl(var(--primary));
 }
-
 .sectionBackground::after {
   position: absolute;
   inset: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.16;
   background-image:
-    linear-gradient(
-      hsl(var(--primary-foreground) / 0.055) 1px,
-      transparent 1px
-    ),
+    linear-gradient(hsl(var(--primary-foreground) / 0.14) 1px, transparent 1px),
     linear-gradient(
       90deg,
-      hsl(var(--primary-foreground) / 0.055) 1px,
+      hsl(var(--primary-foreground) / 0.14) 1px,
       transparent 1px
     );
-  background-size: 4.5rem 4.5rem;
-  mask-image: radial-gradient(circle at center, black, transparent 82%);
-  content: "";
-}
-
-.ambientOrb {
-  animation: cta-drift 9s ease-in-out infinite;
-  background: hsl(var(--primary-foreground) / 0.08);
-  filter: blur(2px);
-}
-
-.previewCard {
-  background: linear-gradient(
-    150deg,
-    hsl(var(--primary-foreground) / 0.12),
-    hsl(var(--primary-foreground) / 0.055)
-  );
-  box-shadow:
-    0 28px 80px -42px hsl(var(--background) / 0.6),
-    inset 0 1px 0 hsl(var(--primary-foreground) / 0.16);
-}
-
-.valueItem {
-  transition:
-    background-color 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.valueItem:hover {
-  border-color: hsl(var(--primary-foreground) / 0.2);
-  background-color: hsl(var(--primary-foreground) / 0.07);
-}
-
-@keyframes cta-drift {
-  0%,
-  100% {
-    opacity: 0.45;
-    transform: translate3d(0, 0, 0) scale(0.92);
-  }
-  50% {
-    opacity: 0.8;
-    transform: translate3d(-1rem, 1.25rem, 0) scale(1.04);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ambientOrb {
-    animation: none;
-  }
-
-  .valueItem {
-    transition: none;
-  }
+  background-size: 3rem 3rem;
+  mask-image: radial-gradient(circle at 70% 50%, black, transparent 70%);
 }

@@ -30,7 +30,7 @@ export const getPublishedBlogPage = unstable_cache(
     return repo.findPublishedPage(options);
   },
   ["published-blog-page"],
-  { revalidate: 300, tags: ["blog"] },
+  { revalidate: 300, tags: ["blog", "homepage"] },
 );
 
 export const getPublishedBlogFilters = unstable_cache(

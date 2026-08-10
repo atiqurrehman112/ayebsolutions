@@ -264,6 +264,27 @@ export interface SiteConfigurationRow
   readonly maintenance_mode: boolean;
   readonly maintenance_message: string;
   readonly status: ContentStatus;
+  readonly homepage_heading: string | null;
+  readonly homepage_subheading: string | null;
+  readonly homepage_badge: string | null;
+  readonly homepage_primary_cta_label: string | null;
+  readonly homepage_primary_cta_href: string | null;
+  readonly homepage_secondary_cta_label: string | null;
+  readonly homepage_secondary_cta_href: string | null;
+  readonly homepage_hero_media_id: string | null;
+  readonly homepage_background_media_id: string | null;
+  readonly homepage_statistics: Json;
+  readonly homepage_trust_indicators: readonly string[];
+  readonly homepage_services_limit: number;
+  readonly homepage_portfolio_limit: number;
+  readonly homepage_blog_limit: number;
+  readonly homepage_testimonials_limit: number;
+  readonly homepage_cta_heading: string | null;
+  readonly homepage_cta_description: string | null;
+  readonly homepage_cta_primary_label: string | null;
+  readonly homepage_cta_primary_href: string | null;
+  readonly homepage_cta_secondary_label: string | null;
+  readonly homepage_cta_secondary_href: string | null;
 }
 
 export interface ArticleTagRow extends Record<string, unknown> {

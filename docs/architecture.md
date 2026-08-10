@@ -95,6 +95,12 @@ The public `/services` listing and `/services/[slug]` detail boundary use `Servi
 
 `src/lib/services/public-services.ts` contains the anonymous RLS-governed client and five-minute caches tagged `services`. Service mutations invalidate the tag plus listing and affected old/new detail paths. A normalized `service_media` junction keeps gallery order and captions independent of media metadata. Optional subtitle, benefits, process, deliverables, FAQ, and gallery fields render only when populated. The six literal route modules and their duplicated feature implementations were removed; the sitemap now uses published service slugs and modification dates.
 
+## Sprint 9D dynamic homepage
+
+The root page is a server-rendered orchestration boundary over `SettingsRepository`, `ServicesRepository`, `PortfolioRepository`, `BlogRepository`, and `TestimonialsRepository` projections. It loads settings first to obtain feature flags and bounded section limits, then resolves service, portfolio, blog, and testimonial sections concurrently with independent failure containment. React components receive typed rows and never access Supabase.
+
+Site configuration owns hero copy, badge, CTA links, hero/background Media Library references, statistics, trust indicators, per-section limits, and final CTA copy. Published services are featured-first by display order; portfolio is featured and published; blog is latest published; testimonials require published status, approval, and verified consent. The global footer already consumes the same settings projection for contact, social, copyright, navigation, and business information. Five-minute caches carry their domain tag plus `homepage`, and settings retain both `site-settings` and `settings` compatibility tags.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

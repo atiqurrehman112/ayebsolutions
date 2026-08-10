@@ -1,5 +1,5 @@
 "use server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/auth";
 import { getPermissions } from "@/lib/auth/permissions";
@@ -104,6 +104,8 @@ function failure(error: unknown): TestimonialActionState {
   };
 }
 function revalidateTestimonials() {
+  revalidateTag("testimonials");
+  revalidateTag("homepage");
   revalidatePath("/admin/testimonials");
   revalidatePath("/");
 }

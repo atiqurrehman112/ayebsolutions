@@ -54,7 +54,8 @@
 - [x] Dynamic public portfolio with Supabase, ISR, filters, and project SEO (Sprint 9A)
 - [x] Dynamic public blog with Supabase, ISR, discovery, and article SEO (Sprint 9B)
 - [x] Dynamic public services with Supabase, ISR, filtering, and service SEO (Sprint 9C)
-- [ ] Homepage
+- [x] Dynamic production homepage with repository-backed CMS sections (Sprint 9D)
+- [x] Homepage
 - [ ] Services
 - [ ] Solutions
 - [x] Portfolio
