@@ -249,6 +249,21 @@ export function SettingsEditor({ canEdit, media, settings }: Props) {
               name="microsoft_clarity_id"
               value={settings.microsoft_clarity_id}
             />
+            <Field
+              label="Google Search Console verification"
+              name="google_search_console_verification"
+              value={settings.google_search_console_verification}
+            />
+            <Field
+              label="Plausible domain"
+              name="plausible_domain"
+              value={settings.plausible_domain}
+            />
+            <Toggle
+              label="Enable Vercel Analytics"
+              name="vercel_analytics_enabled"
+              value={settings.vercel_analytics_enabled}
+            />
           </Group>
           <Group
             id="features"

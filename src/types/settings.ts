@@ -30,6 +30,7 @@ export interface SiteConfiguration {
   readonly footer_navigation: readonly SettingsFooterGroup[];
   readonly github_url: string | null;
   readonly google_analytics_id: string | null;
+  readonly google_search_console_verification: string | null;
   readonly google_maps_url: string | null;
   readonly google_tag_manager_id: string | null;
   readonly header_navigation: readonly SettingsLink[];
@@ -40,6 +41,7 @@ export interface SiteConfiguration {
   readonly maintenance_message: string;
   readonly maintenance_mode: boolean;
   readonly microsoft_clarity_id: string | null;
+  readonly plausible_domain: string | null;
   readonly open_graph_media_id: string | null;
   readonly robots: string;
   readonly site_name: string;
@@ -49,6 +51,7 @@ export interface SiteConfiguration {
   readonly timezone: string;
   readonly whatsapp: string | null;
   readonly working_hours: string | null;
+  readonly vercel_analytics_enabled: boolean;
   readonly homepage_heading: string | null;
   readonly homepage_subheading: string | null;
   readonly homepage_badge: string | null;

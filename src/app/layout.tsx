@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 
 import "@/app/globals.css";
 import { SiteShell } from "@/components/layout/site-shell";
+import { SiteAnalytics } from "@/components/analytics/site-analytics";
 import { Providers } from "@/components/providers/providers";
 import { StructuredData } from "@/components/seo/structured-data";
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
@@ -26,7 +27,13 @@ export async function generateMetadata(): Promise<Metadata> {
     publisher: settings.site_name,
     category: "technology",
     keywords: [...settings.default_keywords],
-    alternates: { canonical: "/" },
+    alternates: {
+      canonical: "/",
+      languages: { [settings.default_language]: "/", "x-default": "/" },
+    },
+    verification: settings.google_search_console_verification
+      ? { google: settings.google_search_console_verification }
+      : undefined,
     robots: { index, follow: index },
     openGraph: {
       type: "website",
@@ -90,6 +97,20 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             areaServed: "Worldwide",
           }}
         />
+        <StructuredData
+          data={{
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: settings.site_name,
+            url: settings.site_url,
+            potentialAction: {
+              "@type": "SearchAction",
+              target: `${settings.canonical_base_url}/search?q={search_term_string}`,
+              "query-input": "required name=search_term_string",
+            },
+          }}
+        />
+        <SiteAnalytics settings={settings} />
       </body>
     </html>
   );

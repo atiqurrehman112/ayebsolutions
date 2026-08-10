@@ -87,8 +87,13 @@ function input(formData: FormData) {
       formData.get("business_registration_number"),
     ),
     google_analytics_id: nullable(formData.get("google_analytics_id")),
+    google_search_console_verification: nullable(
+      formData.get("google_search_console_verification"),
+    ),
     google_tag_manager_id: nullable(formData.get("google_tag_manager_id")),
     microsoft_clarity_id: nullable(formData.get("microsoft_clarity_id")),
+    plausible_domain: nullable(formData.get("plausible_domain")),
+    vercel_analytics_enabled: boolean("vercel_analytics_enabled"),
     enable_blog: boolean("enable_blog"),
     enable_testimonials: boolean("enable_testimonials"),
     enable_contact_form: boolean("enable_contact_form"),

@@ -258,8 +258,11 @@ export interface SiteConfigurationRow
   readonly emergency_contact: string | null;
   readonly business_registration_number: string | null;
   readonly google_analytics_id: string | null;
+  readonly google_search_console_verification: string | null;
   readonly google_tag_manager_id: string | null;
   readonly microsoft_clarity_id: string | null;
+  readonly plausible_domain: string | null;
+  readonly vercel_analytics_enabled: boolean;
   readonly enable_blog: boolean;
   readonly enable_testimonials: boolean;
   readonly enable_contact_form: boolean;
