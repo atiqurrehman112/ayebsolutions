@@ -56,6 +56,7 @@
 - [x] Dynamic public services with Supabase, ISR, filtering, and service SEO (Sprint 9C)
 - [x] Dynamic production homepage with repository-backed CMS sections (Sprint 9D)
 - [x] Dynamic public testimonials with consent-gated CMS content (Sprint 9E)
+- [x] Production contact form with Supabase CRM capture and Resend delivery (Sprint 9F)
 - [x] Homepage
 - [ ] Services
 - [ ] Solutions

@@ -7,6 +7,7 @@ import { env } from "@/lib/env";
 export async function sendLeadEmail(input: {
   readonly body: string;
   readonly recipient: string;
+  readonly replyTo?: string;
   readonly subject: string;
 }) {
   const apiKey = env.RESEND_API_KEY;
@@ -15,6 +16,7 @@ export async function sendLeadEmail(input: {
   const { data, error } = await new Resend(apiKey).emails.send({
     from,
     to: input.recipient,
+    replyTo: input.replyTo,
     subject: input.subject,
     text: input.body,
   });

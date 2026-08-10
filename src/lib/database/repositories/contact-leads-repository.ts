@@ -27,6 +27,25 @@ export interface LeadContext {
   readonly emails: readonly LeadEmailHistoryRow[];
   readonly statuses: readonly LeadStatusHistoryRow[];
 }
+export interface PublicLeadSubmission {
+  readonly budget: string | null;
+  readonly company: string | null;
+  readonly email: string;
+  readonly ipHash: string;
+  readonly interests: readonly string[];
+  readonly message: string;
+  readonly name: string;
+  readonly payloadHash: string;
+  readonly phone: string | null;
+  readonly service: string;
+  readonly timeline: string | null;
+}
+export class PublicLeadSubmissionError extends Error {
+  constructor(readonly reason: "duplicate" | "rate_limit") {
+    super(reason);
+    this.name = "PublicLeadSubmissionError";
+  }
+}
 
 export class ContactLeadsRepository extends LeadRepository<
   ContactLeadRow,
@@ -57,6 +76,28 @@ export class ContactLeadsRepository extends LeadRepository<
       .overrideTypes<ContactLeadRow, { merge: false }>();
     this.throwIfError(error);
     return this.requireData(data);
+  }
+  async createPublicSubmission(input: PublicLeadSubmission): Promise<string> {
+    const { data, error } = await this.client.rpc("submit_contact_lead", {
+      p_budget: input.budget,
+      p_company: input.company,
+      p_email: input.email,
+      p_ip_hash: input.ipHash,
+      p_interests: [...input.interests],
+      p_message: input.message,
+      p_name: input.name,
+      p_payload_hash: input.payloadHash,
+      p_phone: input.phone,
+      p_service: input.service,
+      p_timeline: input.timeline,
+    });
+    if (error?.message.includes("contact_rate_limited"))
+      throw new PublicLeadSubmissionError("rate_limit");
+    if (error?.message.includes("contact_duplicate"))
+      throw new PublicLeadSubmissionError("duplicate");
+    this.throwIfError(error);
+    if (!data) throw new Error("The inquiry could not be created.");
+    return data;
   }
   async update(id: string, input: ContactLeadUpdate) {
     const { data, error } = await this.client
@@ -194,7 +235,7 @@ export class ContactLeadsRepository extends LeadRepository<
     readonly leadId: string;
     readonly providerId: string | null;
     readonly recipient: string;
-    readonly sentBy: string;
+    readonly sentBy: string | null;
     readonly subject: string;
   }) {
     const { error } = await this.client.from("lead_email_history").insert({

@@ -1,20 +1,15 @@
 import {
   ArrowRight,
-  Bot,
   BriefcaseBusiness,
   ChevronDown,
   CircleHelp,
   Clock3,
   Code2,
   FileSearch,
-  LifeBuoy,
   Mail,
-  Network,
   Palette,
-  PanelsTopLeft,
   Search,
   Send,
-  Sparkles,
   Workflow,
   Wrench,
   type LucideIcon,
@@ -29,6 +24,7 @@ import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { company } from "@/config/company";
 import { cn } from "@/lib/utils";
+import { ContactForm } from "./contact-form";
 import styles from "./contact-page.module.css";
 
 interface IconItem {
@@ -54,7 +50,7 @@ const contactMethods: readonly ContactMethod[] = [
   {
     title: "Project Inquiry",
     description:
-      "Use the planning preview below to organize the project type, context, interests, and constraints.",
+      "Use the secure inquiry form below to share the project type, context, interests, and constraints.",
     action: "Prepare project details",
     href: "#contact-form",
     icon: BriefcaseBusiness,
@@ -74,16 +70,6 @@ const contactMethods: readonly ContactMethod[] = [
     icon: FileSearch,
   },
 ] as const;
-
-const services = [
-  ["web-development", "Web Development", Code2],
-  ["custom-saas", "Custom SaaS", PanelsTopLeft],
-  ["ai-automation", "AI Automation", Bot],
-  ["ui-ux-design", "UI/UX Design", Palette],
-  ["api-integration", "API Integration", Network],
-  ["maintenance", "Maintenance", LifeBuoy],
-  ["other", "Other", Sparkles],
-] as const satisfies readonly (readonly [string, string, LucideIcon])[];
 
 const timeline: readonly IconItem[] = [
   {
@@ -133,7 +119,7 @@ const contactFaqs = [
   {
     question: "Does submitting the form on this page send my information?",
     answer:
-      "No. The contact form is a static UI preview in this sprint. It has no submission handler, backend, API, storage, email delivery, or analytics event. Use the published email address or consultation link for an actual inquiry.",
+      "Yes. After server-side validation and anti-spam checks, the inquiry is stored in our lead-management system. A confirmation email is attempted separately, so a temporary email-provider issue will not discard a saved inquiry.",
   },
   {
     question: "How quickly will Ayeb Solutions respond?",
@@ -178,7 +164,7 @@ const contactFaqs = [
   {
     question: "How do you handle confidential project information?",
     answer:
-      "Do not place secrets, credentials, regulated records, or unnecessary personal data into this static preview. Confidentiality, access, retention, and approved communication channels should be agreed before sensitive information is exchanged.",
+      "Do not place secrets, credentials, regulated records, or unnecessary personal data into the form. Confidentiality, access, retention, and approved communication channels should be agreed before sensitive information is exchanged.",
   },
   {
     question: "Can you take over an unfinished project?",
@@ -197,12 +183,9 @@ const contactFaqs = [
   },
   {
     question: "What is the best way to contact Ayeb Solutions today?",
-    answer: `Use ${company.email} for a real written inquiry or follow the Book Consultation link. The static form on this page is provided only to demonstrate the planned lead-capture experience.`,
+    answer: `Use the secure project inquiry form, email ${company.email}, or follow the Book Consultation link. The form validates and stores inquiries before attempting confirmation and notification emails.`,
   },
 ] as const;
-
-const nativeControlClass =
-  "focus-ring w-full rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50";
 
 function SectionIntroduction({
   eyebrow,
@@ -381,86 +364,6 @@ function ContactMethodsSection() {
   );
 }
 
-function FormField({
-  id,
-  label,
-  description,
-  type = "text",
-  autoComplete,
-}: {
-  readonly id: string;
-  readonly label: string;
-  readonly description: string;
-  readonly type?: "text" | "email";
-  readonly autoComplete?: string;
-}) {
-  const descriptionId = `${id}-description`;
-  return (
-    <div className="grid gap-2">
-      <label htmlFor={id} className="text-sm font-medium leading-none">
-        {label}
-      </label>
-      <input
-        id={id}
-        name={id}
-        type={type}
-        autoComplete={autoComplete}
-        aria-describedby={descriptionId}
-        className={cn("h-11", nativeControlClass)}
-      />
-      <p id={descriptionId} className="text-xs leading-5 text-muted-foreground">
-        {description}
-      </p>
-    </div>
-  );
-}
-
-function NativeSelect({
-  id,
-  label,
-  description,
-  options,
-}: {
-  readonly id: string;
-  readonly label: string;
-  readonly description: string;
-  readonly options: readonly string[];
-}) {
-  const descriptionId = `${id}-description`;
-  return (
-    <div className="grid gap-2">
-      <label htmlFor={id} className="text-sm font-medium leading-none">
-        {label}
-      </label>
-      <div className="relative">
-        <select
-          id={id}
-          name={id}
-          defaultValue=""
-          aria-describedby={descriptionId}
-          className="focus-ring h-11 w-full appearance-none rounded-md border border-input bg-background px-3 pr-10 text-sm text-foreground shadow-xs disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <option value="" disabled>
-            Select an option
-          </option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-        <ChevronDown
-          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-          aria-hidden="true"
-        />
-      </div>
-      <p id={descriptionId} className="text-xs leading-5 text-muted-foreground">
-        {description}
-      </p>
-    </div>
-  );
-}
-
 function ContactFormSection() {
   return (
     <section
@@ -475,10 +378,10 @@ function ContactFormSection() {
               eyebrow="Project inquiry"
               id="contact-form-heading"
               title="Organize the context before the first conversation."
-              description="This static planning interface shows the information that can make discovery more useful. It does not submit, save, validate, email, or transmit any entered value."
+              description="Share the project context that will help us review your needs and recommend an appropriate next step."
             />
             <div
-              id="form-static-note"
+              id="form-privacy-note"
               className="mt-8 rounded-xl border bg-card p-5"
               role="note"
             >
@@ -488,167 +391,20 @@ function ContactFormSection() {
                   aria-hidden="true"
                 />
                 <div>
-                  <h3 className="font-semibold">UI preview only</h3>
+                  <h3 className="font-semibold">
+                    Your context stays purposeful
+                  </h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Nothing entered here is sent or stored. For a real inquiry,
-                    email{" "}
-                    <a
-                      className="focus-ring rounded-sm font-medium text-foreground underline underline-offset-4"
-                      href={`mailto:${company.email}`}
-                    >
-                      {company.email}
-                    </a>{" "}
-                    or book a consultation.
+                    Submissions are stored securely in our lead-management
+                    system and used to review and respond to your inquiry. Do
+                    not include credentials, payment data, or sensitive records.
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          <form
-            aria-describedby="form-static-note"
-            className={cn(
-              "rounded-2xl border bg-card p-5 sm:p-7 lg:p-9",
-              styles.formPanel,
-            )}
-          >
-            <fieldset>
-              <legend className="text-xl font-semibold">Project details</legend>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Use non-sensitive planning context only. Fields are
-                intentionally optional in this UI-only sprint.
-              </p>
-              <div className="mt-7 grid gap-6 sm:grid-cols-2">
-                <FormField
-                  id="name"
-                  label="Name"
-                  description="The person we would speak with."
-                  autoComplete="name"
-                />
-                <FormField
-                  id="email"
-                  label="Email"
-                  description="A future response channel; not transmitted today."
-                  type="email"
-                  autoComplete="email"
-                />
-                <FormField
-                  id="company"
-                  label="Company"
-                  description="Optional business or product context."
-                  autoComplete="organization"
-                />
-                <NativeSelect
-                  id="project-type"
-                  label="Project Type"
-                  description="Choose the closest current description."
-                  options={[
-                    "New website",
-                    "Existing product improvement",
-                    "Custom application",
-                    "AI or workflow automation",
-                    "Integration",
-                    "Maintenance",
-                    "Not sure yet",
-                  ]}
-                />
-                <NativeSelect
-                  id="budget"
-                  label="Budget"
-                  description="No prices or packages are implied by these options."
-                  options={[
-                    "Need scope guidance",
-                    "Budget range is defined",
-                    "Exploring feasibility",
-                    "Internal approval pending",
-                  ]}
-                />
-                <NativeSelect
-                  id="timeline"
-                  label="Timeline"
-                  description="A target does not create a delivery commitment."
-                  options={[
-                    "No target yet",
-                    "Target date in mind",
-                    "Flexible timing",
-                    "Time constraint to discuss",
-                  ]}
-                />
-              </div>
-              <div className="mt-6 grid gap-2">
-                <label
-                  htmlFor="message"
-                  className="text-sm font-medium leading-none"
-                >
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={7}
-                  aria-describedby="message-description"
-                  className={cn("min-h-32 resize-y py-3", nativeControlClass)}
-                />
-                <p
-                  id="message-description"
-                  className="text-xs leading-5 text-muted-foreground"
-                >
-                  Describe the problem, users, current workflow, constraints,
-                  and desired change. Do not enter passwords, credentials, or
-                  regulated personal data.
-                </p>
-              </div>
-            </fieldset>
-
-            <fieldset className="mt-9 border-t pt-8">
-              <legend className="text-xl font-semibold">
-                Services Interested In
-              </legend>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Select any areas that seem relevant. Choosing an option does not
-                set scope.
-              </p>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {services.map(([id, label, Icon]) => (
-                  <div key={id}>
-                    <input
-                      id={`service-${id}`}
-                      name="services"
-                      value={id}
-                      type="checkbox"
-                      className="peer sr-only"
-                    />
-                    <label
-                      htmlFor={`service-${id}`}
-                      className={cn(
-                        "flex min-h-20 cursor-pointer items-center gap-3 rounded-xl border bg-background p-4 transition-colors focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 hover:border-foreground/25 peer-checked:border-primary peer-checked:bg-primary/5 peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2",
-                        styles.serviceChoice,
-                      )}
-                    >
-                      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-muted peer-checked:bg-primary">
-                        <Icon className="size-4" aria-hidden="true" />
-                      </span>
-                      <span className="text-sm font-semibold">{label}</span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </fieldset>
-
-            <div className="mt-9 border-t pt-7">
-              <Button
-                type="button"
-                size="lg"
-                className="h-12 w-full sm:w-auto"
-                aria-describedby="form-static-note"
-              >
-                Submission Not Connected
-              </Button>
-              <p className="mt-3 text-xs leading-5 text-muted-foreground">
-                This control intentionally performs no action in Sprint 6D.
-              </p>
-            </div>
-          </form>
+          <ContactForm />
         </div>
       </Container>
     </section>
@@ -716,7 +472,7 @@ function FaqSection() {
           eyebrow="Contact FAQ"
           id="contact-faq-heading"
           title="Answers before you start the conversation."
-          description="These questions explain the static form, inquiry context, consultation process, timing, confidentiality, inherited projects, and ongoing support."
+          description="These questions explain inquiry handling, project context, consultation, timing, confidentiality, inherited projects, and ongoing support."
         />
         <div className="mt-12 space-y-3">
           {contactFaqs.map(({ question, answer }, index) => (
@@ -803,9 +559,8 @@ function ContactPage() {
         title="Ready to discuss your project with Ayeb Solutions?"
         description={
           <p className="max-w-2xl leading-relaxed text-primary-foreground/70">
-            Use email for a written inquiry or book a consultation. The planning
-            form above remains an explicit UI preview until secure lead capture
-            is connected.
+            Send a secure project inquiry, use email for a written conversation,
+            or book a consultation when you are ready to discuss the next step.
           </p>
         }
         actions={

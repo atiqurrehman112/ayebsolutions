@@ -159,6 +159,7 @@ export interface TestimonialRow extends AuditColumns, Record<string, unknown> {
 export interface ContactLeadRow extends AuditColumns, Record<string, unknown> {
   readonly name: string;
   readonly email: string;
+  readonly phone: string | null;
   readonly company: string | null;
   readonly project_type: string;
   readonly budget_range: string | null;
@@ -492,6 +493,22 @@ export interface Database {
       is_admin: {
         Args: Record<string, never>;
         Returns: boolean;
+      };
+      submit_contact_lead: {
+        Args: {
+          p_budget: string | null;
+          p_company: string | null;
+          p_email: string;
+          p_ip_hash: string;
+          p_interests: string[];
+          p_message: string;
+          p_name: string;
+          p_payload_hash: string;
+          p_phone: string | null;
+          p_service: string;
+          p_timeline: string | null;
+        };
+        Returns: string;
       };
     };
     Enums: {
