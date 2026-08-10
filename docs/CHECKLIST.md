@@ -55,6 +55,7 @@
 - [x] Dynamic public blog with Supabase, ISR, discovery, and article SEO (Sprint 9B)
 - [x] Dynamic public services with Supabase, ISR, filtering, and service SEO (Sprint 9C)
 - [x] Dynamic production homepage with repository-backed CMS sections (Sprint 9D)
+- [x] Dynamic public testimonials with consent-gated CMS content (Sprint 9E)
 - [x] Homepage
 - [ ] Services
 - [ ] Solutions

@@ -151,6 +151,9 @@ export interface TestimonialRow extends AuditColumns, Record<string, unknown> {
   readonly meta_title: string | null;
   readonly meta_description: string | null;
   readonly status: ContentStatus;
+  readonly industry: string | null;
+  readonly avatar_media_id: string | null;
+  readonly company_logo_media_id: string | null;
 }
 
 export interface ContactLeadRow extends AuditColumns, Record<string, unknown> {

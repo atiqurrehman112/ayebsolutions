@@ -4,6 +4,7 @@ import type {
   TestimonialRow,
   TestimonialUpdate,
   TestimonialApprovalStatus,
+  MediaLibraryRow,
 } from "@/types/database";
 import type { DatabaseClient } from "../client";
 import { ContentRepository, type PaginationOptions } from "./base-repository";
@@ -16,6 +17,18 @@ export interface TestimonialQueryOptions extends PaginationOptions {
   readonly query?: string;
   readonly sort?: TestimonialSort;
   readonly status?: ContentStatus;
+}
+export type PublicTestimonialSort = "display" | "highest-rating" | "newest";
+export interface PublicTestimonialQuery extends PaginationOptions {
+  readonly featured?: boolean;
+  readonly industry?: string;
+  readonly query?: string;
+  readonly rating?: number;
+  readonly sort?: PublicTestimonialSort;
+}
+export interface PublicTestimonial extends TestimonialRow {
+  readonly avatar: MediaLibraryRow | null;
+  readonly companyLogo: MediaLibraryRow | null;
 }
 function normalizeSearchTerm(query: string) {
   return query
@@ -140,11 +153,97 @@ export class TestimonialsRepository extends ContentRepository<
       .eq("status", "published")
       .eq("approval_status", "approved")
       .eq("consent_verified", true)
+      .order("is_featured", { ascending: false })
       .order("display_order", { ascending: true })
       .order("id", { ascending: true })
       .limit(limit);
     this.throwIfError(error);
     return data ?? [];
+  }
+  async findPublicPage(options: PublicTestimonialQuery = {}) {
+    const { page, pageSize, from, to } = this.getRange(options);
+    const term = options.query ? normalizeSearchTerm(options.query) : "";
+    let request = this.client
+      .from("testimonials")
+      .select("*", { count: "exact" })
+      .eq("status", "published")
+      .eq("approval_status", "approved")
+      .eq("consent_verified", true);
+    if (term)
+      request = request.or(
+        `reviewer_name.ilike.%${term}%,company_name.ilike.%${term}%,reviewer_role.ilike.%${term}%,quote.ilike.%${term}%,industry.ilike.%${term}%`,
+      );
+    if (options.rating) request = request.eq("rating", options.rating);
+    if (options.featured !== undefined)
+      request = request.eq("is_featured", options.featured);
+    if (options.industry) request = request.eq("industry", options.industry);
+    const sort = options.sort ?? "display";
+    if (sort === "display")
+      request = request.order("display_order", { ascending: true });
+    if (sort === "highest-rating")
+      request = request.order("rating", {
+        ascending: false,
+        nullsFirst: false,
+      });
+    if (sort === "newest")
+      request = request.order("published_at", {
+        ascending: false,
+        nullsFirst: false,
+      });
+    const { data, count, error } = await request
+      .order("id", { ascending: true })
+      .range(from, to);
+    this.throwIfError(error);
+    const rows = data ?? [];
+    const mediaIds = [
+      ...new Set(
+        rows
+          .flatMap((item) => [item.avatar_media_id, item.company_logo_media_id])
+          .filter((id): id is string => Boolean(id)),
+      ),
+    ];
+    const media = mediaIds.length
+      ? await this.client
+          .from("media_library")
+          .select("*")
+          .in("id", mediaIds)
+          .eq("status", "published")
+          .eq("visibility", "public")
+      : { data: [], error: null };
+    this.throwIfError(media.error);
+    const byId = new Map((media.data ?? []).map((item) => [item.id, item]));
+    const enriched: readonly PublicTestimonial[] = rows.map((item) => ({
+      ...item,
+      avatar: item.avatar_media_id
+        ? (byId.get(item.avatar_media_id) ?? null)
+        : null,
+      companyLogo: item.company_logo_media_id
+        ? (byId.get(item.company_logo_media_id) ?? null)
+        : null,
+    }));
+    return {
+      data: enriched,
+      count: count ?? 0,
+      page,
+      pageSize,
+      totalPages: Math.ceil((count ?? 0) / pageSize),
+    };
+  }
+  async findPublicIndustries() {
+    const { data, error } = await this.client
+      .from("testimonials")
+      .select("industry")
+      .eq("status", "published")
+      .eq("approval_status", "approved")
+      .eq("consent_verified", true)
+      .not("industry", "is", null)
+      .order("industry");
+    this.throwIfError(error);
+    return [
+      ...new Set(
+        (data ?? []).flatMap((item) => (item.industry ? [item.industry] : [])),
+      ),
+    ];
   }
   approve(id: string, approverId: string) {
     return this.update(id, {

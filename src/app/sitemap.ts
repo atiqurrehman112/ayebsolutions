@@ -63,6 +63,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    {
+      url: `${siteUrl}/testimonials`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     ...blogArticles.map((article) => ({
       url: `${siteUrl}/blog/${article.slug}`,
       lastModified: new Date(article.updated_at),
@@ -72,6 +78,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
   return entries.filter((entry) => {
     if (!settings.enable_blog && entry.url.startsWith(`${siteUrl}/blog`))
+      return false;
+    if (
+      !settings.enable_testimonials &&
+      entry.url === `${siteUrl}/testimonials`
+    )
       return false;
     if (!settings.enable_contact_form && entry.url === `${siteUrl}/contact`)
       return false;

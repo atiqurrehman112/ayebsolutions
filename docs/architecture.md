@@ -101,6 +101,12 @@ The root page is a server-rendered orchestration boundary over `SettingsReposito
 
 Site configuration owns hero copy, badge, CTA links, hero/background Media Library references, statistics, trust indicators, per-section limits, and final CTA copy. Published services are featured-first by display order; portfolio is featured and published; blog is latest published; testimonials require published status, approval, and verified consent. The global footer already consumes the same settings projection for contact, social, copyright, navigation, and business information. Five-minute caches carry their domain tag plus `homepage`, and settings retain both `site-settings` and `settings` compatibility tags.
 
+## Sprint 9E dynamic public testimonials
+
+The public `/testimonials` route delegates all reads to `TestimonialsRepository`. Its public projection applies published status, approved moderation, and verified consent before search, exact rating, featured, optional industry, deterministic sort, and bounded pagination. Public avatar and company-logo fields reference published, public Media Library records and remain absent when unavailable.
+
+`src/lib/testimonials/public-testimonials.ts` wraps listing and industry projections in five-minute caches tagged `testimonials`; homepage feedback uses the same repository and a settings-controlled limit, with featured rows ordered before display order. Testimonial mutations invalidate both `testimonials` and `homepage`. The public route emits Organization, BreadcrumbList, and one Review schema per visible row, while the sitemap respects the testimonials feature toggle.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries
