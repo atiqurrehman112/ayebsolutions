@@ -115,6 +115,16 @@ Migration `202608100010_production_contact_form.sql` adds the lead phone field, 
 
 After commit, Resend independently attempts the customer acknowledgement and internal notification; the latter uses the customer address as reply-to. Successful deliveries are appended to existing email history. Delivery or history-recording failures cannot roll back or hide a saved lead. Successful writes invalidate `/admin/contact-leads` and the `contact-leads` cache tag.
 
+## Sprint 10A complete Media Library integration
+
+`src/components/media/cms-media.tsx` is the single public rendering boundary for Media Library records. It renders raster images and SVGs through `next/image`, videos through semantic native controls, and PDFs/documents as accessible download links. Cloudinary image URLs are transformed for automatic format, bounded responsive width, and quality; raster assets receive a Cloudinary low-quality blur source. CMS width, height, MIME type, filename, and alt metadata remain authoritative, while an explicit neutral placeholder preserves geometry when no asset exists.
+
+`src/lib/media/public-media.ts` provides five-minute, `media`-tagged role resolution using `usage_locations` or tags. Page roles such as `about.hero`, `about.og`, `contact.hero`, and `contact.og` let pages without dedicated relational media columns consume managed assets without hardcoded URLs or direct UI queries. The About and Contact code-rendered visuals remain graceful fallbacks when those roles are unassigned; no route or asset URL is fabricated.
+
+Portfolio and service listing repositories batch the first ordered gallery asset as each card cover. Blog listing queries batch featured-media records, and testimonial projections batch avatars and company logos. Detail galleries support images, SVGs, videos, PDFs, and documents through the same renderer. Homepage hero/background, portfolio, blog, and testimonial sections reuse these projections; header/footer branding and global favicon come from Settings Media Library relations.
+
+Global, listing, detail, About, and Contact metadata use transformed Media Library images for OpenGraph and Twitter. Organization, WebPage, BlogPosting, portfolio ItemList, service ItemList, and gallery structured data include only eligible image assets. All media-dependent caches carry the `media` tag, and upload, replace, rename, or delete actions invalidate that tag plus the shared layout. The repository currently has no public Team route, so Sprint 10A does not create one.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

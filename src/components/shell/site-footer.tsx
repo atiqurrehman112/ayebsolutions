@@ -49,10 +49,7 @@ function SiteFooter({ settings }: { readonly settings: PublicSiteSettings }) {
 
         <div className="grid gap-12 py-14 lg:grid-cols-[1.35fr_3fr]">
           <div>
-            <Logo
-              logoUrl={settings.logo?.secure_url}
-              name={settings.site_name}
-            />
+            <Logo media={settings.logo} name={settings.site_name} />
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
               {settings.default_meta_description}
             </p>

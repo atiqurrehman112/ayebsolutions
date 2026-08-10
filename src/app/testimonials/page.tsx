@@ -6,12 +6,14 @@ import {
   getPublishedTestimonialsPage,
 } from "@/lib/testimonials/public-testimonials";
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { mediaSeoUrl } from "@/lib/media/media";
 export const revalidate = 300;
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicSiteSettings();
   const title = "Testimonials";
   const description =
     "Read approved, consent-verified feedback published by Ayeb Solutions.";
+  const image = mediaSeoUrl(settings.openGraphImage);
   return {
     title,
     description,
@@ -22,8 +24,14 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       siteName: settings.site_name,
+      images: image ? [image] : undefined,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 interface Props {

@@ -4,12 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
 import { Card } from "@/components/cards/card";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
 import type { PaginatedResult } from "@/lib/database/repositories/base-repository";
-import type { PublicPortfolioSort } from "@/lib/database/repositories/portfolio-repository";
-import type { PortfolioProjectRow } from "@/types/database";
+import type {
+  PublicPortfolioProject,
+  PublicPortfolioSort,
+} from "@/lib/database/repositories/portfolio-repository";
+import { mediaSeoUrl } from "@/lib/media/media";
 import styles from "./portfolio-page.module.css";
 
 export interface PortfolioFilters {
@@ -27,7 +31,7 @@ interface FilterItem {
 interface Props {
   readonly categories: readonly FilterItem[];
   readonly filters: PortfolioFilters;
-  readonly projects: PaginatedResult<PortfolioProjectRow>;
+  readonly projects: PaginatedResult<PublicPortfolioProject>;
   readonly siteUrl: string;
   readonly tags: readonly FilterItem[];
 }
@@ -61,6 +65,7 @@ export function PortfolioPage({
         position: (projects.page - 1) * projects.pageSize + index + 1,
         url: `${siteUrl}/portfolio/${project.slug}`,
         name: project.title,
+        image: mediaSeoUrl(project.cover),
       })),
     },
   } as const;
@@ -166,14 +171,26 @@ export function PortfolioPage({
                   key={project.id}
                   className={`${styles.hoverCard} flex h-full flex-col overflow-hidden ${project.is_featured ? "md:col-span-2 xl:grid xl:grid-cols-[.85fr_1.15fr]" : ""}`}
                 >
-                  <div
-                    className={`${styles.projectVisual} grid place-items-center border-b`}
-                  >
-                    <Sparkles
-                      className="size-8 text-muted-foreground"
-                      aria-hidden="true"
+                  {project.cover ? (
+                    <CmsMedia
+                      media={project.cover}
+                      alt={project.cover.alt ?? `${project.title} preview`}
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className={`${styles.projectVisual} aspect-[16/10] w-full border-b object-cover`}
                     />
-                  </div>
+                  ) : (
+                    <div
+                      className={`${styles.projectVisual} grid place-items-center border-b`}
+                    >
+                      <Sparkles
+                        className="size-8 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                      <span className="sr-only">
+                        No project media is configured
+                      </span>
+                    </div>
+                  )}
                   <div className="flex flex-1 flex-col p-6">
                     <div className="flex flex-wrap gap-2">
                       <Badge>{project.project_type}</Badge>

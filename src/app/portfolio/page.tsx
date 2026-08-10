@@ -6,6 +6,7 @@ import {
 } from "@/lib/portfolio/public-portfolio";
 import type { PublicPortfolioSort } from "@/lib/database/repositories/portfolio-repository";
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { mediaSeoUrl } from "@/lib/media/media";
 
 export const revalidate = 300;
 export async function generateMetadata(): Promise<Metadata> {
@@ -13,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = "Portfolio — Published digital work";
   const description =
     "Explore published web, SaaS, automation, integration, and product design work from Ayeb Solutions.";
+  const image = mediaSeoUrl(settings.openGraphImage);
   return {
     title,
     description,
@@ -23,8 +25,14 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       siteName: settings.site_name,
+      images: image ? [image] : undefined,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 interface Props {

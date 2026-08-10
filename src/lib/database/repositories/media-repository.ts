@@ -37,6 +37,35 @@ export class MediaRepository extends ContentRepository<
     this.throwIfError(error);
     return data ?? [];
   }
+  async findPublicByUsage(roles: readonly string[]) {
+    if (!roles.length) return [];
+    const [usage, tags] = await Promise.all([
+      this.client
+        .from("media_library")
+        .select("*")
+        .eq("status", "published")
+        .eq("visibility", "public")
+        .overlaps("usage_locations", [...roles])
+        .order("updated_at", { ascending: false }),
+      this.client
+        .from("media_library")
+        .select("*")
+        .eq("status", "published")
+        .eq("visibility", "public")
+        .overlaps("tags", [...roles])
+        .order("updated_at", { ascending: false }),
+    ]);
+    this.throwIfError(usage.error);
+    this.throwIfError(tags.error);
+    return [
+      ...new Map(
+        [...(usage.data ?? []), ...(tags.data ?? [])].map((item) => [
+          item.id,
+          item,
+        ]),
+      ).values(),
+    ];
+  }
   async findById(id: string) {
     const { data, error } = await this.client
       .from("media_library")

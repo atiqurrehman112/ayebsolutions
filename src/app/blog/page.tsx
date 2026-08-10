@@ -6,6 +6,7 @@ import {
   getPublishedBlogPage,
 } from "@/lib/blog/public-blog";
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { mediaSeoUrl } from "@/lib/media/media";
 
 export const revalidate = 300;
 export async function generateMetadata(): Promise<Metadata> {
@@ -13,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = "Insights & Resources";
   const description =
     "Published guidance from Ayeb Solutions on software, AI automation, design, integrations, and sustainable digital growth.";
+  const image = mediaSeoUrl(settings.openGraphImage);
   return {
     title,
     description,
@@ -23,8 +25,14 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       siteName: settings.site_name,
+      images: image ? [image] : undefined,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 interface Props {

@@ -15,6 +15,7 @@ import {
 } from "@/lib/homepage/homepage-data";
 import { getPublishedPortfolioPage } from "@/lib/portfolio/public-portfolio";
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { mediaSeoUrl } from "@/lib/media/media";
 
 export const revalidate = 300;
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = settings.default_meta_title;
   const description = settings.default_meta_description;
   const image = settings.openGraphImage;
+  const imageUrl = mediaSeoUrl(image);
   return {
     title,
     description,
@@ -33,15 +35,15 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       siteName: settings.site_name,
-      images: image
-        ? [{ url: image.secure_url, alt: image.alt ?? settings.site_name }]
+      images: imageUrl
+        ? [{ url: imageUrl, alt: image?.alt ?? settings.site_name }]
         : undefined,
     },
     twitter: {
       card: image ? "summary_large_image" : "summary",
       title,
       description,
-      images: image ? [image.secure_url] : undefined,
+      images: imageUrl ? [imageUrl] : undefined,
     },
   };
 }
@@ -92,7 +94,7 @@ export default async function HomePage() {
     url: settings.site_url,
     email: settings.contact_email ?? undefined,
     telephone: settings.contact_phone ?? undefined,
-    logo: settings.logo?.secure_url,
+    logo: mediaSeoUrl(settings.logo),
     sameAs: [
       settings.facebook_url,
       settings.instagram_url,

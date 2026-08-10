@@ -6,6 +6,7 @@ import {
   getPublishedBlogSlugs,
 } from "@/lib/blog/public-blog";
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { mediaSeoUrl } from "@/lib/media/media";
 
 export const revalidate = 300;
 interface Props {
@@ -29,7 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = article.meta_title ?? article.title;
   const description = article.meta_description ?? article.description;
   const path = `/blog/${article.slug}`;
-  const image = context.featuredMedia;
+  const image = context.featuredMedia ?? settings.openGraphImage;
+  const imageUrl = mediaSeoUrl(image);
   return {
     title,
     description,
@@ -44,15 +46,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       modifiedTime: article.updated_at,
       authors: article.author_name ? [article.author_name] : undefined,
       tags: context.tags.map((tag) => tag.name),
-      images: image
-        ? [{ url: image.secure_url, alt: image.alt ?? article.title }]
+      images: imageUrl
+        ? [{ url: imageUrl, alt: image?.alt ?? article.title }]
         : undefined,
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: imageUrl ? "summary_large_image" : "summary",
       title,
       description,
-      images: image ? [image.secure_url] : undefined,
+      images: imageUrl ? [imageUrl] : undefined,
     },
   };
 }

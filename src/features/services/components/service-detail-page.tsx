@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronDown } from "lucide-react";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
@@ -295,11 +295,9 @@ export function ServiceDetailPage({
             <div className="mt-10 grid gap-5 md:grid-cols-2">
               {context.gallery.map((item) => (
                 <figure key={item.id} className={styles.gallery}>
-                  <Image
-                    src={item.secure_url}
-                    alt={item.alt ?? ""}
-                    width={item.width ?? 1200}
-                    height={item.height ?? 800}
+                  <CmsMedia
+                    media={item}
+                    alt={item.alt ?? item.caption ?? service.title}
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                   {item.caption ? (

@@ -2,15 +2,16 @@ import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Card } from "@/components/cards/card";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
-import type { PortfolioProjectRow } from "@/types/database";
+import type { PublicPortfolioProject } from "@/lib/database/repositories/portfolio-repository";
 import styles from "./portfolio-preview.module.css";
 
 export function PortfolioPreviewSection({
   projects,
 }: {
-  readonly projects: readonly PortfolioProjectRow[];
+  readonly projects: readonly PublicPortfolioProject[];
 }) {
   if (!projects.length) return null;
   const featured = projects[0];
@@ -44,14 +45,27 @@ export function PortfolioPreviewSection({
           </Button>
         </div>
         <article className="mt-12 grid overflow-hidden rounded-2xl bg-primary text-primary-foreground shadow-elevated lg:grid-cols-[.9fr_1.1fr]">
-          <div
-            className={`${styles.visualNoise} grid min-h-72 place-items-center border-primary-foreground/15 p-8 lg:border-r`}
-          >
-            <Sparkles
-              className="size-14 text-primary-foreground/50"
-              aria-hidden="true"
+          {featured.cover ? (
+            <CmsMedia
+              media={featured.cover}
+              alt={featured.cover.alt ?? `${featured.title} preview`}
+              priority
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              className="h-full min-h-72 w-full border-primary-foreground/15 object-cover lg:border-r"
             />
-          </div>
+          ) : (
+            <div
+              className={`${styles.visualNoise} grid min-h-72 place-items-center border-primary-foreground/15 p-8 lg:border-r`}
+            >
+              <Sparkles
+                className="size-14 text-primary-foreground/50"
+                aria-hidden="true"
+              />
+              <span className="sr-only">
+                No featured project media is configured
+              </span>
+            </div>
+          )}
           <div className="flex flex-col p-7 sm:p-10">
             <div className="flex flex-wrap gap-2">
               <Badge className="border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground">

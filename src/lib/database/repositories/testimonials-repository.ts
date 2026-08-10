@@ -45,6 +45,36 @@ export class TestimonialsRepository extends ContentRepository<
   constructor(client: DatabaseClient) {
     super(client);
   }
+  private async attachMedia(
+    rows: readonly TestimonialRow[],
+  ): Promise<readonly PublicTestimonial[]> {
+    const mediaIds = [
+      ...new Set(
+        rows
+          .flatMap((item) => [item.avatar_media_id, item.company_logo_media_id])
+          .filter((id): id is string => Boolean(id)),
+      ),
+    ];
+    const media = mediaIds.length
+      ? await this.client
+          .from("media_library")
+          .select("*")
+          .in("id", mediaIds)
+          .eq("status", "published")
+          .eq("visibility", "public")
+      : { data: [], error: null };
+    this.throwIfError(media.error);
+    const byId = new Map((media.data ?? []).map((item) => [item.id, item]));
+    return rows.map((item) => ({
+      ...item,
+      avatar: item.avatar_media_id
+        ? (byId.get(item.avatar_media_id) ?? null)
+        : null,
+      companyLogo: item.company_logo_media_id
+        ? (byId.get(item.company_logo_media_id) ?? null)
+        : null,
+    }));
+  }
   async findAll() {
     const { data, error } = await this.client
       .from("testimonials")
@@ -158,7 +188,7 @@ export class TestimonialsRepository extends ContentRepository<
       .order("id", { ascending: true })
       .limit(limit);
     this.throwIfError(error);
-    return data ?? [];
+    return this.attachMedia(data ?? []);
   }
   async findPublicPage(options: PublicTestimonialQuery = {}) {
     const { page, pageSize, from, to } = this.getRange(options);
@@ -194,33 +224,7 @@ export class TestimonialsRepository extends ContentRepository<
       .order("id", { ascending: true })
       .range(from, to);
     this.throwIfError(error);
-    const rows = data ?? [];
-    const mediaIds = [
-      ...new Set(
-        rows
-          .flatMap((item) => [item.avatar_media_id, item.company_logo_media_id])
-          .filter((id): id is string => Boolean(id)),
-      ),
-    ];
-    const media = mediaIds.length
-      ? await this.client
-          .from("media_library")
-          .select("*")
-          .in("id", mediaIds)
-          .eq("status", "published")
-          .eq("visibility", "public")
-      : { data: [], error: null };
-    this.throwIfError(media.error);
-    const byId = new Map((media.data ?? []).map((item) => [item.id, item]));
-    const enriched: readonly PublicTestimonial[] = rows.map((item) => ({
-      ...item,
-      avatar: item.avatar_media_id
-        ? (byId.get(item.avatar_media_id) ?? null)
-        : null,
-      companyLogo: item.company_logo_media_id
-        ? (byId.get(item.company_logo_media_id) ?? null)
-        : null,
-    }));
+    const enriched = await this.attachMedia(data ?? []);
     return {
       data: enriched,
       count: count ?? 0,

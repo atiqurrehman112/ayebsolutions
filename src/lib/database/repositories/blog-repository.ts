@@ -9,7 +9,11 @@ import type {
   TagRow,
 } from "@/types/database";
 import type { DatabaseClient } from "../client";
-import { ContentRepository, type PaginationOptions } from "./base-repository";
+import {
+  ContentRepository,
+  type PaginatedResult,
+  type PaginationOptions,
+} from "./base-repository";
 
 export interface BlogQueryOptions extends PaginationOptions {
   readonly authorRole?: AppRole;
@@ -30,6 +34,9 @@ export interface PublicBlogContext {
   readonly featuredMedia: MediaLibraryRow | null;
   readonly tags: readonly Pick<TagRow, "id" | "name" | "slug">[];
 }
+export interface PublicBlogArticle extends BlogArticleRow {
+  readonly featuredMedia: MediaLibraryRow | null;
+}
 
 function normalizeSearchTerm(query: string) {
   return query
@@ -45,6 +52,30 @@ export class BlogRepository extends ContentRepository<
 > {
   constructor(client: DatabaseClient) {
     super(client);
+  }
+
+  private async attachFeaturedMedia(
+    rows: readonly BlogArticleRow[],
+  ): Promise<readonly PublicBlogArticle[]> {
+    const mediaIds = rows
+      .map((item) => item.featured_media_id)
+      .filter((id): id is string => Boolean(id));
+    const media = mediaIds.length
+      ? await this.client
+          .from("media_library")
+          .select("*")
+          .in("id", mediaIds)
+          .eq("status", "published")
+          .eq("visibility", "public")
+      : { data: [], error: null };
+    this.throwIfError(media.error);
+    const byId = new Map((media.data ?? []).map((item) => [item.id, item]));
+    return rows.map((item) => ({
+      ...item,
+      featuredMedia: item.featured_media_id
+        ? (byId.get(item.featured_media_id) ?? null)
+        : null,
+    }));
   }
 
   async findAll() {
@@ -166,7 +197,9 @@ export class BlogRepository extends ContentRepository<
     return data ?? [];
   }
 
-  async findPublishedPage(options: PublicBlogQuery = {}) {
+  async findPublishedPage(
+    options: PublicBlogQuery = {},
+  ): Promise<PaginatedResult<PublicBlogArticle>> {
     const { page, pageSize, from, to } = this.getRange(options);
     const term = options.query ? normalizeSearchTerm(options.query) : "";
     let request = this.client
@@ -191,7 +224,12 @@ export class BlogRepository extends ContentRepository<
       .order("id", { ascending: true })
       .range(from, to);
     this.throwIfError(error);
-    return this.paginateResult(data ?? [], count, page, pageSize);
+    return this.paginateResult(
+      await this.attachFeaturedMedia(data ?? []),
+      count,
+      page,
+      pageSize,
+    );
   }
 
   async findPublishedBySlug(slug: string) {

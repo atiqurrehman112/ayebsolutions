@@ -12,14 +12,18 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
 import type { PaginatedResult } from "@/lib/database/repositories/base-repository";
-import type { PublicServiceSort } from "@/lib/database/repositories/services-repository";
-import type { ServiceRow } from "@/types/database";
+import type {
+  PublicService,
+  PublicServiceSort,
+} from "@/lib/database/repositories/services-repository";
+import { mediaSeoUrl } from "@/lib/media/media";
 import styles from "./services-page.module.css";
 
 const icons: Readonly<Record<string, LucideIcon>> = {
@@ -55,7 +59,7 @@ export interface ServiceFilters {
 interface Props {
   readonly categories: readonly Category[];
   readonly filters: ServiceFilters;
-  readonly services: PaginatedResult<ServiceRow>;
+  readonly services: PaginatedResult<PublicService>;
   readonly siteUrl: string;
 }
 function pageHref(filters: ServiceFilters, page: number) {
@@ -89,6 +93,7 @@ export function ServicesPage({
         position: (services.page - 1) * services.pageSize + index + 1,
         name: service.title,
         url: `${siteUrl}/services/${service.slug}`,
+        image: mediaSeoUrl(service.cover),
       })),
     },
   } as const;
@@ -222,6 +227,14 @@ export function ServicesPage({
                     key={service.id}
                     className={`${styles.serviceCard} rounded-2xl border bg-card p-6 sm:p-8`}
                   >
+                    {service.cover ? (
+                      <CmsMedia
+                        media={service.cover}
+                        alt={service.cover.alt ?? `${service.title} service`}
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="mb-6 aspect-[16/9] w-full rounded-xl object-cover"
+                      />
+                    ) : null}
                     <div className="flex items-start justify-between gap-4">
                       <span className="grid size-12 place-items-center rounded-xl border bg-muted/30">
                         <Icon className="size-5" aria-hidden="true" />

@@ -7,10 +7,12 @@ import { SiteShell } from "@/components/layout/site-shell";
 import { Providers } from "@/components/providers/providers";
 import { StructuredData } from "@/components/seo/structured-data";
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { mediaSeoUrl } from "@/lib/media/media";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getPublicSiteSettings();
   const index = settings.robots === "index,follow";
+  const socialImage = mediaSeoUrl(settings.openGraphImage);
   return {
     metadataBase: new URL(settings.canonical_base_url),
     title: {
@@ -33,11 +35,11 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: settings.site_name,
       title: settings.default_meta_title,
       description: settings.default_meta_description,
-      images: settings.openGraphImage
+      images: socialImage
         ? [
             {
-              url: settings.openGraphImage.secure_url,
-              alt: settings.openGraphImage.alt ?? settings.site_name,
+              url: socialImage,
+              alt: settings.openGraphImage?.alt ?? settings.site_name,
             },
           ]
         : undefined,
@@ -46,11 +48,9 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: settings.default_meta_title,
       description: settings.default_meta_description,
-      images: settings.openGraphImage
-        ? [settings.openGraphImage.secure_url]
-        : undefined,
+      images: socialImage ? [socialImage] : undefined,
     },
-    icons: { icon: settings.favicon?.secure_url ?? "/favicon.svg" },
+    icons: settings.favicon ? { icon: settings.favicon.secure_url } : undefined,
     formatDetection: { email: false, address: false, telephone: false },
   };
 }
@@ -86,6 +86,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             url: settings.site_url,
             email: settings.contact_email ?? undefined,
             description: settings.default_meta_description,
+            logo: mediaSeoUrl(settings.logo),
             areaServed: "Worldwide",
           }}
         />

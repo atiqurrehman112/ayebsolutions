@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -9,10 +8,12 @@ import {
   UserRound,
 } from "lucide-react";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { mediaSeoUrl } from "@/lib/media/media";
 import { Badge } from "@/components/ui/status";
 import type { PublicBlogContext } from "@/lib/database/repositories/blog-repository";
 import type { BlogArticleRow } from "@/types/database";
@@ -126,7 +127,7 @@ export function BlogArticlePage({
       ? { "@type": "Person", name: article.author_name }
       : { "@type": "Organization", name: siteName },
     publisher: { "@type": "Organization", name: siteName, url: siteUrl },
-    image: context.featuredMedia?.secure_url,
+    image: mediaSeoUrl(context.featuredMedia),
     keywords: [
       ...article.keywords,
       ...context.tags.map((tag) => tag.name),
@@ -217,13 +218,12 @@ export function BlogArticlePage({
         {context.featuredMedia ? (
           <Container className="max-w-[100rem] py-10">
             <div className={styles.featuredImage}>
-              <Image
-                src={context.featuredMedia.secure_url}
-                alt={context.featuredMedia.alt ?? ""}
-                width={context.featuredMedia.width ?? 1600}
-                height={context.featuredMedia.height ?? 900}
+              <CmsMedia
+                media={context.featuredMedia}
+                alt={context.featuredMedia.alt ?? article.title}
                 sizes="(max-width: 1024px) 100vw, 1440px"
                 priority
+                className="h-auto w-full object-cover"
               />
             </div>
           </Container>

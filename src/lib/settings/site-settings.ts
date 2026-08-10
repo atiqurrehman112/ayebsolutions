@@ -106,6 +106,9 @@ const loadPublishedSettings = unstable_cache(
     }
   },
   ["published-site-settings"],
-  { revalidate: 300, tags: ["site-settings", "settings", "homepage"] },
+  {
+    revalidate: 300,
+    tags: ["site-settings", "settings", "homepage", "media"],
+  },
 );
 export const getPublicSiteSettings = cache(loadPublishedSettings);

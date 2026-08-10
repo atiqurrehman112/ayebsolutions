@@ -1,13 +1,14 @@
 import Link from "next/link";
-import Image from "next/image";
 
 import { cn } from "@/lib/utils";
+import { CmsMedia } from "@/components/media/cms-media";
+import type { MediaLibraryRow } from "@/types/database";
 
 interface LogoProps {
   readonly className?: string;
   readonly compact?: boolean;
   readonly linked?: boolean;
-  readonly logoUrl?: string | null;
+  readonly media?: MediaLibraryRow | null;
   readonly name?: string;
 }
 
@@ -31,18 +32,18 @@ function Logo({
   className,
   compact = false,
   linked = true,
-  logoUrl,
+  media,
   name = "Ayeb Solutions",
 }: LogoProps) {
   const content = (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      {logoUrl ? (
-        <Image
+      {media ? (
+        <CmsMedia
           alt=""
           className="size-9 rounded-xl object-contain"
-          height={36}
-          src={logoUrl}
-          width={36}
+          decorative
+          media={media}
+          sizes="36px"
         />
       ) : (
         <LogoMark />

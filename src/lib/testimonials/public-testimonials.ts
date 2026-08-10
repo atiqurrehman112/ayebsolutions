@@ -29,10 +29,10 @@ export const getPublishedTestimonialsPage = unstable_cache(
     return repo.findPublicPage(options);
   },
   ["published-testimonials-page"],
-  { revalidate: 300, tags: ["testimonials", "homepage"] },
+  { revalidate: 300, tags: ["testimonials", "homepage", "media"] },
 );
 export const getPublishedTestimonialIndustries = unstable_cache(
   async () => repository()?.findPublicIndustries() ?? [],
   ["published-testimonial-industries"],
-  { revalidate: 300, tags: ["testimonials"] },
+  { revalidate: 300, tags: ["testimonials", "media"] },
 );

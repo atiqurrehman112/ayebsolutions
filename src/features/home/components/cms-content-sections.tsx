@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { ArrowRight, Quote } from "lucide-react";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
-import type { BlogArticleRow, TestimonialRow } from "@/types/database";
+import type { PublicBlogArticle } from "@/lib/database/repositories/blog-repository";
+import type { PublicTestimonial } from "@/lib/database/repositories/testimonials-repository";
 
 export function BlogPreviewSection({
   articles,
 }: {
-  readonly articles: readonly BlogArticleRow[];
+  readonly articles: readonly PublicBlogArticle[];
 }) {
   if (!articles.length) return null;
   return (
@@ -40,6 +42,14 @@ export function BlogPreviewSection({
               key={article.id}
               className="flex flex-col rounded-2xl border bg-card p-6"
             >
+              {article.featuredMedia ? (
+                <CmsMedia
+                  media={article.featuredMedia}
+                  alt={article.featuredMedia.alt ?? article.title}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="mb-6 aspect-[16/9] w-full rounded-xl object-cover"
+                />
+              ) : null}
               <div className="flex gap-2">
                 {article.is_featured ? <Badge>Featured</Badge> : null}
                 <Badge variant="outline">Published</Badge>
@@ -65,7 +75,7 @@ export function BlogPreviewSection({
 export function TestimonialsPreviewSection({
   testimonials,
 }: {
-  readonly testimonials: readonly TestimonialRow[];
+  readonly testimonials: readonly PublicTestimonial[];
 }) {
   if (!testimonials.length) return null;
   return (
@@ -81,6 +91,14 @@ export function TestimonialsPreviewSection({
         <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {testimonials.map((item) => (
             <figure key={item.id} className="rounded-2xl border bg-card p-6">
+              {item.avatar ? (
+                <CmsMedia
+                  media={item.avatar}
+                  alt={item.avatar.alt ?? item.reviewer_name}
+                  sizes="48px"
+                  className="size-12 rounded-full object-cover"
+                />
+              ) : null}
               <Quote
                 className="size-6 text-muted-foreground"
                 aria-hidden="true"

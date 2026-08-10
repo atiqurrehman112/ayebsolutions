@@ -1,14 +1,18 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Search } from "lucide-react";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
 import type { PaginatedResult } from "@/lib/database/repositories/base-repository";
-import type { PublicBlogSort } from "@/lib/database/repositories/blog-repository";
-import type { BlogArticleRow } from "@/types/database";
+import type {
+  PublicBlogArticle,
+  PublicBlogSort,
+} from "@/lib/database/repositories/blog-repository";
+import { mediaSeoUrl } from "@/lib/media/media";
 import styles from "./blog-page.module.css";
 
 interface FilterItem {
@@ -24,7 +28,7 @@ export interface BlogFilters {
   readonly tag?: string;
 }
 interface Props {
-  readonly articles: PaginatedResult<BlogArticleRow>;
+  readonly articles: PaginatedResult<PublicBlogArticle>;
   readonly categories: readonly FilterItem[];
   readonly filters: BlogFilters;
   readonly siteUrl: string;
@@ -58,6 +62,7 @@ export function BlogPage({
       "@type": "BlogPosting",
       headline: article.title,
       url: `${siteUrl}/blog/${article.slug}`,
+      image: mediaSeoUrl(article.featuredMedia),
     })),
   } as const;
   return (
@@ -185,6 +190,14 @@ export function BlogPage({
             <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {articles.data.map((article) => (
                 <article key={article.id} className={styles.articleCard}>
+                  {article.featuredMedia ? (
+                    <CmsMedia
+                      media={article.featuredMedia}
+                      alt={article.featuredMedia.alt ?? article.title}
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="mb-6 aspect-[16/9] w-full rounded-xl object-cover"
+                    />
+                  ) : null}
                   <div className="flex flex-wrap gap-2">
                     {article.is_featured ? <Badge>Featured</Badge> : null}
                     <Badge variant="outline">Published</Badge>

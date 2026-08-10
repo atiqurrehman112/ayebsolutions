@@ -26,7 +26,7 @@ export function SiteShell({ children, settings }: SiteShellProps) {
       <SiteHeader
         brandName={settings.site_name}
         links={links}
-        logoUrl={settings.logo?.secure_url}
+        logo={settings.logo}
       />
       <main
         id="main-content"

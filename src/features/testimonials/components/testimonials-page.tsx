@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Quote, Search, Star } from "lucide-react";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
@@ -232,11 +232,11 @@ export function TestimonialsPage({
                     <div className="flex items-center gap-3">
                       {item.avatar ? (
                         <span className={styles.avatar}>
-                          <Image
-                            src={item.avatar.secure_url}
-                            alt={item.avatar.alt ?? ""}
-                            width={item.avatar.width ?? 96}
-                            height={item.avatar.height ?? 96}
+                          <CmsMedia
+                            media={item.avatar}
+                            alt={item.avatar.alt ?? item.reviewer_name}
+                            sizes="96px"
+                            className="size-full object-cover"
                           />
                         </span>
                       ) : null}
@@ -249,11 +249,13 @@ export function TestimonialsPage({
                         ) : null}
                       </div>
                       {item.companyLogo ? (
-                        <Image
-                          src={item.companyLogo.secure_url}
-                          alt={item.companyLogo.alt ?? ""}
-                          width={item.companyLogo.width ?? 120}
-                          height={item.companyLogo.height ?? 48}
+                        <CmsMedia
+                          media={item.companyLogo}
+                          alt={
+                            item.companyLogo.alt ??
+                            `${item.company_name ?? "Company"} logo`
+                          }
+                          sizes="120px"
                           className="ml-auto max-h-8 w-auto"
                         />
                       ) : null}

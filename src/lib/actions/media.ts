@@ -1,5 +1,5 @@
 "use server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/auth/auth";
 import { getPermissions } from "@/lib/auth/permissions";
 import {
@@ -59,6 +59,7 @@ function failure(error: unknown): MediaActionState {
 function revalidateMedia() {
   revalidatePath("/admin/media");
   revalidatePath("/", "layout");
+  revalidateTag("media");
 }
 function fileFrom(formData: FormData) {
   const value = formData.get("file");

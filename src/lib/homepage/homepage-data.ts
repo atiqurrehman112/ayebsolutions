@@ -22,7 +22,7 @@ export const getHomepageTestimonials = unstable_cache(
       : [];
   },
   ["homepage-testimonials"],
-  { revalidate: 300, tags: ["homepage", "testimonials"] },
+  { revalidate: 300, tags: ["homepage", "testimonials", "media"] },
 );
 export const getHomepageServices = unstable_cache(
   async (limit: number) => {
@@ -32,5 +32,5 @@ export const getHomepageServices = unstable_cache(
       : [];
   },
   ["homepage-services"],
-  { revalidate: 300, tags: ["homepage", "services"] },
+  { revalidate: 300, tags: ["homepage", "services", "media"] },
 );

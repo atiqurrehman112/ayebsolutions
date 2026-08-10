@@ -35,6 +35,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/cards/card";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
@@ -42,6 +43,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
 import { company } from "@/config/company";
 import { cn } from "@/lib/utils";
+import { mediaSeoUrl } from "@/lib/media/media";
+import type { MediaLibraryRow } from "@/types/database";
 import styles from "./about-page.module.css";
 
 interface IconItem {
@@ -429,7 +432,7 @@ function PurposeVisual() {
   );
 }
 
-function Hero() {
+function Hero({ heroMedia }: { readonly heroMedia?: MediaLibraryRow | null }) {
   return (
     <section
       aria-labelledby="about-title"
@@ -475,7 +478,19 @@ function Hero() {
             </p>
           </div>
           <div className="min-w-0">
-            <PurposeVisual />
+            {heroMedia ? (
+              <div className="overflow-hidden rounded-2xl border bg-card shadow-elevated">
+                <CmsMedia
+                  media={heroMedia}
+                  alt={heroMedia.alt ?? "Ayeb Solutions approach"}
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 55vw"
+                  className="aspect-[4/3] h-auto w-full object-cover"
+                />
+              </div>
+            ) : (
+              <PurposeVisual />
+            )}
           </div>
         </div>
       </Container>
@@ -816,7 +831,11 @@ function FaqSection() {
   );
 }
 
-function AboutPage() {
+function AboutPage({
+  heroMedia,
+}: {
+  readonly heroMedia?: MediaLibraryRow | null;
+}) {
   const pageUrl = new URL("/about", company.url).toString();
   const aboutSchema = {
     "@context": "https://schema.org",
@@ -825,6 +844,7 @@ function AboutPage() {
     description:
       "Ayeb Solutions' approach to modern software, thoughtful design, AI automation, accessibility, and maintainable digital products.",
     url: pageUrl,
+    image: mediaSeoUrl(heroMedia),
     isPartOf: { "@type": "WebSite", name: company.name, url: company.url },
     about: { "@type": "Organization", name: company.name, url: company.url },
   } as const;
@@ -835,6 +855,9 @@ function AboutPage() {
     description:
       "Learn how Ayeb Solutions approaches business problems through software, design, and responsible automation.",
     url: pageUrl,
+    primaryImageOfPage: mediaSeoUrl(heroMedia)
+      ? { "@type": "ImageObject", url: mediaSeoUrl(heroMedia) }
+      : undefined,
     isPartOf: { "@type": "WebSite", name: company.name, url: company.url },
   } as const;
   const faqSchema = {
@@ -848,7 +871,7 @@ function AboutPage() {
   } as const;
   return (
     <>
-      <Hero />
+      <Hero heroMedia={heroMedia} />
       <StorySection />
       <DirectionSection />
       <ValuesSection />

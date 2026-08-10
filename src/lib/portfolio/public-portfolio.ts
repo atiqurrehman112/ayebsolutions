@@ -29,7 +29,7 @@ export const getPublishedPortfolioPage = unstable_cache(
     return repo.findPublishedPage(options);
   },
   ["published-portfolio-page"],
-  { revalidate: 300, tags: ["portfolio", "homepage"] },
+  { revalidate: 300, tags: ["portfolio", "homepage", "media"] },
 );
 export const getPublishedPortfolioFilters = unstable_cache(
   async () => {
@@ -42,7 +42,7 @@ export const getPublishedPortfolioFilters = unstable_cache(
     return { categories, tags };
   },
   ["published-portfolio-filters"],
-  { revalidate: 300, tags: ["portfolio"] },
+  { revalidate: 300, tags: ["portfolio", "media"] },
 );
 export const getPublishedProject = unstable_cache(
   async (slug: string) => {
@@ -57,7 +57,7 @@ export const getPublishedProject = unstable_cache(
     return { project, context, related };
   },
   ["published-portfolio-project"],
-  { revalidate: 300, tags: ["portfolio"] },
+  { revalidate: 300, tags: ["portfolio", "media"] },
 );
 export const getPublishedPortfolioSlugs = unstable_cache(
   async () => repository()?.findPublishedSlugs() ?? [],

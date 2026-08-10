@@ -1,12 +1,13 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronDown, Sparkles } from "lucide-react";
 import { Card } from "@/components/cards/card";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { mediaSeoUrl } from "@/lib/media/media";
 import { Badge } from "@/components/ui/status";
 import type { MediaLibraryRow, PortfolioProjectRow } from "@/types/database";
 import styles from "./portfolio-project-page.module.css";
@@ -100,7 +101,10 @@ export function PortfolioProjectPage({
     ),
     datePublished: project.published_at,
     dateModified: project.updated_at,
-    image: gallery.map((item) => item.secure_url),
+    image: gallery.flatMap((item) => {
+      const url = mediaSeoUrl(item);
+      return url ? [url] : [];
+    }),
   } as const;
   const webPage = {
     "@context": "https://schema.org",
@@ -260,16 +264,15 @@ export function PortfolioProjectPage({
                   className="overflow-hidden rounded-2xl border bg-card"
                   key={item.id}
                 >
-                  <Image
+                  <CmsMedia
                     alt={
                       item.alt ??
                       item.caption ??
                       `${project.title} project visual`
                     }
                     className="aspect-[16/10] w-full object-cover"
-                    height={item.height ?? 900}
-                    src={item.secure_url}
-                    width={item.width ?? 1440}
+                    media={item}
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                   {item.caption ? (
                     <figcaption className="p-4 text-sm text-muted-foreground">

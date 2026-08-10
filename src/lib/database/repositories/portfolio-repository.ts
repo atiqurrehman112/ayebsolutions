@@ -3,9 +3,14 @@ import type {
   PortfolioProjectInsert,
   PortfolioProjectRow,
   PortfolioProjectUpdate,
+  MediaLibraryRow,
 } from "@/types/database";
 import type { DatabaseClient } from "../client";
-import { ContentRepository, type PaginationOptions } from "./base-repository";
+import {
+  ContentRepository,
+  type PaginatedResult,
+  type PaginationOptions,
+} from "./base-repository";
 
 export interface PortfolioQueryOptions extends PaginationOptions {
   readonly categoryId?: string;
@@ -22,6 +27,9 @@ export interface PublicPortfolioQuery extends PaginationOptions {
   readonly query?: string;
   readonly sort?: PublicPortfolioSort;
 }
+export interface PublicPortfolioProject extends PortfolioProjectRow {
+  readonly cover: MediaLibraryRow | null;
+}
 
 function normalizeSearchTerm(query: string) {
   return query
@@ -37,6 +45,41 @@ export class PortfolioRepository extends ContentRepository<
 > {
   constructor(client: DatabaseClient) {
     super(client);
+  }
+
+  private async attachCovers(
+    rows: readonly PortfolioProjectRow[],
+  ): Promise<readonly PublicPortfolioProject[]> {
+    const links = rows.length
+      ? await this.client
+          .from("portfolio_project_media")
+          .select("project_id,media_id,sort_order")
+          .in(
+            "project_id",
+            rows.map((item) => item.id),
+          )
+          .order("sort_order")
+      : { data: [], error: null };
+    this.throwIfError(links.error);
+    const firstByProject = new Map<string, string>();
+    for (const link of links.data ?? [])
+      if (!firstByProject.has(link.project_id))
+        firstByProject.set(link.project_id, link.media_id);
+    const mediaIds = [...new Set(firstByProject.values())];
+    const media = mediaIds.length
+      ? await this.client
+          .from("media_library")
+          .select("*")
+          .in("id", mediaIds)
+          .eq("status", "published")
+          .eq("visibility", "public")
+      : { data: [], error: null };
+    this.throwIfError(media.error);
+    const byId = new Map((media.data ?? []).map((item) => [item.id, item]));
+    return rows.map((item) => ({
+      ...item,
+      cover: byId.get(firstByProject.get(item.id) ?? "") ?? null,
+    }));
   }
 
   async findAll() {
@@ -150,7 +193,9 @@ export class PortfolioRepository extends ContentRepository<
     return data ?? [];
   }
 
-  async findPublishedPage(options: PublicPortfolioQuery = {}) {
+  async findPublishedPage(
+    options: PublicPortfolioQuery = {},
+  ): Promise<PaginatedResult<PublicPortfolioProject>> {
     const { page, pageSize, from, to } = this.getRange(options);
     const term = options.query ? normalizeSearchTerm(options.query) : "";
     let projectIds: readonly string[] | undefined;
@@ -161,7 +206,13 @@ export class PortfolioRepository extends ContentRepository<
         .eq("tag_id", options.tagId);
       this.throwIfError(tagged.error);
       projectIds = (tagged.data ?? []).map((item) => item.project_id);
-      if (!projectIds.length) return this.paginateResult([], 0, page, pageSize);
+      if (!projectIds.length)
+        return this.paginateResult<PublicPortfolioProject>(
+          [],
+          0,
+          page,
+          pageSize,
+        );
     }
     let request = this.client
       .from("portfolio_projects")
@@ -197,7 +248,12 @@ export class PortfolioRepository extends ContentRepository<
       .order("id", { ascending: true })
       .range(from, to);
     this.throwIfError(error);
-    return this.paginateResult(data ?? [], count, page, pageSize);
+    return this.paginateResult(
+      await this.attachCovers(data ?? []),
+      count,
+      page,
+      pageSize,
+    );
   }
   async findPublishedBySlug(slug: string) {
     const { data, error } = await this.client

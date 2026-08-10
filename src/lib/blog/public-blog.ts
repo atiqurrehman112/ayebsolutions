@@ -30,7 +30,7 @@ export const getPublishedBlogPage = unstable_cache(
     return repo.findPublishedPage(options);
   },
   ["published-blog-page"],
-  { revalidate: 300, tags: ["blog", "homepage"] },
+  { revalidate: 300, tags: ["blog", "homepage", "media"] },
 );
 
 export const getPublishedBlogFilters = unstable_cache(
@@ -44,7 +44,7 @@ export const getPublishedBlogFilters = unstable_cache(
     return { categories, tags };
   },
   ["published-blog-filters"],
-  { revalidate: 300, tags: ["blog"] },
+  { revalidate: 300, tags: ["blog", "media"] },
 );
 
 export const getPublishedArticle = unstable_cache(
@@ -61,7 +61,7 @@ export const getPublishedArticle = unstable_cache(
     return { article, context, related, adjacent };
   },
   ["published-blog-article"],
-  { revalidate: 300, tags: ["blog"] },
+  { revalidate: 300, tags: ["blog", "media"] },
 );
 
 export const getPublishedBlogSlugs = unstable_cache(

@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { Container } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { Fade, Stagger, StaggerItem } from "@/components/motion/motion";
 import { Button } from "@/components/ui/button";
 import type { PublicSiteSettings } from "@/types/settings";
@@ -41,9 +41,9 @@ export function HeroSection({
       className="relative isolate flex min-h-[calc(100svh-var(--header-height))] items-center overflow-hidden border-b py-16 sm:py-20 lg:py-24"
     >
       {settings.homepageBackgroundMedia ? (
-        <Image
-          src={settings.homepageBackgroundMedia.secure_url}
-          alt=""
+        <CmsMedia
+          media={settings.homepageBackgroundMedia}
+          decorative
           fill
           priority
           sizes="100vw"
@@ -126,13 +126,12 @@ export function HeroSection({
           <Fade>
             {settings.homepageHeroMedia ? (
               <div className="overflow-hidden rounded-2xl border bg-card shadow-elevated">
-                <Image
-                  src={settings.homepageHeroMedia.secure_url}
-                  alt={settings.homepageHeroMedia.alt ?? ""}
-                  width={settings.homepageHeroMedia.width ?? 1200}
-                  height={settings.homepageHeroMedia.height ?? 900}
+                <CmsMedia
+                  media={settings.homepageHeroMedia}
+                  alt={settings.homepageHeroMedia.alt ?? heading}
                   priority
                   sizes="(max-width:1024px) 100vw, 50vw"
+                  className="h-auto w-full object-cover"
                 />
               </div>
             ) : (

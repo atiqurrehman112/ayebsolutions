@@ -32,6 +32,9 @@ export interface PublicServiceContext {
     readonly sort_order: number;
   })[];
 }
+export interface PublicService extends ServiceRow {
+  readonly cover: MediaLibraryRow | null;
+}
 function normalizeSearchTerm(query: string) {
   return query
     .trim()
@@ -150,7 +153,40 @@ export class ServicesRepository extends ContentRepository<
     return data ?? [];
   }
   async findPublishedPage(options: PublicServiceQuery = {}) {
-    return this.findPage({ ...options, status: "published" });
+    const result = await this.findPage({ ...options, status: "published" });
+    const links = result.data.length
+      ? await this.client
+          .from("service_media")
+          .select("service_id,media_id,sort_order")
+          .in(
+            "service_id",
+            result.data.map((item) => item.id),
+          )
+          .order("sort_order")
+      : { data: [], error: null };
+    this.throwIfError(links.error);
+    const firstByService = new Map<string, string>();
+    for (const link of links.data ?? [])
+      if (!firstByService.has(link.service_id))
+        firstByService.set(link.service_id, link.media_id);
+    const mediaIds = [...new Set(firstByService.values())];
+    const media = mediaIds.length
+      ? await this.client
+          .from("media_library")
+          .select("*")
+          .in("id", mediaIds)
+          .eq("status", "published")
+          .eq("visibility", "public")
+      : { data: [], error: null };
+    this.throwIfError(media.error);
+    const byId = new Map((media.data ?? []).map((item) => [item.id, item]));
+    return {
+      ...result,
+      data: result.data.map((item): PublicService => ({
+        ...item,
+        cover: byId.get(firstByService.get(item.id) ?? "") ?? null,
+      })),
+    };
   }
   async findHomepagePublished(limit = 6) {
     const { data, error } = await this.client

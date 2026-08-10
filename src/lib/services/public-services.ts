@@ -30,13 +30,13 @@ export const getPublishedServicesPage = unstable_cache(
     return repo.findPublishedPage(options);
   },
   ["published-services-page"],
-  { revalidate: 300, tags: ["services", "homepage"] },
+  { revalidate: 300, tags: ["services", "homepage", "media"] },
 );
 
 export const getPublishedServiceFilters = unstable_cache(
   async () => repository()?.findPublicCategories() ?? [],
   ["published-service-filters"],
-  { revalidate: 300, tags: ["services"] },
+  { revalidate: 300, tags: ["services", "media"] },
 );
 
 export const getPublishedService = unstable_cache(
@@ -52,7 +52,7 @@ export const getPublishedService = unstable_cache(
     return { service, context, related };
   },
   ["published-service-detail"],
-  { revalidate: 300, tags: ["services"] },
+  { revalidate: 300, tags: ["services", "media"] },
 );
 
 export const getPublishedServiceSlugs = unstable_cache(

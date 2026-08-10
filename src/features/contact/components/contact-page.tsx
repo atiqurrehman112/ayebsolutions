@@ -18,12 +18,15 @@ import Link from "next/link";
 
 import { Card } from "@/components/cards/card";
 import { Container, Eyebrow } from "@/components/layout/primitives";
+import { CmsMedia } from "@/components/media/cms-media";
 import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { company } from "@/config/company";
 import { cn } from "@/lib/utils";
+import { mediaSeoUrl } from "@/lib/media/media";
+import type { MediaLibraryRow } from "@/types/database";
 import { ContactForm } from "./contact-form";
 import styles from "./contact-page.module.css";
 
@@ -259,7 +262,7 @@ function InquiryVisual() {
   );
 }
 
-function Hero() {
+function Hero({ heroMedia }: { readonly heroMedia?: MediaLibraryRow | null }) {
   return (
     <section
       aria-labelledby="contact-title"
@@ -304,7 +307,19 @@ function Hero() {
             </p>
           </div>
           <div className="min-w-0">
-            <InquiryVisual />
+            {heroMedia ? (
+              <div className="overflow-hidden rounded-2xl border bg-card shadow-elevated">
+                <CmsMedia
+                  media={heroMedia}
+                  alt={heroMedia.alt ?? "Project inquiry planning"}
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 55vw"
+                  className="aspect-[4/3] h-auto w-full object-cover"
+                />
+              </div>
+            ) : (
+              <InquiryVisual />
+            )}
           </div>
         </div>
       </Container>
@@ -507,7 +522,11 @@ function FaqSection() {
   );
 }
 
-function ContactPage() {
+function ContactPage({
+  heroMedia,
+}: {
+  readonly heroMedia?: MediaLibraryRow | null;
+}) {
   const pageUrl = new URL("/contact", company.url).toString();
   const contactPageSchema = {
     "@context": "https://schema.org",
@@ -516,6 +535,7 @@ function ContactPage() {
     description:
       "Contact Ayeb Solutions about web development, custom software, AI automation, design, integration, or maintenance.",
     url: pageUrl,
+    image: mediaSeoUrl(heroMedia),
     isPartOf: { "@type": "WebSite", name: company.name, url: company.url },
     about: {
       "@type": "Organization",
@@ -531,6 +551,9 @@ function ContactPage() {
     description:
       "Share project context with Ayeb Solutions and explore an appropriate consultation path.",
     url: pageUrl,
+    primaryImageOfPage: mediaSeoUrl(heroMedia)
+      ? { "@type": "ImageObject", url: mediaSeoUrl(heroMedia) }
+      : undefined,
     isPartOf: { "@type": "WebSite", name: company.name, url: company.url },
   } as const;
   const faqSchema = {
@@ -545,7 +568,7 @@ function ContactPage() {
 
   return (
     <>
-      <Hero />
+      <Hero heroMedia={heroMedia} />
       <ContactMethodsSection />
       <ContactFormSection />
       <TimelineSection />

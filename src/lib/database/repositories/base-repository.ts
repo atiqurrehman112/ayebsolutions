@@ -40,12 +40,12 @@ export abstract class BaseRepository<
     return { page, pageSize, from, to: from + pageSize - 1 } as const;
   }
 
-  protected paginateResult(
-    data: readonly Row[],
+  protected paginateResult<ResultRow extends Row = Row>(
+    data: readonly ResultRow[],
     count: number | null,
     page: number,
     pageSize: number,
-  ): PaginatedResult<Row> {
+  ): PaginatedResult<ResultRow> {
     const total = count ?? 0;
     return {
       data,
