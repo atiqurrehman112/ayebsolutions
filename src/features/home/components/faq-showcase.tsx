@@ -36,7 +36,7 @@ interface TrustIndicator {
 
 const faqItems: readonly FaqItem[] = [
   {
-    question: "What services does Ayeb Solutions provide?",
+    question: "What services do you provide?",
     answer:
       "We design and develop business websites, web applications, AI automation workflows, custom SaaS products, user interfaces, API integrations, and ongoing maintenance solutions. The recommended scope depends on the problem, users, existing systems, and operational goals we identify during discovery.",
   },

@@ -71,7 +71,11 @@ function HeroBackground() {
   );
 }
 
-function HeroSection() {
+function HeroSection({
+  brandName = "Ayeb Solutions",
+}: {
+  readonly brandName?: string;
+}) {
   return (
     <section
       aria-labelledby="hero-heading"
@@ -107,9 +111,9 @@ function HeroSection() {
 
             <StaggerItem>
               <p className="mx-auto mt-6 max-w-2xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg lg:mx-0 lg:max-w-xl xl:text-xl">
-                Ayeb Solutions helps businesses grow through premium websites,
-                AI automation, custom software, and intelligent digital
-                solutions that save time and increase revenue.
+                {brandName} helps businesses grow through premium websites, AI
+                automation, custom software, and intelligent digital solutions
+                that save time and increase revenue.
               </p>
             </StaggerItem>
 

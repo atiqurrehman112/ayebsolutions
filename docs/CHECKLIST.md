@@ -50,6 +50,7 @@
 - [x] Testimonials CRUD integration with consent-aware moderation (Sprint 8F)
 - [x] Cloudinary and Supabase media-library integration (Sprint 8G)
 - [x] Supabase contact-leads CRM and Resend workflow (Sprint 8H)
+- [x] Supabase site-settings CMS and public configuration integration (Sprint 8I)
 - [ ] Homepage
 - [ ] Services
 - [ ] Solutions
@@ -70,7 +71,7 @@
 - [x] Testimonials management (Supabase CRUD integration)
 - [x] Media library (Cloudinary and Supabase CRUD integration)
 - [x] Contact leads (Supabase CRM and Resend email history)
-- [ ] SEO settings
+- [x] SEO and site settings (Supabase production configuration)
 - [ ] Team management
 
 ## Quality

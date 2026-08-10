@@ -188,14 +188,18 @@ function SolutionsMenu({ pathname }: { readonly pathname: string }) {
   );
 }
 
-function DesktopNavigation() {
+function DesktopNavigation({
+  links = primaryNavigation,
+}: {
+  readonly links?: readonly ShellLink[];
+}) {
   const pathname = usePathname();
   return (
     <nav
       aria-label="Primary navigation"
       className="hidden items-center xl:flex"
     >
-      {primaryNavigation.map((item) => {
+      {links.map((item) => {
         if (item.label === "Services")
           return <ServicesMegaMenu key={item.href} pathname={pathname} />;
         if (item.label === "Solutions")
@@ -243,10 +247,18 @@ function MobileSection({
   );
 }
 
-function MobileNavigation() {
+function MobileNavigation({
+  brandName,
+  links = primaryNavigation,
+  logoUrl,
+}: {
+  readonly brandName: string;
+  readonly links?: readonly ShellLink[];
+  readonly logoUrl?: string | null;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const simpleLinks = primaryNavigation.filter(
+  const simpleLinks = links.filter(
     (item) => item.label !== "Services" && item.label !== "Solutions",
   );
   return (
@@ -272,9 +284,9 @@ function MobileNavigation() {
         </DrawerClose>
         <DrawerHeader className="border-b text-left">
           <DrawerTitle>
-            <Logo linked={false} />
+            <Logo linked={false} logoUrl={logoUrl} name={brandName} />
           </DrawerTitle>
-          <DrawerDescription>Navigate Ayeb Solutions</DrawerDescription>
+          <DrawerDescription>Navigate {brandName}</DrawerDescription>
         </DrawerHeader>
         <nav
           aria-label="Mobile navigation"
@@ -320,7 +332,15 @@ function MobileNavigation() {
   );
 }
 
-function SiteHeader() {
+function SiteHeader({
+  brandName = "Ayeb Solutions",
+  links = primaryNavigation,
+  logoUrl = null,
+}: {
+  readonly brandName?: string;
+  readonly links?: readonly ShellLink[];
+  readonly logoUrl?: string | null;
+}) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     function update() {
@@ -343,15 +363,19 @@ function SiteHeader() {
         )}
       >
         <div className="mx-auto flex h-[var(--header-height)] w-full max-w-[min(87.5rem,100vw)] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <Logo />
-          <DesktopNavigation />
+          <Logo logoUrl={logoUrl} name={brandName} />
+          <DesktopNavigation links={links} />
           <div className="flex items-center gap-0.5">
-            <GlobalSearch />
+            <GlobalSearch brandName={brandName} links={links} />
             <ThemeSwitcher />
             <Button asChild size="sm" className="ml-1 hidden xl:inline-flex">
               <Link href={consultationLink.href}>{consultationLink.label}</Link>
             </Button>
-            <MobileNavigation />
+            <MobileNavigation
+              brandName={brandName}
+              links={links}
+              logoUrl={logoUrl}
+            />
           </div>
         </div>
       </header>

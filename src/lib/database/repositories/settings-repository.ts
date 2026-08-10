@@ -1,87 +1,112 @@
-import type {
-  ContentStatus,
-  SiteSettingInsert,
-  SiteSettingRow,
-  SiteSettingUpdate,
-} from "@/types/database";
 import type { DatabaseClient } from "../client";
-import { ContentRepository, type PaginationOptions } from "./base-repository";
+import type {
+  MediaLibraryRow,
+  SiteConfigurationRow,
+  SiteConfigurationUpdate,
+} from "@/types/database";
+import type {
+  PublicSiteSettings,
+  SettingsFooterGroup,
+  SettingsLink,
+  SiteConfiguration,
+} from "@/types/settings";
+import { DatabaseRepositoryError } from "./base-repository";
 
-export class SettingsRepository extends ContentRepository<
-  SiteSettingRow,
-  SiteSettingInsert,
-  SiteSettingUpdate
-> {
-  constructor(client: DatabaseClient) {
-    super(client);
-  }
-  async findAll() {
-    const { data, error } = await this.client
-      .from("site_settings")
-      .select("*")
-      .order("group_name");
-    this.throwIfError(error);
-    return data ?? [];
-  }
-  async findById(id: string) {
-    const { data, error } = await this.client
-      .from("site_settings")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
-    this.throwIfError(error);
-    return data;
-  }
-  async create(input: SiteSettingInsert) {
-    const { data, error } = await this.client
-      .from("site_settings")
-      .insert(input)
-      .select("*")
-      .single();
-    this.throwIfError(error);
-    return this.requireData(data);
-  }
-  async update(id: string, input: SiteSettingUpdate) {
-    const { data, error } = await this.client
-      .from("site_settings")
-      .update(input)
-      .eq("id", id)
-      .select("*")
-      .single();
-    this.throwIfError(error);
-    return this.requireData(data);
-  }
-  async delete(id: string) {
-    const { error } = await this.client
-      .from("site_settings")
-      .delete()
-      .eq("id", id);
-    this.throwIfError(error);
-  }
-  async search(query: string) {
-    const term = query.trim().replaceAll(",", "");
-    if (!term) return this.findAll();
-    const { data, error } = await this.client
-      .from("site_settings")
-      .select("*")
-      .or(
-        `key.ilike.%${term}%,group_name.ilike.%${term}%,description.ilike.%${term}%`,
+const SETTINGS_ID = "00000000-0000-4000-8000-000000000001";
+function links(value: unknown): readonly SettingsLink[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is { label: string; href: string } =>
+        Boolean(
+          item &&
+          typeof item === "object" &&
+          "label" in item &&
+          "href" in item &&
+          typeof item.label === "string" &&
+          typeof item.href === "string",
+        ),
       )
-      .order("group_name");
-    this.throwIfError(error);
-    return data ?? [];
+    : [];
+}
+function footer(
+  value: SiteConfigurationRow["footer_navigation"],
+): readonly SettingsFooterGroup[] {
+  return Array.isArray(value)
+    ? value
+        .filter(
+          (item): item is { title: string; links: readonly SettingsLink[] } =>
+            Boolean(
+              item &&
+              typeof item === "object" &&
+              "title" in item &&
+              "links" in item &&
+              typeof item.title === "string" &&
+              Array.isArray(item.links),
+            ),
+        )
+        .map((item) => ({ title: item.title, links: links(item.links) }))
+    : [];
+}
+function model(row: SiteConfigurationRow): SiteConfiguration {
+  return {
+    ...row,
+    header_navigation: links(row.header_navigation),
+    footer_navigation: footer(row.footer_navigation),
+  };
+}
+
+export class SettingsRepository {
+  constructor(private readonly client: DatabaseClient) {}
+  async find() {
+    const { data, error } = await this.client
+      .from("site_configuration")
+      .select("*")
+      .eq("id", SETTINGS_ID)
+      .maybeSingle();
+    if (error) throw new DatabaseRepositoryError(error);
+    return data ? model(data) : null;
   }
-  async paginate(options: PaginationOptions = {}) {
-    const { page, pageSize, from, to } = this.getRange(options);
-    const { data, count, error } = await this.client
-      .from("site_settings")
-      .select("*", { count: "exact" })
-      .order("group_name")
-      .range(from, to);
-    this.throwIfError(error);
-    return this.paginateResult(data ?? [], count, page, pageSize);
+  async update(input: SiteConfigurationUpdate) {
+    const { data, error } = await this.client
+      .from("site_configuration")
+      .update(input)
+      .eq("id", SETTINGS_ID)
+      .select("*")
+      .single();
+    if (error) throw new DatabaseRepositoryError(error);
+    if (!data) throw new DatabaseRepositoryError();
+    return model(data);
   }
-  setStatus(id: string, status: ContentStatus) {
-    return this.update(id, { status });
+  async findPublic(): Promise<PublicSiteSettings | null> {
+    const settings = await this.find();
+    if (!settings || settings.status !== "published") return null;
+    const ids = [
+      settings.logo_media_id,
+      settings.favicon_media_id,
+      settings.open_graph_media_id,
+    ].filter((id): id is string => Boolean(id));
+    let media: readonly MediaLibraryRow[] = [];
+    if (ids.length) {
+      const result = await this.client
+        .from("media_library")
+        .select("*")
+        .in("id", ids)
+        .eq("status", "published")
+        .eq("visibility", "public");
+      if (result.error) throw new DatabaseRepositoryError(result.error);
+      media = result.data ?? [];
+    }
+    const byId = new Map(media.map((item) => [item.id, item]));
+    return {
+      ...settings,
+      logo: settings.logo_media_id
+        ? (byId.get(settings.logo_media_id) ?? null)
+        : null,
+      favicon: settings.favicon_media_id
+        ? (byId.get(settings.favicon_media_id) ?? null)
+        : null,
+      openGraphImage: settings.open_graph_media_id
+        ? (byId.get(settings.open_graph_media_id) ?? null)
+        : null,
+    };
   }
 }

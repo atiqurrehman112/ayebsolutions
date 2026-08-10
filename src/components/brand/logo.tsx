@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
@@ -6,6 +7,8 @@ interface LogoProps {
   readonly className?: string;
   readonly compact?: boolean;
   readonly linked?: boolean;
+  readonly logoUrl?: string | null;
+  readonly name?: string;
 }
 
 function LogoMark({ className }: { readonly className?: string }) {
@@ -24,20 +27,36 @@ function LogoMark({ className }: { readonly className?: string }) {
   );
 }
 
-function Logo({ className, compact = false, linked = true }: LogoProps) {
+function Logo({
+  className,
+  compact = false,
+  linked = true,
+  logoUrl,
+  name = "Ayeb Solutions",
+}: LogoProps) {
   const content = (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <LogoMark />
+      {logoUrl ? (
+        <Image
+          alt=""
+          className="size-9 rounded-xl object-contain"
+          height={36}
+          src={logoUrl}
+          width={36}
+        />
+      ) : (
+        <LogoMark />
+      )}
       {!compact ? (
         <span className="text-base font-bold tracking-tight sm:text-lg">
-          Ayeb Solutions
+          {name}
         </span>
       ) : null}
     </span>
   );
 
   return linked ? (
-    <Link href="/" aria-label="Ayeb Solutions home" className="rounded-md">
+    <Link href="/" aria-label={`${name} home`} className="rounded-md">
       {content}
     </Link>
   ) : (

@@ -71,6 +71,12 @@ The `/admin/media` route server-renders paginated Supabase metadata through `Med
 
 The `/admin/contact-leads` route server-renders count-aware, paginated lead records through `ContactLeadsRepository`. Search, status/priority/assignment/date filters, deterministic sorting, assignee discovery, status history, and email history remain in the repository boundary. `src/lib/actions/contact-leads.ts` is the sole mutation and delivery boundary: it validates input with Zod, applies authenticated role checks, calls the repository, invokes the server-only Resend adapter, records successful delivery history, and revalidates the CRM route. The forward migration normalizes the lifecycle to New, Contacted, Qualified, Proposal Sent, Won, Lost, and Archived while preserving legacy rows through an explicit mapping. Status and email events use append-only related tables so audit history is queryable without rewriting the lead record. Administrators and editors manage, assign, respond, and archive; permanent deletion remains administrator-only; viewers remain read-only; RLS remains authoritative.
 
+## Sprint 8I site-settings integration
+
+The singleton `site_configuration` table is the typed production configuration source. Scalar concerns use dedicated PostgreSQL columns, Media Library selections use foreign keys, and only inherently structured header/footer navigation uses validated JSON. `SettingsRepository` owns the configuration and referenced public-media projection; `src/lib/actions/settings.ts` is the sole write boundary and requires the administrator role before Zod validation output reaches Supabase. Editor and viewer roles remain read-only under both application controls and RLS.
+
+Public rendering consumes one cached, published settings projection through `getPublicSiteSettings()`. The root layout, metadata defaults, Organization schema, language, logo/favicon/OpenGraph media, header, search, footer, contact/social information, feature-aware sitemap, robots policy, newsletter visibility, homepage AI visibility, and maintenance state share that projection. Immutable source configuration remains only as a fail-safe when Supabase is unconfigured or temporarily unavailable. The cache uses a settings tag and a bounded revalidation interval; successful writes invalidate the tag and application layout.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

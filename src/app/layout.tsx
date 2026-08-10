@@ -6,39 +6,54 @@ import "@/app/globals.css";
 import { SiteShell } from "@/components/layout/site-shell";
 import { Providers } from "@/components/providers/providers";
 import { StructuredData } from "@/components/seo/structured-data";
-import { company } from "@/config/company";
-import { siteConfig } from "@/config/site";
+import { getPublicSiteSettings } from "@/lib/settings/site-settings";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  applicationName: siteConfig.name,
-  authors: [{ name: siteConfig.name, url: siteConfig.url }],
-  creator: siteConfig.name,
-  publisher: siteConfig.name,
-  category: "technology",
-  keywords: [...siteConfig.keywords],
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: siteConfig.url,
-    siteName: siteConfig.name,
-    title: siteConfig.name,
-    description: siteConfig.description,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
-  },
-  icons: { icon: "/favicon.svg" },
-  formatDetection: { email: false, address: false, telephone: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
+  const index = settings.robots === "index,follow";
+  return {
+    metadataBase: new URL(settings.canonical_base_url),
+    title: {
+      default: settings.default_meta_title,
+      template: `%s | ${settings.site_name}`,
+    },
+    description: settings.default_meta_description,
+    applicationName: settings.site_name,
+    authors: [{ name: settings.site_name, url: settings.site_url }],
+    creator: settings.site_name,
+    publisher: settings.site_name,
+    category: "technology",
+    keywords: [...settings.default_keywords],
+    alternates: { canonical: "/" },
+    robots: { index, follow: index },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: settings.site_url,
+      siteName: settings.site_name,
+      title: settings.default_meta_title,
+      description: settings.default_meta_description,
+      images: settings.openGraphImage
+        ? [
+            {
+              url: settings.openGraphImage.secure_url,
+              alt: settings.openGraphImage.alt ?? settings.site_name,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: settings.default_meta_title,
+      description: settings.default_meta_description,
+      images: settings.openGraphImage
+        ? [settings.openGraphImage.secure_url]
+        : undefined,
+    },
+    icons: { icon: settings.favicon?.secure_url ?? "/favicon.svg" },
+    formatDetection: { email: false, address: false, telephone: false },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -54,22 +69,23 @@ interface RootLayoutProps {
   readonly children: React.ReactNode;
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const settings = await getPublicSiteSettings();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={settings.default_language} suppressHydrationWarning>
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans`}>
         <Providers>
-          <SiteShell>{children}</SiteShell>
+          <SiteShell settings={settings}>{children}</SiteShell>
         </Providers>
         <StructuredData
           data={{
             "@context": "https://schema.org",
             "@type": "Organization",
-            name: company.name,
-            legalName: company.legalName,
-            url: company.url,
-            email: company.email,
-            description: company.description,
+            name: settings.site_name,
+            legalName: settings.site_name,
+            url: settings.site_url,
+            email: settings.contact_email ?? undefined,
+            description: settings.default_meta_description,
             areaServed: "Worldwide",
           }}
         />

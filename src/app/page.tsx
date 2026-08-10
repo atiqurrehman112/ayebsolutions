@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { StructuredData } from "@/components/seo/structured-data";
-import { company } from "@/config/company";
+import { getPublicSiteSettings } from "@/lib/settings/site-settings";
 import {
   AutomationShowcaseSection,
   FaqShowcaseSection,
@@ -15,35 +15,38 @@ import {
 } from "@/features/home";
 
 const title = "AI Automation & Premium Web Solutions";
-const description =
-  "Build smarter and scale faster with premium websites, AI automation, custom software, and intelligent digital solutions from Ayeb Solutions.";
-
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    url: "/",
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
+  const description = settings.default_meta_description;
+  return {
     title,
     description,
-    siteName: company.name,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-  },
-};
+    alternates: { canonical: "/" },
+    openGraph: {
+      type: "website",
+      url: "/",
+      title,
+      description,
+      siteName: settings.site_name,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
-export default function HomePage() {
+export default async function HomePage() {
+  const settings = await getPublicSiteSettings();
+  const description = settings.default_meta_description;
   return (
     <>
-      <HeroSection />
+      <HeroSection brandName={settings.site_name} />
       <TrustSocialProofSection />
       <ServicesOverviewSection />
       <PortfolioPreviewSection />
-      <AutomationShowcaseSection />
+      {settings.enable_ai_features ? <AutomationShowcaseSection /> : null}
       <ProcessShowcaseSection />
       <IndustriesShowcaseSection />
       <FaqShowcaseSection />
@@ -54,11 +57,11 @@ export default function HomePage() {
           "@type": "WebPage",
           name: title,
           description,
-          url: company.url,
+          url: settings.site_url,
           isPartOf: {
             "@type": "WebSite",
-            name: company.name,
-            url: company.url,
+            name: settings.site_name,
+            url: settings.site_url,
           },
           about: [
             "AI automation",

@@ -1,59 +1,61 @@
 import type { MetadataRoute } from "next";
 
-import { siteConfig } from "@/config/site";
+import { getPublicSiteSettings } from "@/lib/settings/site-settings";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return [
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const settings = await getPublicSiteSettings();
+  const siteUrl = settings.canonical_base_url;
+  const entries: MetadataRoute.Sitemap = [
     {
-      url: siteConfig.url,
+      url: siteUrl,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: `${siteConfig.url}/services`,
+      url: `${siteUrl}/services`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
-      url: `${siteConfig.url}/services/web-development`,
+      url: `${siteUrl}/services/web-development`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${siteConfig.url}/services/ai-automation`,
+      url: `${siteUrl}/services/ai-automation`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${siteConfig.url}/services/custom-saas`,
+      url: `${siteUrl}/services/custom-saas`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${siteConfig.url}/services/ui-ux-design`,
+      url: `${siteUrl}/services/ui-ux-design`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${siteConfig.url}/services/api-integration`,
+      url: `${siteUrl}/services/api-integration`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${siteConfig.url}/services/maintenance-support`,
+      url: `${siteUrl}/services/maintenance-support`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${siteConfig.url}/portfolio`,
+      url: `${siteUrl}/portfolio`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.9,
@@ -68,25 +70,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
       "accessible-booking-experience",
       "api-operations-console",
     ].map((slug) => ({
-      url: `${siteConfig.url}/portfolio/${slug}`,
+      url: `${siteUrl}/portfolio/${slug}`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),
     {
-      url: `${siteConfig.url}/about`,
+      url: `${siteUrl}/about`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${siteConfig.url}/contact`,
+      url: `${siteUrl}/contact`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
-      url: `${siteConfig.url}/blog`,
+      url: `${siteUrl}/blog`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
@@ -101,10 +103,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       "improving-website-performance",
       "planning-a-successful-digital-project",
     ].map((slug) => ({
-      url: `${siteConfig.url}/blog/${slug}`,
+      url: `${siteUrl}/blog/${slug}`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),
   ];
+  return entries.filter((entry) => {
+    if (!settings.enable_blog && entry.url.startsWith(`${siteUrl}/blog`))
+      return false;
+    if (!settings.enable_contact_form && entry.url === `${siteUrl}/contact`)
+      return false;
+    return true;
+  });
 }

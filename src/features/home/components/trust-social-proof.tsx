@@ -263,7 +263,7 @@ function Comparison() {
   return (
     <div>
       <SectionIntroduction
-        eyebrow="Why choose Ayeb Solutions"
+        eyebrow="Why choose our team"
         title="A delivery model built for clarity."
         description="Every provider works differently. This is how our approach addresses common delivery risks without relying on vague promises."
       />
@@ -274,7 +274,7 @@ function Comparison() {
             Conventional project risk
           </span>
           <span className="flex items-center gap-2">
-            <Sparkles className="size-4" aria-hidden="true" /> Ayeb Solutions
+            <Sparkles className="size-4" aria-hidden="true" /> Our approach
             approach
           </span>
         </div>

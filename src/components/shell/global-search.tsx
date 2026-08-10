@@ -15,8 +15,15 @@ import {
 } from "@/components/ui/command-menu";
 import { IconButton } from "@/components/ui/icon-button";
 import { searchNavigation } from "@/config/navigation";
+import type { ShellLink } from "@/types/global-settings";
 
-function GlobalSearch() {
+function GlobalSearch({
+  brandName = "Ayeb Solutions",
+  links = searchNavigation,
+}: {
+  readonly brandName?: string;
+  readonly links?: readonly ShellLink[];
+}) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -48,14 +55,14 @@ function GlobalSearch() {
       <CommandDialog
         open={open}
         onOpenChange={setOpen}
-        title="Search Ayeb Solutions"
+        title={`Search ${brandName}`}
         description="Search available website destinations."
       >
         <CommandInput placeholder="Search pages and services…" />
         <CommandList>
           <CommandEmpty>No matching destination found.</CommandEmpty>
           <CommandGroup heading="Navigate">
-            {searchNavigation.map((item) => (
+            {links.map((item) => (
               <CommandItem
                 key={item.href}
                 value={`${item.label} ${item.description ?? ""}`}
