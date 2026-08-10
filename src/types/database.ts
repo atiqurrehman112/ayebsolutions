@@ -11,6 +11,7 @@ export type LeadStatus =
 export type AppRole = "admin" | "editor" | "viewer";
 export type CategoryKind = "portfolio" | "blog" | "service";
 export type MediaVisibility = "public" | "private";
+export type TestimonialApprovalStatus = "pending" | "approved" | "rejected";
 
 export type Json =
   | string
@@ -114,6 +115,13 @@ export interface TestimonialRow extends AuditColumns, Record<string, unknown> {
   readonly related_service_id: string | null;
   readonly consent_verified: boolean;
   readonly is_featured: boolean;
+  readonly approval_status: TestimonialApprovalStatus;
+  readonly display_order: number;
+  readonly published_at: string | null;
+  readonly approved_at: string | null;
+  readonly approved_by: string | null;
+  readonly meta_title: string | null;
+  readonly meta_description: string | null;
   readonly status: ContentStatus;
 }
 

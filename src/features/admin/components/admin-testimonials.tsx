@@ -1,596 +1,324 @@
-import {
-  Archive,
-  CheckCircle2,
-  ChevronDown,
-  CircleUserRound,
-  Eye,
-  FileInput,
-  FilePlus2,
-  LayoutTemplate,
-  Link2Off,
-  MessageSquareQuote,
-  Pencil,
-  RotateCcw,
-  Search,
-  ShieldAlert,
-  Star,
-} from "lucide-react";
-
+import Link from "next/link";
+import { MessageSquareQuote, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
-import { cn } from "@/lib/utils";
+import type { PaginatedResult } from "@/lib/database/repositories/base-repository";
+import type { TestimonialSort } from "@/lib/database/repositories/testimonials-repository";
+import type {
+  ContentStatus,
+  TestimonialApprovalStatus,
+  TestimonialRow,
+} from "@/types/database";
+import { TestimonialDialog } from "./testimonial-dialog";
+import { TestimonialRowActions } from "./testimonial-row-actions";
 import styles from "./admin-testimonials.module.css";
 
-type SampleLabel =
-  "Placeholder Preview" | "Sample Content" | "Internal Example";
-
-interface TestimonialRow {
-  readonly reviewer: string;
-  readonly company: string;
-  readonly status: "Review" | "Ready" | "Draft";
-  readonly featured: "Planned" | "Available";
-  readonly visibility: "Hidden";
-  readonly label: SampleLabel;
+export interface TestimonialFilters {
+  readonly approval?: TestimonialApprovalStatus;
+  readonly featured?: string;
+  readonly pageSize: number;
+  readonly query?: string;
+  readonly sort: TestimonialSort;
+  readonly status?: ContentStatus;
 }
-
-const testimonials: readonly TestimonialRow[] = [
-  {
-    reviewer: "Sample Reviewer A",
-    company: "Placeholder Company A",
-    status: "Review",
-    featured: "Planned",
-    visibility: "Hidden",
-    label: "Placeholder Preview",
-  },
-  {
-    reviewer: "Sample Reviewer B",
-    company: "Placeholder Company B",
-    status: "Ready",
-    featured: "Available",
-    visibility: "Hidden",
-    label: "Sample Content",
-  },
-  {
-    reviewer: "Sample Reviewer C",
-    company: "Placeholder Company C",
-    status: "Draft",
-    featured: "Planned",
-    visibility: "Hidden",
-    label: "Internal Example",
-  },
-  {
-    reviewer: "Sample Reviewer D",
-    company: "Placeholder Company D",
-    status: "Review",
-    featured: "Available",
-    visibility: "Hidden",
-    label: "Placeholder Preview",
-  },
-  {
-    reviewer: "Sample Reviewer E",
-    company: "Placeholder Company E",
-    status: "Draft",
-    featured: "Planned",
-    visibility: "Hidden",
-    label: "Sample Content",
-  },
-  {
-    reviewer: "Sample Reviewer F",
-    company: "Placeholder Company F",
-    status: "Ready",
-    featured: "Available",
-    visibility: "Hidden",
-    label: "Internal Example",
-  },
-  {
-    reviewer: "Sample Reviewer G",
-    company: "Placeholder Company G",
-    status: "Review",
-    featured: "Planned",
-    visibility: "Hidden",
-    label: "Placeholder Preview",
-  },
-  {
-    reviewer: "Sample Reviewer H",
-    company: "Placeholder Company H",
-    status: "Draft",
-    featured: "Available",
-    visibility: "Hidden",
-    label: "Sample Content",
-  },
-] as const;
-
-const readiness = [
-  [
-    "Testimonials",
-    "Configured",
-    "Placeholder records demonstrate the interface",
-  ],
-  ["Review Queue", "Available", "Review states are represented, not connected"],
-  ["Featured", "Ready", "Placement fields are prepared"],
-  ["Visibility", "Configured", "Every sample remains hidden"],
-  ["Moderation", "Planned", "No moderation logic exists"],
-  ["Publishing", "Planned", "No publishing action exists"],
-] as const;
-
-const moderationWorkflow = [
-  ["Submitted", "Receive feedback with source and consent context."],
-  ["Review", "Check content quality and identify missing information."],
-  [
-    "Verification",
-    "Confirm authenticity and permission through a future process.",
-  ],
-  ["Approval", "Record accountable approval before changing visibility."],
-  ["Publish", "Release only after review, consent, and display checks."],
-] as const;
-
-const qualityChecks = [
-  "Authenticity Review",
-  "Grammar",
-  "Length",
-  "Service Mention",
-  "Accessibility",
-  "Formatting",
-  "Consent",
-  "Visibility",
-] as const;
-
-const placements = [
-  "Homepage",
-  "Service Pages",
-  "Portfolio",
-  "About",
-  "Landing Pages",
-] as const;
-
-const integrations = [
-  "Google Reviews",
-  "Clutch",
-  "Trustpilot",
-  "LinkedIn",
-  "Manual Entry",
-] as const;
-
-const nativeControlClass =
-  "focus-ring h-11 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs placeholder:text-muted-foreground";
-
-function AdminTestimonials() {
+interface Props {
+  readonly canDelete: boolean;
+  readonly canEdit: boolean;
+  readonly filters: TestimonialFilters;
+  readonly testimonials: PaginatedResult<TestimonialRow>;
+}
+const statuses: Readonly<Record<ContentStatus, string>> = {
+  archived: "Archived",
+  draft: "Draft",
+  published: "Published",
+  review: "In review",
+};
+const approvals: Readonly<Record<TestimonialApprovalStatus, string>> = {
+  approved: "Approved",
+  pending: "Pending",
+  rejected: "Rejected",
+};
+const sorts: readonly (readonly [TestimonialSort, string])[] = [
+  ["display-asc", "Display order"],
+  ["display-desc", "Display order, descending"],
+  ["updated-desc", "Recently updated"],
+  ["name-asc", "Reviewer name"],
+  ["rating-desc", "Rating, high to low"],
+];
+function pageHref(filters: TestimonialFilters, page: number) {
+  const p = new URLSearchParams();
+  if (filters.query) p.set("q", filters.query);
+  if (filters.status) p.set("status", filters.status);
+  if (filters.approval) p.set("approval", filters.approval);
+  if (filters.featured) p.set("featured", filters.featured);
+  p.set("sort", filters.sort);
+  p.set("pageSize", String(filters.pageSize));
+  p.set("page", String(page));
+  return `/admin/testimonials?${p.toString()}`;
+}
+export function AdminTestimonials({
+  canDelete,
+  canEdit,
+  filters,
+  testimonials,
+}: Props) {
+  const formatter = new Intl.DateTimeFormat("en", {
+    dateStyle: "medium",
+    timeZone: "UTC",
+  });
+  const filtered = Boolean(
+    filters.query || filters.status || filters.approval || filters.featured,
+  );
   return (
-    <div className="mx-auto max-w-[100rem]">
-      <section
-        aria-labelledby="testimonials-management-title"
-        className={styles.hero}
-      >
-        <div className="max-w-4xl">
-          <div className="flex flex-wrap gap-2">
-            <Badge>Testimonials CMS</Badge>
-            <Badge variant="outline">Static preview</Badge>
-          </div>
-          <h1
-            id="testimonials-management-title"
-            className="mt-6 text-balance text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[0.98] tracking-tight"
-          >
-            Testimonials Management
-          </h1>
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">
-            Manage customer feedback, reviews, and featured testimonials. This
-            interface previews the future CMS; creating, editing, approving, and
-            publishing testimonials are not available in this sprint.
+    <main className={styles.page}>
+      <header className={styles.hero}>
+        <div>
+          <span className={styles.eyebrow}>Trust content</span>
+          <h1>Testimonials Management</h1>
+          <p>
+            Review consent-aware feedback, record approval, and control where
+            verified testimonials become visible.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button type="button" disabled className="min-h-11">
-              <FilePlus2 className="size-4" aria-hidden="true" />
-              Add Testimonial
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              disabled
-              className="min-h-11"
-            >
-              <FileInput className="size-4" aria-hidden="true" />
-              Import Reviews
-            </Button>
-          </div>
         </div>
-        <div className={styles.heroNotice} role="note">
-          <ShieldAlert className="size-5 shrink-0" aria-hidden="true" />
-          <div>
-            <strong>Testimonials shown here are placeholder examples.</strong>
-            <p>
-              Real management, moderation, verification, integrations, and
-              publishing will be implemented in a future sprint.
-            </p>
-          </div>
-        </div>
+        {canEdit ? <TestimonialDialog mode="create" /> : null}
+      </header>
+      <section aria-label="Testimonial summary" className={styles.summary}>
+        <article>
+          <span>Matching testimonials</span>
+          <strong>{testimonials.count}</strong>
+        </article>
+        <article>
+          <span>Current page</span>
+          <strong>
+            {testimonials.totalPages
+              ? `${testimonials.page} / ${testimonials.totalPages}`
+              : "—"}
+          </strong>
+        </article>
+        <article>
+          <span>Access</span>
+          <strong>{canEdit ? "Content editor" : "Read only"}</strong>
+        </article>
       </section>
-
-      <section aria-labelledby="testimonial-readiness-heading" className="mt-8">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <section
+        aria-labelledby="testimonial-library-heading"
+        className={styles.panel}
+      >
+        <div className={styles.panelHeading}>
           <div>
-            <span className={styles.eyebrow}>Module readiness</span>
-            <h2
-              id="testimonial-readiness-heading"
-              className={styles.sectionTitle}
-            >
-              Prepared without invented counts
+            <span className={styles.eyebrow}>Moderation library</span>
+            <h2 id="testimonial-library-heading">
+              Find, verify, and publish feedback
             </h2>
           </div>
-          <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-            Qualitative states describe interface preparation only. They do not
-            represent real feedback, moderation, or publication activity.
-          </p>
+          {!canEdit ? <p>Your viewer role has read-only access.</p> : null}
         </div>
-        <dl className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {readiness.map(([label, value, description]) => (
-            <div key={label} className={styles.statCard}>
-              <dt>{label}</dt>
-              <dd>{value}</dd>
-              <p>{description}</p>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <section aria-labelledby="testimonial-index-heading" className="mt-14">
-        <span className={styles.eyebrow}>Placeholder index</span>
-        <h2 id="testimonial-index-heading" className={styles.sectionTitle}>
-          Sample records for interface review
-        </h2>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">
-          Every row uses fictional placeholder labels and remains hidden.
-          Nothing below represents a real customer, company, review, or
-          endorsement.
-        </p>
-
-        <div className={styles.filters} aria-label="Static testimonial filters">
-          <div className={styles.searchField}>
-            <label htmlFor="testimonial-search">Search</label>
-            <div className="relative">
-              <Search
-                className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden="true"
-              />
+        <form className={styles.filters} method="get" role="search">
+          <label className={styles.search}>
+            <span>Search testimonials</span>
+            <div>
+              <Search aria-hidden="true" />
               <input
-                id="testimonial-search"
+                defaultValue={filters.query}
+                name="q"
+                placeholder="Name, company, position, or quote"
                 type="search"
-                placeholder="Search samples"
-                aria-describedby="testimonial-filter-notice"
-                className={cn(nativeControlClass, "pl-10")}
               />
             </div>
-          </div>
-          <StaticSelect
-            id="testimonial-status"
-            label="Status"
-            options={["All statuses", "Draft", "Review", "Ready"]}
+          </label>
+          <Filter
+            label="Publish status"
+            name="status"
+            options={Object.entries(statuses)}
+            value={filters.status}
           />
-          <StaticSelect
-            id="testimonial-featured"
+          <Filter
+            label="Approval"
+            name="approval"
+            options={Object.entries(approvals)}
+            value={filters.approval}
+          />
+          <Filter
             label="Featured"
-            options={["All samples", "Available", "Planned"]}
-          />
-          <StaticSelect
-            id="testimonial-rating"
-            label="Rating"
-            options={["All ratings", "Illustrative 5", "Illustrative 4"]}
-          />
-          <StaticSelect
-            id="testimonial-source"
-            label="Source"
-            options={["All sources", "Placeholder", "Internal example"]}
-          />
-          <StaticSelect
-            id="testimonial-sort"
-            label="Sort"
+            name="featured"
             options={[
-              "Configured order",
-              "Reviewer label",
-              "Status",
-              "Visibility",
+              ["true", "Featured"],
+              ["false", "Not featured"],
             ]}
+            value={filters.featured}
           />
-          <Button
-            type="button"
-            variant="outline"
-            disabled
-            className="h-11 self-end"
-          >
-            <RotateCcw className="size-4" aria-hidden="true" />
-            Reset
-          </Button>
-          <p id="testimonial-filter-notice">
-            Filters are presentation-only and do not search, sort, reset, or
-            query testimonial data.
-          </p>
-        </div>
-
-        <div className={styles.indexLayout}>
-          <div className={styles.tableFrame}>
+          <Filter
+            label="Sort"
+            name="sort"
+            options={sorts}
+            value={filters.sort}
+          />
+          <label>
+            <span>Per page</span>
+            <select defaultValue={String(filters.pageSize)} name="pageSize">
+              {[25, 50, 100].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className={styles.filterActions}>
+            <Button type="submit">Apply</Button>
+            <Button asChild variant="ghost">
+              <Link href="/admin/testimonials">Reset</Link>
+            </Button>
+          </div>
+        </form>
+        {testimonials.data.length ? (
+          <div className={styles.tableWrap}>
             <table>
-              <caption>
-                Static placeholder testimonials management preview
+              <caption className="sr-only">
+                Testimonials matching the current filters
               </caption>
               <thead>
                 <tr>
                   <th scope="col">Reviewer</th>
-                  <th scope="col">Company</th>
+                  <th scope="col">Approval</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Rating</th>
                   <th scope="col">Featured</th>
-                  <th scope="col">Visibility</th>
+                  <th scope="col">Order</th>
                   <th scope="col">Updated</th>
                   <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {testimonials.map((testimonial) => (
-                  <tr key={testimonial.reviewer}>
+                {testimonials.data.map((testimonial) => (
+                  <tr key={testimonial.id}>
                     <th scope="row">
-                      <span>{testimonial.reviewer}</span>
-                      <Badge variant="outline">{testimonial.label}</Badge>
-                    </th>
-                    <td>{testimonial.company}</td>
-                    <td>
-                      <Badge variant="outline">{testimonial.status}</Badge>
-                    </td>
-                    <td>{testimonial.featured}</td>
-                    <td>
-                      <span className={styles.hiddenState}>
-                        <span aria-hidden="true" />
-                        {testimonial.visibility}
+                      <strong>{testimonial.reviewer_name}</strong>
+                      <span>
+                        {testimonial.reviewer_role || "Position not provided"}
+                        {testimonial.company_name
+                          ? ` · ${testimonial.company_name}`
+                          : ""}
                       </span>
-                    </td>
-                    <td>Not connected</td>
+                      <small>
+                        {testimonial.consent_verified
+                          ? "Consent verified"
+                          : "Consent not verified"}
+                      </small>
+                    </th>
                     <td>
-                      <div className={styles.actions}>
-                        <DisabledAction
-                          icon={Eye}
-                          label={`Preview ${testimonial.reviewer}, unavailable`}
-                        />
-                        <DisabledAction
-                          icon={Pencil}
-                          label={`Edit ${testimonial.reviewer}, unavailable`}
-                        />
-                        <DisabledAction
-                          icon={Archive}
-                          label={`Archive ${testimonial.reviewer}, unavailable`}
-                        />
-                      </div>
+                      <Badge variant="outline">
+                        {approvals[testimonial.approval_status]}
+                      </Badge>
+                    </td>
+                    <td>
+                      <Badge variant="outline">
+                        {statuses[testimonial.status]}
+                      </Badge>
+                    </td>
+                    <td>
+                      {testimonial.rating
+                        ? `${testimonial.rating} / 5`
+                        : "Not rated"}
+                    </td>
+                    <td>{testimonial.is_featured ? "Yes" : "No"}</td>
+                    <td>{testimonial.display_order}</td>
+                    <td>
+                      <time dateTime={testimonial.updated_at}>
+                        {formatter.format(new Date(testimonial.updated_at))}
+                      </time>
+                    </td>
+                    <td>
+                      <TestimonialRowActions
+                        canDelete={canDelete}
+                        canEdit={canEdit}
+                        testimonial={testimonial}
+                      />
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-
-          <aside
-            aria-labelledby="selected-testimonial-heading"
-            className={styles.previewPanel}
+        ) : (
+          <div className={styles.empty}>
+            <MessageSquareQuote aria-hidden="true" />
+            <h3>No testimonials yet</h3>
+            <p>
+              {filtered
+                ? "No testimonials match these filters. Reset them to view the full library."
+                : "Create your first testimonial after confirming the source and consent context."}
+            </p>
+            {canEdit && !filtered ? (
+              <TestimonialDialog mode="create" />
+            ) : (
+              <Button asChild variant="outline">
+                <Link href="/admin/testimonials">Reset filters</Link>
+              </Button>
+            )}
+          </div>
+        )}
+        {testimonials.totalPages > 1 ? (
+          <nav
+            aria-label="Testimonial pagination"
+            className={styles.pagination}
           >
-            <div className="flex items-center justify-between gap-3">
-              <Badge variant="secondary">Selected Testimonial</Badge>
-              <MessageSquareQuote
-                className="size-5 text-muted-foreground"
-                aria-hidden="true"
-              />
-            </div>
-            <div className={styles.sampleWarning}>
-              <ShieldAlert aria-hidden="true" />
-              <p>
-                <strong>Placeholder Preview</strong>This is fictional sample
-                content—not a customer testimonial.
-              </p>
-            </div>
-            <h2 id="selected-testimonial-heading">Sample Reviewer A</h2>
-            <p className={styles.previewRole}>
-              Example Operations Lead · Placeholder Company A
-            </p>
-            <div
-              className={styles.rating}
-              aria-label="Illustrative rating, five out of five"
+            <Button
+              asChild={testimonials.page > 1}
+              disabled={testimonials.page <= 1}
+              variant="outline"
             >
-              <span>Illustrative rating</span>
-              <span>
-                {Array.from({ length: 5 }, (_, index) => (
-                  <Star key={index} aria-hidden="true" />
-                ))}
-              </span>
-            </div>
-            <blockquote>
-              “This placeholder quote demonstrates testimonial typography,
-              reading length, and visual hierarchy. It is not feedback from a
-              real client or organization.”
-            </blockquote>
-            <dl className={styles.previewDetails}>
-              <PreviewDetail term="Reviewer" detail="Sample Reviewer A" />
-              <PreviewDetail term="Company" detail="Placeholder Company A" />
-              <PreviewDetail term="Role" detail="Example Operations Lead" />
-              <PreviewDetail
-                term="Summary"
-                detail="Illustrative workflow feedback"
-              />
-              <PreviewDetail term="Related Service" detail="Web Development" />
-              <PreviewDetail term="Display Status" detail="Hidden" />
-              <PreviewDetail term="SEO Visibility" detail="Excluded" />
-              <PreviewDetail term="Public Preview" detail="Unavailable" />
-            </dl>
-          </aside>
-        </div>
-      </section>
-
-      <section className={styles.reviewGrid}>
-        <div
-          className={styles.workflowPanel}
-          aria-labelledby="moderation-workflow-heading"
-        >
-          <span className={styles.eyebrow}>Moderation workflow</span>
-          <h2 id="moderation-workflow-heading" className={styles.sectionTitle}>
-            A future path from submission to display
-          </h2>
-          <ol className={styles.workflow}>
-            {moderationWorkflow.map(([title, description], index) => (
-              <li key={title}>
-                <span className={styles.stepNumber}>
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3>{title}</h3>
-                  <p>{description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <div
-          className={styles.qualityPanel}
-          aria-labelledby="testimonial-quality-heading"
-        >
-          <span className={styles.inverseEyebrow}>Quality checklist</span>
-          <h2 id="testimonial-quality-heading">Review before visibility</h2>
-          <ul>
-            {qualityChecks.map((item) => (
-              <li key={item}>
-                <span>{item}</span>
-                <strong>
-                  <CheckCircle2 aria-hidden="true" />
-                  Planned
-                </strong>
-              </li>
-            ))}
-          </ul>
-          <p>
-            Checklist states preview a future process. No testimonial has been
-            authenticated, approved, or cleared for publication.
-          </p>
-        </div>
-      </section>
-
-      <section aria-labelledby="featured-placement-heading" className="mt-14">
-        <span className={styles.eyebrow}>Featured placement preview</span>
-        <h2 id="featured-placement-heading" className={styles.sectionTitle}>
-          Potential display contexts
-        </h2>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">
-          These frames demonstrate future placement controls only. No
-          placeholder testimonial appears on a public page.
-        </p>
-        <ul className={styles.placementGrid}>
-          {placements.map((placement, index) => (
-            <li key={placement}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <LayoutTemplate aria-hidden="true" />
-              <h3>{placement}</h3>
-              <Badge variant="outline">Preview Only</Badge>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section
-        aria-labelledby="future-integrations-heading"
-        className="mt-14 pb-8"
-      >
-        <div className={styles.integrationsPanel}>
-          <div className={styles.integrationsIntro}>
-            <span className={styles.eyebrow}>Future integrations</span>
-            <h2
-              id="future-integrations-heading"
-              className={styles.sectionTitle}
+              {testimonials.page > 1 ? (
+                <Link href={pageHref(filters, testimonials.page - 1)}>
+                  Previous
+                </Link>
+              ) : (
+                <span>Previous</span>
+              )}
+            </Button>
+            <span>
+              Page {testimonials.page} of {testimonials.totalPages}
+            </span>
+            <Button
+              asChild={testimonials.page < testimonials.totalPages}
+              disabled={testimonials.page >= testimonials.totalPages}
+              variant="outline"
             >
-              Disconnected by design
-            </h2>
-            <p>
-              External review sources require API access, consent handling,
-              verification rules, attribution, and operational ownership before
-              integration.
-            </p>
-          </div>
-          <ul className={styles.integrationGrid}>
-            {integrations.map((integration) => (
-              <li key={integration}>
-                <div>
-                  <CircleUserRound aria-hidden="true" />
-                  <h3>{integration}</h3>
-                </div>
-                <div>
-                  <Badge variant="warning">Planned</Badge>
-                  <Badge variant="outline">Not Connected</Badge>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <div className={styles.integrationNotice} role="note">
-            <Link2Off aria-hidden="true" />
-            <p>
-              No provider connection, partnership, certification, imported
-              review, or moderation workflow is implied.
-            </p>
-          </div>
-        </div>
+              {testimonials.page < testimonials.totalPages ? (
+                <Link href={pageHref(filters, testimonials.page + 1)}>
+                  Next
+                </Link>
+              ) : (
+                <span>Next</span>
+              )}
+            </Button>
+          </nav>
+        ) : null}
       </section>
-    </div>
+    </main>
   );
 }
-
-function StaticSelect({
-  id,
+function Filter({
   label,
+  name,
   options,
+  value,
 }: {
-  readonly id: string;
   readonly label: string;
-  readonly options: readonly string[];
+  readonly name: string;
+  readonly options: readonly (readonly [string, string])[];
+  readonly value?: string;
 }) {
   return (
-    <div>
-      <label htmlFor={id}>{label}</label>
-      <div className="relative">
-        <select
-          id={id}
-          defaultValue={options[0]}
-          aria-describedby="testimonial-filter-notice"
-          className={cn(nativeControlClass, "appearance-none pr-10")}
-        >
-          {options.map((option) => (
-            <option key={option}>{option}</option>
-          ))}
-        </select>
-        <ChevronDown
-          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-          aria-hidden="true"
-        />
-      </div>
-    </div>
+    <label>
+      <span>{label}</span>
+      <select defaultValue={value ?? ""} name={name}>
+        <option value="">All</option>
+        {options.map(([key, text]) => (
+          <option key={key} value={key}>
+            {text}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
-
-function DisabledAction({
-  icon: Icon,
-  label,
-}: {
-  readonly icon: typeof Eye;
-  readonly label: string;
-}) {
-  return (
-    <button type="button" disabled aria-label={label}>
-      <Icon aria-hidden="true" />
-    </button>
-  );
-}
-
-function PreviewDetail({
-  term,
-  detail,
-}: {
-  readonly term: string;
-  readonly detail: string;
-}) {
-  return (
-    <div>
-      <dt>{term}</dt>
-      <dd>{detail}</dd>
-    </div>
-  );
-}
-
-export { AdminTestimonials };

@@ -59,6 +59,10 @@ The `/admin/blog` route follows the same persistence boundary: the Server Compon
 
 The `/admin/services` route is a database-backed Server Component that delegates filtered, sorted, count-aware pagination and category retrieval to `ServicesRepository`. `src/lib/actions/services.ts` is the sole mutation boundary: it reuses the service Zod contracts, checks role capabilities, delegates writes and lifecycle transitions to the repository, and revalidates the admin catalogue, public Services index, and affected old/new service slugs. Accessible create/edit and row lifecycle dialogs are narrow client boundaries. Existing feature and technology arrays are preserved by the editor even though their dedicated editing experience remains outside this sprint. Editors manage content and publication states, administrators may also permanently delete, viewers remain read-only, and RLS remains authoritative.
 
+## Sprint 8F testimonials integration
+
+The `/admin/testimonials` route loads authenticated, paginated moderation data through `TestimonialsRepository`; components never access Supabase directly. The repository owns search, filters, deterministic sorting, CRUD, approval, publication, archive, restore, and featured-placement persistence. `src/lib/actions/testimonials.ts` validates input, checks role permissions, applies consent-aware workflow rules, records approver identity, and revalidates the admin route plus homepage testimonial consumers. Accessible create/edit, lifecycle, featured, and destructive-confirmation controls are the only client boundaries. A database constraint independently prevents publication without approval, verified consent, and a publication timestamp. Administrators may permanently delete, editors manage content and moderation, viewers remain read-only, and RLS remains authoritative.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

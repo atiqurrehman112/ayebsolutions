@@ -3,9 +3,26 @@ import type {
   TestimonialInsert,
   TestimonialRow,
   TestimonialUpdate,
+  TestimonialApprovalStatus,
 } from "@/types/database";
 import type { DatabaseClient } from "../client";
 import { ContentRepository, type PaginationOptions } from "./base-repository";
+
+export type TestimonialSort =
+  "display-asc" | "display-desc" | "name-asc" | "rating-desc" | "updated-desc";
+export interface TestimonialQueryOptions extends PaginationOptions {
+  readonly approval?: TestimonialApprovalStatus;
+  readonly featured?: boolean;
+  readonly query?: string;
+  readonly sort?: TestimonialSort;
+  readonly status?: ContentStatus;
+}
+function normalizeSearchTerm(query: string) {
+  return query
+    .trim()
+    .replace(/[,%().]/g, " ")
+    .replace(/\s+/g, " ");
+}
 
 export class TestimonialsRepository extends ContentRepository<
   TestimonialRow,
@@ -59,7 +76,7 @@ export class TestimonialsRepository extends ContentRepository<
     this.throwIfError(error);
   }
   async search(query: string) {
-    const term = query.trim().replaceAll(",", "");
+    const term = normalizeSearchTerm(query);
     if (!term) return this.findAll();
     const { data, error } = await this.client
       .from("testimonials")
@@ -80,6 +97,69 @@ export class TestimonialsRepository extends ContentRepository<
       .range(from, to);
     this.throwIfError(error);
     return this.paginateResult(data ?? [], count, page, pageSize);
+  }
+  async findPage(options: TestimonialQueryOptions = {}) {
+    const { page, pageSize, from, to } = this.getRange(options);
+    const term = options.query ? normalizeSearchTerm(options.query) : "";
+    let request = this.client
+      .from("testimonials")
+      .select("*", { count: "exact" });
+    if (term)
+      request = request.or(
+        `reviewer_name.ilike.%${term}%,company_name.ilike.%${term}%,reviewer_role.ilike.%${term}%,quote.ilike.%${term}%`,
+      );
+    if (options.status) request = request.eq("status", options.status);
+    if (options.approval)
+      request = request.eq("approval_status", options.approval);
+    if (options.featured !== undefined)
+      request = request.eq("is_featured", options.featured);
+    const sort = options.sort ?? "display-asc";
+    if (sort === "display-asc")
+      request = request.order("display_order", { ascending: true });
+    if (sort === "display-desc")
+      request = request.order("display_order", { ascending: false });
+    if (sort === "name-asc")
+      request = request.order("reviewer_name", { ascending: true });
+    if (sort === "rating-desc")
+      request = request.order("rating", {
+        ascending: false,
+        nullsFirst: false,
+      });
+    if (sort === "updated-desc")
+      request = request.order("updated_at", { ascending: false });
+    const { data, count, error } = await request
+      .order("id", { ascending: true })
+      .range(from, to);
+    this.throwIfError(error);
+    return this.paginateResult(data ?? [], count, page, pageSize);
+  }
+  approve(id: string, approverId: string) {
+    return this.update(id, {
+      approval_status: "approved",
+      approved_at: new Date().toISOString(),
+      approved_by: approverId,
+    });
+  }
+  reject(id: string) {
+    return this.update(id, {
+      approval_status: "rejected",
+      approved_at: null,
+      approved_by: null,
+      published_at: null,
+      status: "draft",
+    });
+  }
+  publish(id: string) {
+    return this.update(id, {
+      published_at: new Date().toISOString(),
+      status: "published",
+    });
+  }
+  unpublish(id: string) {
+    return this.update(id, { published_at: null, status: "draft" });
+  }
+  restore(id: string) {
+    return this.update(id, { published_at: null, status: "draft" });
   }
   setStatus(id: string, status: ContentStatus) {
     return this.update(id, { status });
