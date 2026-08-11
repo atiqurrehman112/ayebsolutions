@@ -122,9 +122,6 @@ export async function addLeadNote(
     return failure(error);
   }
 }
-export async function archiveLead(id: string) {
-  return changeLeadStatus(id, "archived");
-}
 export async function restoreLead(id: string) {
   return changeLeadStatus(id, "new");
 }

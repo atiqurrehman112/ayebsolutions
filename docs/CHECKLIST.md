@@ -74,7 +74,7 @@
 - [ ] Dashboard
 - [x] Blog management (Supabase CRUD integration)
 - [x] Portfolio management (Supabase CRUD integration)
-- [x] Services management (Supabase CRUD integration)
+- [x] Static Services catalogue (obsolete admin Services module removed in CP4)
 - [x] Testimonials management (Supabase CRUD integration)
 - [x] Media library (Cloudinary and Supabase CRUD integration)
 - [x] Contact leads (Supabase CRM and Resend email history)

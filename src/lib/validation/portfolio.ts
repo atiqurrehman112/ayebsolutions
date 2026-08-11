@@ -31,8 +31,3 @@ export const portfolioProjectSchema = z.strictObject({
 export const portfolioProjectUpdateSchema = requireAtLeastOneField(
   portfolioProjectSchema,
 );
-
-export type PortfolioProjectInput = z.input<typeof portfolioProjectSchema>;
-export type PortfolioProjectUpdateInput = z.input<
-  typeof portfolioProjectUpdateSchema
->;

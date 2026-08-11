@@ -2,7 +2,7 @@ import { getPublishedBlogPage } from "@/lib/blog/public-blog";
 import { getPublishedPortfolioPage } from "@/lib/portfolio/public-portfolio";
 import { getPublishedServicesPage } from "@/lib/services/public-services";
 
-export interface SearchResult {
+interface SearchResult {
   readonly description: string;
   readonly href: string;
   readonly title: string;

@@ -23,7 +23,7 @@ const permissions: Readonly<Record<AuthRole, PermissionSet>> = {
   },
 };
 
-export function isAuthRole(value: unknown): value is AuthRole {
+function isAuthRole(value: unknown): value is AuthRole {
   return typeof value === "string" && AUTH_ROLES.includes(value as AuthRole);
 }
 

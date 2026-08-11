@@ -65,5 +65,4 @@ function Logo({
   );
 }
 
-export { Logo, LogoMark };
-export type { LogoProps };
+export { Logo };

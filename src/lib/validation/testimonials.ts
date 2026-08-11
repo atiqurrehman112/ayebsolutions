@@ -29,6 +29,3 @@ export const testimonialSchema = z.strictObject({
 
 export const testimonialUpdateSchema =
   requireAtLeastOneField(testimonialSchema);
-
-export type TestimonialInput = z.input<typeof testimonialSchema>;
-export type TestimonialUpdateInput = z.input<typeof testimonialUpdateSchema>;

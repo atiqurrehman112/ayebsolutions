@@ -70,4 +70,3 @@ function SiteBreadcrumbs({ items, className }: SiteBreadcrumbsProps) {
 }
 
 export { SiteBreadcrumbs };
-export type { BreadcrumbEntry, SiteBreadcrumbsProps };

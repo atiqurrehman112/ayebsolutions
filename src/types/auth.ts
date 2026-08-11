@@ -10,11 +10,6 @@ export interface AuthUser {
   readonly role: AuthRole;
 }
 
-export interface AuthSession {
-  readonly user: AuthUser;
-  readonly expiresAt: number | null;
-}
-
 export type SupabaseAuthUser = User;
 
 export interface PermissionSet {

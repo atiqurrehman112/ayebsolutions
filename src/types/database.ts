@@ -1,5 +1,5 @@
 export type ContentStatus = "draft" | "review" | "published" | "archived";
-export type ProfileStatus = "active" | "suspended" | "invited";
+type ProfileStatus = "active" | "suspended" | "invited";
 export type LeadStatus =
   | "new"
   | "contacted"
@@ -9,8 +9,8 @@ export type LeadStatus =
   | "lost"
   | "archived";
 export type AppRole = "admin" | "editor" | "viewer";
-export type CategoryKind = "portfolio" | "blog" | "service";
-export type MediaVisibility = "public" | "private";
+type CategoryKind = "portfolio" | "blog" | "service";
+type MediaVisibility = "public" | "private";
 export type TestimonialApprovalStatus = "pending" | "approved" | "rejected";
 
 export type Json =
@@ -73,7 +73,7 @@ export interface PortfolioProjectRow
   readonly results: readonly string[];
   readonly faq: Json;
 }
-export interface PortfolioProjectMediaRow extends Record<string, unknown> {
+interface PortfolioProjectMediaRow extends Record<string, unknown> {
   readonly project_id: string;
   readonly media_id: string;
   readonly sort_order: number;
@@ -125,7 +125,7 @@ export interface ServiceRow extends AuditColumns, Record<string, unknown> {
   readonly faq: Json;
 }
 
-export interface ServiceMediaRow extends Record<string, unknown> {
+interface ServiceMediaRow extends Record<string, unknown> {
   readonly service_id: string;
   readonly media_id: string;
   readonly sort_order: number;
@@ -217,14 +217,14 @@ export interface MediaLibraryRow extends AuditColumns, Record<string, unknown> {
   readonly status: ContentStatus;
 }
 
-export interface ArticleTagRow extends Record<string, unknown> {
+interface ArticleTagRow extends Record<string, unknown> {
   readonly article_id: string;
   readonly tag_id: string;
   readonly created_at: string;
   readonly created_by: string | null;
 }
 
-export interface ProjectTagRow extends Record<string, unknown> {
+interface ProjectTagRow extends Record<string, unknown> {
   readonly project_id: string;
   readonly tag_id: string;
   readonly created_at: string;
@@ -238,22 +238,19 @@ type InsertShape<Row, RequiredKeys extends keyof Row> = Pick<
   Partial<Omit<Row, RequiredKeys>>;
 type UpdateShape<Row> = Partial<Omit<Row, "id" | "created_at" | "created_by">>;
 
-export type ProfileInsert = InsertShape<ProfileRow, "id">;
-export type ProfileUpdate = UpdateShape<ProfileRow>;
-export type CategoryInsert = InsertShape<CategoryRow, "name" | "slug" | "kind">;
-export type CategoryUpdate = UpdateShape<CategoryRow>;
-export type TagInsert = InsertShape<TagRow, "name" | "slug">;
-export type TagUpdate = UpdateShape<TagRow>;
+type ProfileInsert = InsertShape<ProfileRow, "id">;
+type ProfileUpdate = UpdateShape<ProfileRow>;
+type CategoryInsert = InsertShape<CategoryRow, "name" | "slug" | "kind">;
+type CategoryUpdate = UpdateShape<CategoryRow>;
+type TagInsert = InsertShape<TagRow, "name" | "slug">;
+type TagUpdate = UpdateShape<TagRow>;
 export type PortfolioProjectInsert = InsertShape<
   PortfolioProjectRow,
   "title" | "slug" | "summary" | "project_type"
 >;
 export type PortfolioProjectUpdate = UpdateShape<PortfolioProjectRow>;
-export type PortfolioProjectMediaInsert = Omit<
-  PortfolioProjectMediaRow,
-  "created_at"
->;
-export type PortfolioProjectMediaUpdate = Partial<
+type PortfolioProjectMediaInsert = Omit<PortfolioProjectMediaRow, "created_at">;
+type PortfolioProjectMediaUpdate = Partial<
   Pick<PortfolioProjectMediaRow, "caption" | "sort_order">
 >;
 export type BlogArticleInsert = InsertShape<
@@ -261,13 +258,13 @@ export type BlogArticleInsert = InsertShape<
   "title" | "slug" | "description" | "excerpt" | "content"
 >;
 export type BlogArticleUpdate = UpdateShape<BlogArticleRow>;
-export type ServiceInsert = InsertShape<
+type ServiceInsert = InsertShape<
   ServiceRow,
   "title" | "slug" | "summary" | "description"
 >;
-export type ServiceUpdate = UpdateShape<ServiceRow>;
-export type ServiceMediaInsert = Omit<ServiceMediaRow, "created_at">;
-export type ServiceMediaUpdate = Partial<
+type ServiceUpdate = UpdateShape<ServiceRow>;
+type ServiceMediaInsert = Omit<ServiceMediaRow, "created_at">;
+type ServiceMediaUpdate = Partial<
   Pick<ServiceMediaRow, "caption" | "sort_order">
 >;
 export type TestimonialInsert = InsertShape<
@@ -292,20 +289,14 @@ export type MediaLibraryInsert = InsertShape<
   | "folder"
 >;
 export type MediaLibraryUpdate = UpdateShape<MediaLibraryRow>;
-export type ArticleTagInsert = ArticleTagRow;
-export type ArticleTagUpdate = Partial<Pick<ArticleTagRow, "created_by">>;
-export type ProjectTagInsert = ProjectTagRow;
-export type ProjectTagUpdate = Partial<Pick<ProjectTagRow, "created_by">>;
-export type LeadStatusHistoryInsert = Omit<
-  LeadStatusHistoryRow,
-  "id" | "created_at"
->;
-export type LeadStatusHistoryUpdate = Partial<LeadStatusHistoryInsert>;
-export type LeadEmailHistoryInsert = Omit<
-  LeadEmailHistoryRow,
-  "id" | "sent_at"
->;
-export type LeadEmailHistoryUpdate = Partial<LeadEmailHistoryInsert>;
+type ArticleTagInsert = ArticleTagRow;
+type ArticleTagUpdate = Partial<Pick<ArticleTagRow, "created_by">>;
+type ProjectTagInsert = ProjectTagRow;
+type ProjectTagUpdate = Partial<Pick<ProjectTagRow, "created_by">>;
+type LeadStatusHistoryInsert = Omit<LeadStatusHistoryRow, "id" | "created_at">;
+type LeadStatusHistoryUpdate = Partial<LeadStatusHistoryInsert>;
+type LeadEmailHistoryInsert = Omit<LeadEmailHistoryRow, "id" | "sent_at">;
+type LeadEmailHistoryUpdate = Partial<LeadEmailHistoryInsert>;
 
 interface TableDefinition<Row, Insert, Update> {
   Row: Row;
@@ -422,55 +413,4 @@ export interface Database {
     };
     CompositeTypes: Record<never, never>;
   };
-}
-
-export interface PortfolioProject {
-  readonly id: string;
-  readonly title: string;
-  readonly slug: string;
-  readonly summary: string;
-  readonly technologies: readonly string[];
-  readonly status: ContentStatus;
-  readonly isFeatured: boolean;
-}
-
-export interface BlogArticle {
-  readonly id: string;
-  readonly title: string;
-  readonly slug: string;
-  readonly excerpt: string;
-  readonly status: ContentStatus;
-  readonly publishedAt: string | null;
-}
-
-export interface Service {
-  readonly id: string;
-  readonly title: string;
-  readonly slug: string;
-  readonly summary: string;
-  readonly status: ContentStatus;
-}
-
-export interface Testimonial {
-  readonly id: string;
-  readonly reviewerName: string;
-  readonly companyName: string | null;
-  readonly quote: string;
-  readonly status: ContentStatus;
-}
-
-export interface ContactLead {
-  readonly id: string;
-  readonly name: string;
-  readonly email: string;
-  readonly projectType: string;
-  readonly status: LeadStatus;
-}
-
-export interface MediaAsset {
-  readonly id: string;
-  readonly fileName: string;
-  readonly storagePath: string;
-  readonly mimeType: string;
-  readonly visibility: MediaVisibility;
 }

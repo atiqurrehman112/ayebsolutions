@@ -153,7 +153,15 @@ CP3 supersedes the historical Settings CMS sections above. The Settings admin ro
 
 Public metadata, canonical URLs, navigation, footer content, branding, homepage marketing content, robots output, sitemaps, and RSS identity now read immutable configuration from `src/config`. Homepage Portfolio, Blog, and Testimonials remain repository-backed with their existing failure containment. Authentication, roles, middleware, Portfolio CMS, Blog CMS, Testimonials CMS, Media Library, Contact Leads CRM, and contact submission remain unchanged.
 
-The primary admin dashboard and sidebar expose Portfolio, Blog, Testimonials, Media, and Contact Leads. The Services administration implementation remains available as retained code but is not registered as a primary dashboard module. The public shell and static marketing content can render without Supabase.
+The primary admin dashboard and sidebar expose Portfolio, Blog, Testimonials, Media, and Contact Leads. The public shell and static marketing content can render without Supabase.
+
+## Cleanup CP4 dead-code removal
+
+CP4 removes the orphaned Services administration route, components, mutation actions, and validation contract so the protected admin surface exactly matches Dashboard, Portfolio, Blog, Testimonials, Media, and Contact Leads. The static public Services catalogue is unchanged. Its narrow published repository projection remains only for global search and Media Library image discovery.
+
+The source tree no longer carries empty action/hook barrels, unused component category barrels, obsolete design-system components, the superseded navigation component family, the browser Supabase adapter, or the unused public media-role helper. Shared component modules now expose only their consumed primitives while retaining the original implementations and class names of those primitives. Generated-style database types remain exported only when another source module consumes them.
+
+Package dependencies were reduced alongside their last consumers. Authentication, middleware, retained CMS repositories/actions, Cloudinary, `CmsMedia`, Portfolio media, Blog media, Testimonial media, Contact Leads, and the public contact submission path are preserved.
 
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 

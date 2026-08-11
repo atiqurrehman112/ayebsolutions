@@ -8,7 +8,6 @@ import {
   CircleHelp,
   CodeXml,
   Cpu,
-  FileText,
   Globe2,
   Handshake,
   Layers3,
@@ -223,5 +222,3 @@ export const consultationLink = {
   href: "/book-consultation",
   icon: Sparkles,
 } as const satisfies ShellLink;
-
-export const documentIcon = FileText;

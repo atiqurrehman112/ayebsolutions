@@ -35,6 +35,3 @@ export const blogArticleSchema = z.strictObject({
 
 export const blogArticleUpdateSchema =
   requireAtLeastOneField(blogArticleSchema);
-
-export type BlogArticleInput = z.input<typeof blogArticleSchema>;
-export type BlogArticleUpdateInput = z.input<typeof blogArticleUpdateSchema>;

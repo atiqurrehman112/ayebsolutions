@@ -16,7 +16,7 @@ export interface PaginatedResult<Row> {
   readonly totalPages: number;
 }
 
-export abstract class BaseRepository<
+abstract class BaseRepository<
   Row extends { readonly id: string },
   Insert,
   Update,

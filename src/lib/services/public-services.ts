@@ -32,31 +32,3 @@ export const getPublishedServicesPage = unstable_cache(
   ["published-services-page"],
   { revalidate: 300, tags: ["services", "homepage", "media"] },
 );
-
-export const getPublishedServiceFilters = unstable_cache(
-  async () => repository()?.findPublicCategories() ?? [],
-  ["published-service-filters"],
-  { revalidate: 300, tags: ["services", "media"] },
-);
-
-export const getPublishedService = unstable_cache(
-  async (slug: string) => {
-    const repo = repository();
-    if (!repo) return null;
-    const service = await repo.findPublishedBySlug(slug);
-    if (!service) return null;
-    const [context, related] = await Promise.all([
-      repo.findPublicContext(service),
-      repo.findRelated(service),
-    ]);
-    return { service, context, related };
-  },
-  ["published-service-detail"],
-  { revalidate: 300, tags: ["services", "media"] },
-);
-
-export const getPublishedServiceSlugs = unstable_cache(
-  async () => repository()?.findPublishedSlugs() ?? [],
-  ["published-service-slugs"],
-  { revalidate: 300, tags: ["services"] },
-);

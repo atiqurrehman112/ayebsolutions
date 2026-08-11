@@ -22,5 +22,3 @@ export const mediaRenameSchema = z.strictObject({
     .max(500)
     .regex(/^[a-zA-Z0-9/_-]+$/),
 });
-
-export type MediaMetadataInput = z.infer<typeof mediaMetadataSchema>;

@@ -3,7 +3,6 @@ export * from "./components/admin-layout";
 export * from "./components/admin-login";
 export * from "./components/admin-portfolio";
 export * from "./components/admin-blog";
-export * from "./components/admin-services";
 export * from "./components/admin-testimonials";
 export * from "./components/admin-media";
 export * from "./components/admin-contact-leads";
