@@ -13,6 +13,52 @@ export const homepage = {
       "Long-Term Support",
     ],
   },
+  statistics: [
+    { value: "06", label: "Core service disciplines" },
+    { value: "08", label: "Structured delivery stages" },
+    { value: "12", label: "Modern tools in our core stack" },
+    { value: "4K", label: "Responsive design coverage" },
+  ],
+  process: [
+    {
+      number: "01",
+      title: "Discover",
+      description:
+        "Clarify the business problem, users, constraints, and the outcome worth building toward.",
+    },
+    {
+      number: "02",
+      title: "Shape",
+      description:
+        "Turn the brief into an architecture, experience direction, milestones, and delivery plan.",
+    },
+    {
+      number: "03",
+      title: "Build",
+      description:
+        "Design and engineer in reviewable increments with quality checks built into the workflow.",
+    },
+    {
+      number: "04",
+      title: "Launch",
+      description:
+        "Verify accessibility, performance, deployment, and the operational handover before release.",
+    },
+  ],
+  technologies: [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Node.js",
+    "PostgreSQL",
+    "Supabase",
+    "OpenAI",
+    "Cloudinary",
+    "Docker",
+    "Vercel",
+    "GitHub",
+    "Tailwind CSS",
+  ],
   finalCta: {
     heading: "Ready to Turn Your Ideas Into Powerful Digital Solutions?",
     description:

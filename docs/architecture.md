@@ -163,6 +163,12 @@ The source tree no longer carries empty action/hook barrels, unused component ca
 
 Package dependencies were reduced alongside their last consumers. Authentication, middleware, retained CMS repositories/actions, Cloudinary, `CmsMedia`, Portfolio media, Blog media, Testimonial media, Contact Leads, and the public contact submission path are preserved.
 
+## Sprint 11A homepage presentation
+
+The homepage retains the post-cleanup data boundary: hero copy, services, statistics, process, technology language, and conversion content come from immutable configuration, while Portfolio, Blog, and approved Testimonials continue to use their existing repository-backed projections and independent failure containment. No Settings CMS or direct Supabase access was introduced.
+
+The premium presentation is composed from Server Components for the hero, technology strip, factual capability statistics, service cards, portfolio and blog previews, process timeline, technology grid, and final CTA. `TestimonialCarousel` is the only new Client Component; it receives an already-filtered immutable testimonial projection and owns only keyboard-operable carousel selection. It performs no fetching or persistence. All new motion is CSS- or existing motion-primitive-based and is disabled or neutralized under `prefers-reduced-motion`.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

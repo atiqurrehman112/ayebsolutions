@@ -1,0 +1,58 @@
+.processSection {
+  background:
+    radial-gradient(
+      circle at 8% 25%,
+      hsl(var(--primary) / 0.06),
+      transparent 28rem
+    ),
+    linear-gradient(hsl(var(--border) / 0.18) 1px, transparent 1px);
+  background-size:
+    auto,
+    100% 4rem;
+}
+
+.stat {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: stat-reveal 600ms var(--delay) cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+.processCard,
+.technologyCard {
+  transition:
+    transform 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.processCard:hover,
+.technologyCard:hover {
+  border-color: hsl(var(--primary) / 0.32);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-2px);
+}
+
+@keyframes stat-reveal {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .processCard,
+  .technologyCard {
+    transition: none;
+  }
+
+  .processCard:hover,
+  .technologyCard:hover {
+    transform: none;
+  }
+}

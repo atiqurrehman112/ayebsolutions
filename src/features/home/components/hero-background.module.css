@@ -13,6 +13,18 @@
     radial-gradient(circle at 55% 88%, hsl(271 81% 56% / 0.08), transparent 36%);
 }
 
+.flowLine {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    hsl(var(--border)),
+    hsl(var(--primary) / 0.75),
+    hsl(var(--border))
+  );
+  background-size: 200% 100%;
+  animation: flow-line 2.8s linear infinite;
+}
+
 .grid {
   background-image:
     linear-gradient(hsl(var(--foreground) / 0.045) 1px, transparent 1px),
@@ -159,6 +171,12 @@
   }
 }
 
+@keyframes flow-line {
+  to {
+    background-position: -200% 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .glowPrimary,
   .glowSecondary,
@@ -167,6 +185,10 @@
   .shine::after,
   .statusPulse,
   .scrollDot {
+    animation: none;
+  }
+
+  .flowLine {
     animation: none;
   }
 }

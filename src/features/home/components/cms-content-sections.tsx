@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, Quote } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Container, Eyebrow } from "@/components/layout/primitives";
 import { CmsMedia } from "@/components/media/cms-media";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
 import type { PublicBlogArticle } from "@/lib/database/repositories/blog-repository";
 import type { PublicTestimonial } from "@/lib/database/repositories/testimonials-repository";
+import { TestimonialCarousel } from "./testimonial-carousel";
 
 export function BlogPreviewSection({
   articles,
@@ -39,6 +40,7 @@ export function BlogPreviewSection({
         </Container>
       </section>
     );
+
   return (
     <section
       className="border-b py-20 sm:py-24"
@@ -124,6 +126,7 @@ export function TestimonialsPreviewSection({
         </Container>
       </section>
     );
+
   return (
     <section
       className="border-b bg-muted/[.12] py-20 sm:py-24"
@@ -131,38 +134,13 @@ export function TestimonialsPreviewSection({
     >
       <Container className="max-w-[100rem]">
         <Eyebrow>Testimonials</Eyebrow>
-        <h2 id="testimonials-heading" className="mt-4 text-headline font-bold">
-          Feedback published with consent.
+        <h2
+          id="testimonials-heading"
+          className="mt-4 max-w-4xl text-balance text-headline font-bold"
+        >
+          Feedback published with approval, attribution, and consent.
         </h2>
-        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {testimonials.map((item) => (
-            <figure key={item.id} className="rounded-2xl border bg-card p-6">
-              {item.avatar ? (
-                <CmsMedia
-                  media={item.avatar}
-                  alt={item.avatar.alt ?? item.reviewer_name}
-                  sizes="48px"
-                  className="size-12 rounded-full object-cover"
-                />
-              ) : null}
-              <Quote
-                className="size-6 text-muted-foreground"
-                aria-hidden="true"
-              />
-              <blockquote className="mt-5 leading-8">“{item.quote}”</blockquote>
-              <figcaption className="mt-6 border-t pt-5">
-                <strong className="block">{item.reviewer_name}</strong>
-                {item.reviewer_role || item.company_name ? (
-                  <span className="mt-1 block text-sm text-muted-foreground">
-                    {[item.reviewer_role, item.company_name]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </span>
-                ) : null}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+        <TestimonialCarousel testimonials={testimonials} />
       </Container>
     </section>
   );

@@ -9,7 +9,10 @@ import {
   FinalCtaSection,
   HeroSection,
   PortfolioPreviewSection,
+  ProcessTechnologySection,
   ServicesOverviewSection,
+  StatisticsSection,
+  TechnologyStrip,
   TestimonialsPreviewSection,
 } from "@/features/home";
 import { getPublishedBlogPage } from "@/lib/blog/public-blog";
@@ -79,8 +82,14 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection content={homepage.hero} />
+      <TechnologyStrip technologies={homepage.technologies} />
+      <StatisticsSection statistics={homepage.statistics} />
       <ServicesOverviewSection services={marketingServices} />
       <PortfolioPreviewSection projects={portfolio.data} />
+      <ProcessTechnologySection
+        process={homepage.process}
+        technologies={homepage.technologies}
+      />
       <BlogPreviewSection articles={blog.data} />
       <TestimonialsPreviewSection testimonials={testimonials} />
       <FinalCtaSection content={homepage.finalCta} />
