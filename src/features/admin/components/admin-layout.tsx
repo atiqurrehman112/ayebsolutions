@@ -1,13 +1,11 @@
 import {
   BookOpen,
-  BriefcaseBusiness,
   FolderKanban,
   LayoutDashboard,
   LogOut,
   Mail,
   MenuSquare,
   MessageSquareQuote,
-  Settings,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -39,11 +37,6 @@ const navigation: readonly AdminNavigationItem[] = [
   },
   { label: "Blog", href: "/admin/blog", icon: BookOpen },
   {
-    label: "Services",
-    href: "/admin/services",
-    icon: BriefcaseBusiness,
-  },
-  {
     label: "Testimonials",
     href: "/admin/testimonials",
     icon: MessageSquareQuote,
@@ -53,11 +46,6 @@ const navigation: readonly AdminNavigationItem[] = [
     label: "Contact Leads",
     href: "/admin/contact-leads",
     icon: Mail,
-  },
-  {
-    label: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
   },
 ] as const;
 

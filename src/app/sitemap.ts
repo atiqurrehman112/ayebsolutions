@@ -1,17 +1,16 @@
 import type { MetadataRoute } from "next";
 
-import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { siteConfig } from "@/config/site";
 import { getPublishedPortfolioSlugs } from "@/lib/portfolio/public-portfolio";
 import { getPublishedBlogSlugs } from "@/lib/blog/public-blog";
 import { marketingServices } from "@/config/marketing";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [settings, portfolioProjects, blogArticles] = await Promise.all([
-    getPublicSiteSettings(),
+  const [portfolioProjects, blogArticles] = await Promise.all([
     getPublishedPortfolioSlugs().catch(() => []),
     getPublishedBlogSlugs().catch(() => []),
   ]);
-  const siteUrl = settings.canonical_base_url;
+  const siteUrl = siteConfig.url;
   const entries: MetadataRoute.Sitemap = [
     {
       url: siteUrl,
@@ -88,16 +87,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     })),
   ];
-  return entries.filter((entry) => {
-    if (!settings.enable_blog && entry.url.startsWith(`${siteUrl}/blog`))
-      return false;
-    if (
-      !settings.enable_testimonials &&
-      entry.url === `${siteUrl}/testimonials`
-    )
-      return false;
-    if (!settings.enable_contact_form && entry.url === `${siteUrl}/contact`)
-      return false;
-    return true;
-  });
+  return entries;
 }

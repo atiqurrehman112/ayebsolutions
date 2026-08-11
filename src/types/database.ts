@@ -217,83 +217,6 @@ export interface MediaLibraryRow extends AuditColumns, Record<string, unknown> {
   readonly status: ContentStatus;
 }
 
-export interface SiteSettingRow extends AuditColumns, Record<string, unknown> {
-  readonly key: string;
-  readonly group_name: string;
-  readonly value: Json;
-  readonly description: string | null;
-  readonly is_public: boolean;
-  readonly status: ContentStatus;
-}
-export interface SiteConfigurationRow
-  extends AuditColumns, Record<string, unknown> {
-  readonly site_name: string;
-  readonly tagline: string;
-  readonly site_url: string;
-  readonly default_language: string;
-  readonly timezone: string;
-  readonly logo_media_id: string | null;
-  readonly favicon_media_id: string | null;
-  readonly open_graph_media_id: string | null;
-  readonly default_meta_title: string;
-  readonly default_meta_description: string;
-  readonly default_keywords: readonly string[];
-  readonly robots: string;
-  readonly canonical_base_url: string;
-  readonly contact_email: string | null;
-  readonly contact_phone: string | null;
-  readonly whatsapp: string | null;
-  readonly address: string | null;
-  readonly google_maps_url: string | null;
-  readonly facebook_url: string | null;
-  readonly instagram_url: string | null;
-  readonly linkedin_url: string | null;
-  readonly github_url: string | null;
-  readonly x_url: string | null;
-  readonly youtube_url: string | null;
-  readonly header_navigation: Json;
-  readonly footer_navigation: Json;
-  readonly footer_copyright: string;
-  readonly working_hours: string | null;
-  readonly emergency_contact: string | null;
-  readonly business_registration_number: string | null;
-  readonly google_analytics_id: string | null;
-  readonly google_search_console_verification: string | null;
-  readonly google_tag_manager_id: string | null;
-  readonly microsoft_clarity_id: string | null;
-  readonly plausible_domain: string | null;
-  readonly vercel_analytics_enabled: boolean;
-  readonly enable_blog: boolean;
-  readonly enable_testimonials: boolean;
-  readonly enable_contact_form: boolean;
-  readonly enable_newsletter: boolean;
-  readonly enable_ai_features: boolean;
-  readonly maintenance_mode: boolean;
-  readonly maintenance_message: string;
-  readonly status: ContentStatus;
-  readonly homepage_heading: string | null;
-  readonly homepage_subheading: string | null;
-  readonly homepage_badge: string | null;
-  readonly homepage_primary_cta_label: string | null;
-  readonly homepage_primary_cta_href: string | null;
-  readonly homepage_secondary_cta_label: string | null;
-  readonly homepage_secondary_cta_href: string | null;
-  readonly homepage_hero_media_id: string | null;
-  readonly homepage_background_media_id: string | null;
-  readonly homepage_statistics: Json;
-  readonly homepage_trust_indicators: readonly string[];
-  readonly homepage_services_limit: number;
-  readonly homepage_portfolio_limit: number;
-  readonly homepage_blog_limit: number;
-  readonly homepage_testimonials_limit: number;
-  readonly homepage_cta_heading: string | null;
-  readonly homepage_cta_description: string | null;
-  readonly homepage_cta_primary_label: string | null;
-  readonly homepage_cta_primary_href: string | null;
-  readonly homepage_cta_secondary_label: string | null;
-  readonly homepage_cta_secondary_href: string | null;
-}
-
 export interface ArticleTagRow extends Record<string, unknown> {
   readonly article_id: string;
   readonly tag_id: string;
@@ -369,21 +292,6 @@ export type MediaLibraryInsert = InsertShape<
   | "folder"
 >;
 export type MediaLibraryUpdate = UpdateShape<MediaLibraryRow>;
-export type SiteSettingInsert = InsertShape<
-  SiteSettingRow,
-  "key" | "group_name" | "value"
->;
-export type SiteSettingUpdate = UpdateShape<SiteSettingRow>;
-export type SiteConfigurationInsert = InsertShape<
-  SiteConfigurationRow,
-  | "site_name"
-  | "tagline"
-  | "site_url"
-  | "default_meta_title"
-  | "default_meta_description"
-  | "canonical_base_url"
->;
-export type SiteConfigurationUpdate = UpdateShape<SiteConfigurationRow>;
 export type ArticleTagInsert = ArticleTagRow;
 export type ArticleTagUpdate = Partial<Pick<ArticleTagRow, "created_by">>;
 export type ProjectTagInsert = ProjectTagRow;
@@ -457,16 +365,6 @@ export interface Database {
         MediaLibraryRow,
         MediaLibraryInsert,
         MediaLibraryUpdate
-      >;
-      site_settings: TableDefinition<
-        SiteSettingRow,
-        SiteSettingInsert,
-        SiteSettingUpdate
-      >;
-      site_configuration: TableDefinition<
-        SiteConfigurationRow,
-        SiteConfigurationInsert,
-        SiteConfigurationUpdate
       >;
       article_tags: TableDefinition<
         ArticleTagRow,
@@ -575,12 +473,4 @@ export interface MediaAsset {
   readonly storagePath: string;
   readonly mimeType: string;
   readonly visibility: MediaVisibility;
-}
-
-export interface SiteSetting {
-  readonly id: string;
-  readonly key: string;
-  readonly groupName: string;
-  readonly value: Json;
-  readonly isPublic: boolean;
 }

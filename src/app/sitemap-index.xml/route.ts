@@ -1,8 +1,8 @@
-import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { siteConfig } from "@/config/site";
 import { escapeXml, xmlResponse } from "@/lib/seo/xml";
 export const revalidate = 300;
-export async function GET() {
-  const { canonical_base_url: base } = await getPublicSiteSettings();
+export function GET() {
+  const base = siteConfig.url;
   const maps = [
     "sitemap.xml",
     "sitemaps/services.xml",

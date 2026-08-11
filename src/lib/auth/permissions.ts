@@ -9,19 +9,16 @@ const permissions: Readonly<Record<AuthRole, PermissionSet>> = {
   admin: {
     canManageContent: true,
     canManageUsers: true,
-    canManageSettings: true,
     canViewAdmin: true,
   },
   editor: {
     canManageContent: true,
     canManageUsers: false,
-    canManageSettings: false,
     canViewAdmin: true,
   },
   viewer: {
     canManageContent: false,
     canManageUsers: false,
-    canManageSettings: false,
     canViewAdmin: true,
   },
 };

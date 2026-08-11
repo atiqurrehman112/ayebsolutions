@@ -1,12 +1,11 @@
 import { getPublishedBlogPage } from "@/lib/blog/public-blog";
 import { getPublishedPortfolioPage } from "@/lib/portfolio/public-portfolio";
 import { getPublishedServicesPage } from "@/lib/services/public-services";
-import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { siteConfig } from "@/config/site";
 import { escapeXml, xmlResponse } from "@/lib/seo/xml";
 export const revalidate = 300;
 export async function GET() {
-  const [settings, services, projects, articles] = await Promise.all([
-    getPublicSiteSettings(),
+  const [services, projects, articles] = await Promise.all([
     getPublishedServicesPage({ pageSize: 100 }).catch(() => ({ data: [] })),
     getPublishedPortfolioPage({ pageSize: 100 }).catch(() => ({ data: [] })),
     getPublishedBlogPage({ pageSize: 100 }).catch(() => ({ data: [] })),
@@ -29,6 +28,6 @@ export async function GET() {
     })),
   ].filter((item) => item.media);
   return xmlResponse(
-    `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${records.map((item) => `<url><loc>${escapeXml(`${settings.canonical_base_url}${item.href}`)}</loc><image:image><image:loc>${escapeXml(item.media?.secure_url ?? "")}</image:loc><image:title>${escapeXml(item.media?.alt || item.title)}</image:title></image:image></url>`).join("")}</urlset>`,
+    `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">${records.map((item) => `<url><loc>${escapeXml(`${siteConfig.url}${item.href}`)}</loc><image:image><image:loc>${escapeXml(item.media?.secure_url ?? "")}</image:loc><image:title>${escapeXml(item.media?.alt || item.title)}</image:title></image:image></url>`).join("")}</urlset>`,
   );
 }

@@ -78,11 +78,4 @@ values
   ('40000000-0000-4000-8000-000000000003', 'Custom SaaS', 'custom-saas', 'Purpose-built software platforms and internal systems.', 'Multi-tenant applications, portals, dashboards, permissions, and scalable product foundations.', '10000000-0000-4000-8000-000000000003', array['Role management', 'Dashboards', 'Integrations'], array['Next.js', 'PostgreSQL', 'Docker'], 'draft', false, 30, null, null)
 on conflict (id) do nothing;
 
-insert into public.site_settings (id, key, group_name, value, description, is_public, status, created_by, updated_by)
-values
-  ('50000000-0000-4000-8000-000000000001', 'site.name', 'general', '"Ayeb Solutions"'::jsonb, 'Public website name.', true, 'draft', null, null),
-  ('50000000-0000-4000-8000-000000000002', 'site.tagline', 'general', '"Premium web development and AI automation"'::jsonb, 'Public positioning statement.', true, 'draft', null, null),
-  ('50000000-0000-4000-8000-000000000003', 'maintenance.enabled', 'advanced', 'false'::jsonb, 'Maintenance-mode configuration preview.', false, 'draft', null, null)
-on conflict (id) do nothing;
-
 commit;

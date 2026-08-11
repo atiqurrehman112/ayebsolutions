@@ -147,6 +147,14 @@ The About, Services, service-detail, Solutions, Contact presentation, FAQ, Priva
 
 `src/config/marketing.ts` is the immutable service catalogue for Web Development, AI Automation, SaaS Development, UI/UX Design, E-commerce, and Custom Software. Both the homepage services section and `/services` consume this one source. Homepage Portfolio, Blog, and Testimonials remain CMS-backed with independent error containment; their existing components render honest static empty states when no records are available. The contact form remains the existing client interaction boundary over the production Server Action, validation, CRM persistence, and Resend workflow.
 
+## Cleanup CP3 Settings CMS removal
+
+CP3 supersedes the historical Settings CMS sections above. The Settings admin route, editor, Server Action, repository, validation contract, cache adapter, settings-specific database TypeScript projection, navigation entry, and dedicated settings documentation have been removed. Historical forward migrations remain untouched so deployed database history is never rewritten; application runtime code no longer addresses the retired configuration tables. The development seed no longer inserts settings records.
+
+Public metadata, canonical URLs, navigation, footer content, branding, homepage marketing content, robots output, sitemaps, and RSS identity now read immutable configuration from `src/config`. Homepage Portfolio, Blog, and Testimonials remain repository-backed with their existing failure containment. Authentication, roles, middleware, Portfolio CMS, Blog CMS, Testimonials CMS, Media Library, Contact Leads CRM, and contact submission remain unchanged.
+
+The primary admin dashboard and sidebar expose Portfolio, Blog, Testimonials, Media, and Contact Leads. The Services administration implementation remains available as retained code but is not registered as a primary dashboard module. The public shell and static marketing content can render without Supabase.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

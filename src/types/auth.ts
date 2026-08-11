@@ -20,6 +20,5 @@ export type SupabaseAuthUser = User;
 export interface PermissionSet {
   readonly canManageContent: boolean;
   readonly canManageUsers: boolean;
-  readonly canManageSettings: boolean;
   readonly canViewAdmin: boolean;
 }

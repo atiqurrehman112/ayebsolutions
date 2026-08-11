@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
+import { company } from "@/config/company";
 import { PortfolioPage } from "@/features/portfolio";
 import {
   getPublishedPortfolioFilters,
   getPublishedPortfolioPage,
 } from "@/lib/portfolio/public-portfolio";
 import type { PublicPortfolioSort } from "@/lib/database/repositories/portfolio-repository";
-import { getPublicSiteSettings } from "@/lib/settings/site-settings";
-import { mediaSeoUrl } from "@/lib/media/media";
 
 export const revalidate = 300;
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getPublicSiteSettings();
+export function generateMetadata(): Metadata {
   const title = "Portfolio — Published digital work";
   const description =
     "Explore published web, SaaS, automation, integration, and product design work from Ayeb Solutions.";
-  const image = mediaSeoUrl(settings.openGraphImage);
   return {
     title,
     description,
@@ -24,14 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
       url: "/portfolio",
       title,
       description,
-      siteName: settings.site_name,
-      images: image ? [image] : undefined,
+      siteName: company.name,
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary",
       title,
       description,
-      images: image ? [image] : undefined,
     },
   };
 }
@@ -47,10 +42,9 @@ const sorts: readonly PublicPortfolioSort[] = [
   "alphabetical",
 ];
 export default async function PortfolioRoute({ searchParams }: Props) {
-  const [params, filterOptions, settings] = await Promise.all([
+  const [params, filterOptions] = await Promise.all([
     searchParams,
     getPublishedPortfolioFilters(),
-    getPublicSiteSettings(),
   ]);
   const requestedSize = Number(first(params.pageSize));
   const pageSize = requestedSize === 24 ? 24 : requestedSize === 48 ? 48 : 12;
@@ -75,7 +69,7 @@ export default async function PortfolioRoute({ searchParams }: Props) {
       categories={filterOptions.categories}
       filters={filters}
       projects={projects}
-      siteUrl={settings.site_url}
+      siteUrl={company.url}
       tags={filterOptions.tags}
     />
   );

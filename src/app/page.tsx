@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { StructuredData } from "@/components/seo/structured-data";
 import { company } from "@/config/company";
+import { homepage } from "@/config/homepage";
 import { marketingServices } from "@/config/marketing";
 import { siteConfig } from "@/config/site";
 import {
@@ -14,7 +15,6 @@ import {
 import { getPublishedBlogPage } from "@/lib/blog/public-blog";
 import { getHomepageTestimonials } from "@/lib/homepage/homepage-data";
 import { getPublishedPortfolioPage } from "@/lib/portfolio/public-portfolio";
-import { fallbackSiteSettings } from "@/lib/settings/site-settings";
 
 export const revalidate = 300;
 export const metadata: Metadata = {
@@ -78,12 +78,12 @@ export default async function HomePage() {
   } as const;
   return (
     <>
-      <HeroSection settings={fallbackSiteSettings} />
+      <HeroSection content={homepage.hero} />
       <ServicesOverviewSection services={marketingServices} />
       <PortfolioPreviewSection projects={portfolio.data} />
       <BlogPreviewSection articles={blog.data} />
       <TestimonialsPreviewSection testimonials={testimonials} />
-      <FinalCtaSection settings={fallbackSiteSettings} />
+      <FinalCtaSection content={homepage.finalCta} />
       <StructuredData data={organization} />
       <StructuredData data={website} />
     </>

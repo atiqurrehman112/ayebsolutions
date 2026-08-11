@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { company } from "@/config/company";
 import { BlogArticlePage } from "@/features/blog";
 import {
   getPublishedArticle,
   getPublishedBlogSlugs,
 } from "@/lib/blog/public-blog";
-import { getPublicSiteSettings } from "@/lib/settings/site-settings";
 import { mediaSeoUrl } from "@/lib/media/media";
 
 export const revalidate = 300;
@@ -21,16 +21,13 @@ export async function generateStaticParams() {
 }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const [data, settings] = await Promise.all([
-    getPublishedArticle(slug),
-    getPublicSiteSettings(),
-  ]);
+  const data = await getPublishedArticle(slug);
   if (!data) return {};
   const { article, context } = data;
   const title = article.meta_title ?? article.title;
   const description = article.meta_description ?? article.description;
   const path = `/blog/${article.slug}`;
-  const image = context.featuredMedia ?? settings.openGraphImage;
+  const image = context.featuredMedia;
   const imageUrl = mediaSeoUrl(image);
   return {
     title,
@@ -41,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: path,
       title,
       description,
-      siteName: settings.site_name,
+      siteName: company.name,
       publishedTime: article.published_at ?? undefined,
       modifiedTime: article.updated_at,
       authors: article.author_name ? [article.author_name] : undefined,
@@ -60,20 +57,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 export default async function ArticleRoute({ params }: Props) {
   const { slug } = await params;
-  const [data, settings] = await Promise.all([
-    getPublishedArticle(slug),
-    getPublicSiteSettings(),
-  ]);
+  const data = await getPublishedArticle(slug);
   if (!data) notFound();
   return (
     <BlogArticlePage
       adjacent={data.adjacent}
       article={data.article}
       context={data.context}
-      newsletterEnabled={settings.enable_newsletter}
+      newsletterEnabled={false}
       related={data.related}
-      siteName={settings.site_name}
-      siteUrl={settings.site_url}
+      siteName={company.name}
+      siteUrl={company.url}
     />
   );
 }

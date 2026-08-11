@@ -1,19 +1,16 @@
 import type { Metadata } from "next";
+import { company } from "@/config/company";
 import { TestimonialsPage } from "@/features/testimonials";
 import type { PublicTestimonialSort } from "@/lib/database/repositories/testimonials-repository";
 import {
   getPublishedTestimonialIndustries,
   getPublishedTestimonialsPage,
 } from "@/lib/testimonials/public-testimonials";
-import { getPublicSiteSettings } from "@/lib/settings/site-settings";
-import { mediaSeoUrl } from "@/lib/media/media";
 export const revalidate = 300;
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getPublicSiteSettings();
+export function generateMetadata(): Metadata {
   const title = "Testimonials";
   const description =
     "Read approved, consent-verified feedback published by Ayeb Solutions.";
-  const image = mediaSeoUrl(settings.openGraphImage);
   return {
     title,
     description,
@@ -23,14 +20,12 @@ export async function generateMetadata(): Promise<Metadata> {
       url: "/testimonials",
       title,
       description,
-      siteName: settings.site_name,
-      images: image ? [image] : undefined,
+      siteName: company.name,
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary",
       title,
       description,
-      images: image ? [image] : undefined,
     },
   };
 }
@@ -45,10 +40,9 @@ const sorts: readonly PublicTestimonialSort[] = [
   "newest",
 ];
 export default async function TestimonialsRoute({ searchParams }: Props) {
-  const [params, industries, settings] = await Promise.all([
+  const [params, industries] = await Promise.all([
     searchParams,
     getPublishedTestimonialIndustries(),
-    getPublicSiteSettings(),
   ]);
   const requestedSize = Number(first(params.pageSize));
   const pageSize = requestedSize === 24 ? 24 : requestedSize === 48 ? 48 : 12;
@@ -72,8 +66,8 @@ export default async function TestimonialsRoute({ searchParams }: Props) {
     <TestimonialsPage
       filters={filters}
       industries={industries}
-      siteName={settings.site_name}
-      siteUrl={settings.site_url}
+      siteName={company.name}
+      siteUrl={company.url}
       testimonials={testimonials}
     />
   );

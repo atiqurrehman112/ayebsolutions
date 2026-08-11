@@ -1,18 +1,14 @@
 import type { MetadataRoute } from "next";
 
-import { getPublicSiteSettings } from "@/lib/settings/site-settings";
+import { siteConfig } from "@/config/site";
 
-export default async function robots(): Promise<MetadataRoute.Robots> {
-  const settings = await getPublicSiteSettings();
-  const allow = settings.robots === "index,follow";
+export default function robots(): MetadataRoute.Robots {
   return {
-    rules: allow
-      ? { userAgent: "*", allow: "/" }
-      : { userAgent: "*", disallow: "/" },
+    rules: { userAgent: "*", allow: "/" },
     sitemap: [
-      `${settings.canonical_base_url}/sitemap.xml`,
-      `${settings.canonical_base_url}/sitemap-index.xml`,
+      `${siteConfig.url}/sitemap.xml`,
+      `${siteConfig.url}/sitemap-index.xml`,
     ],
-    host: settings.canonical_base_url,
+    host: siteConfig.url,
   };
 }

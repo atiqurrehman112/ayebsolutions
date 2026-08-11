@@ -78,7 +78,7 @@
 - [x] Testimonials management (Supabase CRUD integration)
 - [x] Media library (Cloudinary and Supabase CRUD integration)
 - [x] Contact leads (Supabase CRM and Resend email history)
-- [x] SEO and site settings (Supabase production configuration)
+- [x] Static SEO and company configuration (Settings CMS removed in CP3)
 - [ ] Team management
 
 ## Quality

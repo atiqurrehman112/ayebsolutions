@@ -1,16 +1,13 @@
 import {
   ArrowUpRight,
   BookOpen,
-  BriefcaseBusiness,
   CircleDashed,
   Clock3,
   FolderKanban,
   ImageIcon,
   Mail,
   MessageSquareQuote,
-  Settings,
   ShieldAlert,
-  Users,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -43,71 +40,51 @@ const destinations: readonly DashboardDestination[] = [
     icon: BookOpen,
   },
   {
-    title: "Services",
-    description: "Service-page content, capabilities, FAQs, and positioning.",
-    href: "/admin/services",
-    icon: BriefcaseBusiness,
-  },
-  {
     title: "Testimonials",
     description:
-      "Future review workflow for approved, attributable customer evidence.",
+      "Moderation, consent, publication, and featured testimonial controls.",
     href: "/admin/testimonials",
     icon: MessageSquareQuote,
   },
   {
-    title: "Leads",
+    title: "Contact Leads",
     description:
-      "Future inquiry intake, qualification context, ownership, and status.",
-    href: "/admin/leads",
+      "Inquiry intake, qualification context, assignment, and response history.",
+    href: "/admin/contact-leads",
     icon: Mail,
   },
   {
     title: "Media Library",
     description:
-      "Future managed assets, metadata, usage context, and delivery state.",
+      "Managed assets, metadata, usage context, and Cloudinary delivery state.",
     href: "/admin/media",
     icon: ImageIcon,
-  },
-  {
-    title: "Settings",
-    description:
-      "Future organization, navigation, SEO, integration, and system settings.",
-    href: "/admin/settings",
-    icon: Settings,
-  },
-  {
-    title: "Users",
-    description:
-      "Future identities, roles, permissions, access review, and audit context.",
-    href: "/admin/users",
-    icon: Users,
   },
 ] as const;
 
 const statistics = [
-  ["Portfolio Projects", "No data", "Repository not connected"],
-  ["Articles", "Not connected", "CMS integration pending"],
-  ["Services", "Pending integration", "Static public content only"],
-  ["Messages", "No data", "Lead capture not connected"],
+  ["Portfolio", "Connected", "Published project workflow available"],
+  ["Blog", "Connected", "Editorial workflow available"],
+  ["Testimonials", "Connected", "Consent-aware moderation available"],
+  ["Contact Leads", "Connected", "CRM workflow available"],
 ] as const;
 
 const activity = [
   [
-    "CMS initialized",
-    "Dashboard presentation foundation is available; content persistence is not.",
+    "Content operations",
+    "Portfolio and Blog publishing workflows are available through protected modules.",
   ],
   [
-    "Content pending",
-    "Editable content models and publishing workflows remain deferred.",
+    "Trust content",
+    "Testimonials use approval, consent, publication, and placement controls.",
   ],
   [
-    "Media library pending",
-    "Upload, storage, transformation, and asset governance are not connected.",
+    "Media delivery",
+    "Cloudinary uploads and Supabase metadata remain available to retained CMS modules.",
   ],
   [
-    "Authentication pending",
-    "Identity, session, authorization, and protected routing remain deferred.",
+    "Protected administration",
+    "Supabase authentication, session refresh, roles, and middleware protect this workspace.",
   ],
 ] as const;
 
@@ -117,28 +94,27 @@ function AdminDashboard() {
       <section aria-labelledby="admin-dashboard-title" className={styles.hero}>
         <div className="max-w-4xl">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge>Admin foundation</Badge>
-            <Badge variant="outline">Static preview</Badge>
+            <Badge>Admin workspace</Badge>
+            <Badge variant="outline">Authenticated operations</Badge>
           </div>
           <h1
             id="admin-dashboard-title"
             className="mt-6 text-balance text-[clamp(2.5rem,6vw,5.5rem)] font-bold leading-[0.98] tracking-tight"
           >
-            Content operations, clearly staged for what comes next.
+            Content operations with a focused, maintainable scope.
           </h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-muted-foreground">
-            This dashboard establishes the reusable administrative workspace.
-            Authentication, CMS persistence, statistics, media, leads, and
-            publishing workflows are intentionally not connected in Sprint 7A.
+            Manage published work, editorial content, approved testimonials,
+            media assets, and contact inquiries from one protected workspace.
           </p>
         </div>
         <div className={styles.systemNotice} role="note">
           <ShieldAlert className="size-5 shrink-0" aria-hidden="true" />
           <div>
-            <strong>Foundation only</strong>
+            <strong>Role-aware access</strong>
             <p>
-              Nothing here proves identity, protects a route, reads a database,
-              or changes public content.
+              Authentication, application permissions, and database policies
+              work together to protect administrative operations.
             </p>
           </div>
         </div>
@@ -184,11 +160,11 @@ function AdminDashboard() {
             id="modules-heading"
             className="mt-2 text-3xl font-bold tracking-tight"
           >
-            Future content surfaces
+            Primary content modules
           </h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
-            Each destination is a planned placeholder route. Sprint 7A provides
-            navigation architecture only, not CRUD screens or persistence.
+            Each destination preserves its existing workflow and persistence
+            boundary. Site-wide marketing configuration is intentionally static.
           </p>
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -215,10 +191,10 @@ function AdminDashboard() {
                 </p>
                 <Link
                   href={href}
-                  aria-label={`Open planned ${title} admin route`}
+                  aria-label={`Open ${title} admin module`}
                   className="focus-ring mt-auto inline-flex min-h-11 items-center gap-2 rounded-md pt-6 text-sm font-semibold"
                 >
-                  Open placeholder{" "}
+                  Open module{" "}
                   <ArrowUpRight className="size-4" aria-hidden="true" />
                 </Link>
               </Card>
@@ -241,7 +217,7 @@ function AdminDashboard() {
                 id="activity-heading"
                 className="mt-2 text-2xl font-bold tracking-tight"
               >
-                Foundation timeline
+                Operational boundaries
               </h2>
             </div>
             <Clock3
@@ -279,12 +255,12 @@ function AdminDashboard() {
             id="next-boundary-heading"
             className="mt-4 text-3xl font-bold tracking-tight text-primary-foreground"
           >
-            Authentication comes before administration.
+            Administration stays behind verified access.
           </h2>
           <p className="mt-5 text-sm leading-7 text-primary-foreground/65">
-            A future sprint must establish identity, session handling,
-            authorization, protected routing, credential policy, audit context,
-            and secure recovery before this workspace can control data.
+            Supabase Auth, refreshed sessions, protected routing, application
+            roles, and Row Level Security form the access boundary for retained
+            CMS operations.
           </p>
           <ButtonLink />
         </aside>
@@ -299,7 +275,7 @@ function ButtonLink() {
       href="/admin/login"
       className="focus-ring mt-8 inline-flex min-h-11 items-center gap-2 rounded-md bg-primary-foreground px-4 text-sm font-semibold text-primary"
     >
-      Review login preview{" "}
+      Review account access{" "}
       <ArrowUpRight className="size-4" aria-hidden="true" />
     </Link>
   );

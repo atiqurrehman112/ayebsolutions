@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
+import { company } from "@/config/company";
 import { BlogPage } from "@/features/blog";
 import type { PublicBlogSort } from "@/lib/database/repositories/blog-repository";
 import {
   getPublishedBlogFilters,
   getPublishedBlogPage,
 } from "@/lib/blog/public-blog";
-import { getPublicSiteSettings } from "@/lib/settings/site-settings";
-import { mediaSeoUrl } from "@/lib/media/media";
 
 export const revalidate = 300;
-export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getPublicSiteSettings();
+export function generateMetadata(): Metadata {
   const title = "Insights & Resources";
   const description =
     "Published guidance from Ayeb Solutions on software, AI automation, design, integrations, and sustainable digital growth.";
-  const image = mediaSeoUrl(settings.openGraphImage);
   return {
     title,
     description,
@@ -24,14 +21,12 @@ export async function generateMetadata(): Promise<Metadata> {
       url: "/blog",
       title,
       description,
-      siteName: settings.site_name,
-      images: image ? [image] : undefined,
+      siteName: company.name,
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary",
       title,
       description,
-      images: image ? [image] : undefined,
     },
   };
 }
@@ -42,10 +37,9 @@ const first = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
 const sorts: readonly PublicBlogSort[] = ["newest", "oldest", "featured"];
 export default async function BlogRoute({ searchParams }: Props) {
-  const [params, filterOptions, settings] = await Promise.all([
+  const [params, filterOptions] = await Promise.all([
     searchParams,
     getPublishedBlogFilters(),
-    getPublicSiteSettings(),
   ]);
   const requestedSize = Number(first(params.pageSize));
   const pageSize = requestedSize === 24 ? 24 : requestedSize === 48 ? 48 : 12;
@@ -70,7 +64,7 @@ export default async function BlogRoute({ searchParams }: Props) {
       articles={articles}
       categories={filterOptions.categories}
       filters={filters}
-      siteUrl={settings.site_url}
+      siteUrl={company.url}
       tags={filterOptions.tags}
     />
   );

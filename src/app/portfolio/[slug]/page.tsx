@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { company } from "@/config/company";
 import { PortfolioProjectPage } from "@/features/portfolio";
 import {
   getPublishedPortfolioSlugs,
   getPublishedProject,
 } from "@/lib/portfolio/public-portfolio";
-import { getPublicSiteSettings } from "@/lib/settings/site-settings";
 import { mediaSeoUrl } from "@/lib/media/media";
 
 export const revalidate = 300;
@@ -21,16 +21,13 @@ export async function generateStaticParams() {
 }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const [data, settings] = await Promise.all([
-    getPublishedProject(slug),
-    getPublicSiteSettings(),
-  ]);
+  const data = await getPublishedProject(slug);
   if (!data) return {};
   const { project, context } = data;
   const title = project.meta_title ?? project.title;
   const description = project.meta_description ?? project.summary;
   const path = `/portfolio/${project.slug}`;
-  const image = context.gallery[0] ?? settings.openGraphImage;
+  const image = context.gallery[0];
   const imageUrl = mediaSeoUrl(image);
   return {
     title,
@@ -41,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: path,
       title,
       description,
-      siteName: settings.site_name,
+      siteName: company.name,
       publishedTime: project.published_at ?? undefined,
       modifiedTime: project.updated_at,
       images: imageUrl
@@ -58,10 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 export default async function PortfolioProjectRoute({ params }: Props) {
   const { slug } = await params;
-  const [data, settings] = await Promise.all([
-    getPublishedProject(slug),
-    getPublicSiteSettings(),
-  ]);
+  const data = await getPublishedProject(slug);
   if (!data) notFound();
   return (
     <PortfolioProjectPage
@@ -69,8 +63,8 @@ export default async function PortfolioProjectRoute({ params }: Props) {
       gallery={data.context.gallery}
       project={data.project}
       related={data.related}
-      siteName={settings.site_name}
-      siteUrl={settings.site_url}
+      siteName={company.name}
+      siteUrl={company.url}
       tags={data.context.tags}
     />
   );
