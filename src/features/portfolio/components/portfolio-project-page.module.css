@@ -1,77 +1,77 @@
 .hero {
   background:
     radial-gradient(
-      circle at 80% 18%,
-      hsl(var(--primary) / 0.1),
-      transparent 31rem
+      circle at 84% 12%,
+      hsl(var(--primary) / 0.14),
+      transparent 32rem
     ),
     radial-gradient(
-      circle at 8% 84%,
-      hsl(var(--foreground) / 0.05),
+      circle at 6% 74%,
+      hsl(var(--foreground) / 0.06),
       transparent 28rem
-    );
+    ),
+    linear-gradient(150deg, hsl(var(--background)), hsl(var(--muted) / 0.2));
 }
-
-.hero::after {
+.hero::before {
   position: absolute;
   inset: 0;
   background-image: radial-gradient(
     hsl(var(--foreground) / 0.12) 0.7px,
     transparent 0.7px
   );
-  background-size: 1.25rem 1.25rem;
-  mask-image: radial-gradient(circle at 76% 42%, black, transparent 60%);
+  background-size: 1.35rem 1.35rem;
+  mask-image: radial-gradient(circle at 82% 32%, black, transparent 58%);
   content: "";
   pointer-events: none;
 }
-
-.heroCanvas {
-  min-width: 0;
-  overflow: hidden;
-  background: linear-gradient(
-    145deg,
-    hsl(var(--card) / 0.96),
-    hsl(var(--card) / 0.68)
-  );
-  box-shadow: 0 38px 100px -54px hsl(var(--foreground) / 0.5);
+.heroMedia {
+  background: hsl(var(--card));
+}
+.heroMedia img {
+  transition: transform 800ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.heroMedia:hover img {
+  transform: scale(1.012);
 }
 
-.architecturePanel,
-.process {
+.processSection {
   background:
     radial-gradient(
-      circle at 86% 14%,
-      hsl(var(--primary-foreground) / 0.1),
-      transparent 27rem
+      circle at 86% 10%,
+      hsl(var(--primary-foreground) / 0.11),
+      transparent 28rem
     ),
     hsl(var(--primary));
 }
 
-.decisionCard {
+.technologyCard,
+.resultCard,
+.relatedCard,
+.galleryItem {
   transition:
-    transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 260ms ease,
+    box-shadow 260ms ease;
 }
-
-.decisionCard:hover,
-.decisionCard:focus-within {
+.technologyCard:hover,
+.technologyCard:focus-within,
+.resultCard:hover,
+.resultCard:focus-within,
+.relatedCard:hover,
+.relatedCard:focus-within {
   border-color: hsl(var(--foreground) / 0.22);
-  box-shadow: 0 24px 60px -42px hsl(var(--foreground) / 0.42);
+  box-shadow: 0 24px 60px -44px hsl(var(--foreground) / 0.48);
   transform: translateY(-3px);
 }
-
-.moduleVisual {
-  min-height: 9.5rem;
-  background:
-    radial-gradient(
-      circle at 86% 8%,
-      hsl(var(--primary) / 0.1),
-      transparent 8rem
-    ),
-    hsl(var(--background) / 0.76);
+.galleryWide {
+  grid-column: span 2;
 }
-
+.galleryItem img {
+  transition: transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.galleryItem:hover img {
+  transform: scale(1.02);
+}
 .disclosure > summary::-webkit-details-marker {
   display: none;
 }
@@ -79,25 +79,30 @@
   color: hsl(var(--foreground));
 }
 
-.finalCta :global(.rounded-2xl) {
-  background:
-    radial-gradient(
-      circle at 12% 10%,
-      hsl(var(--primary-foreground) / 0.14),
-      transparent 22rem
-    ),
-    hsl(var(--primary));
+@media (max-width: 767px) {
+  .galleryWide {
+    grid-column: auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .decisionCard {
-    transition: none;
-  }
-  .decisionCard:hover,
-  .decisionCard:focus-within {
-    transform: none;
-  }
+  .heroMedia img,
+  .technologyCard,
+  .resultCard,
+  .relatedCard,
+  .galleryItem,
+  .galleryItem img,
   .disclosure svg {
     transition: none;
+  }
+  .heroMedia:hover img,
+  .technologyCard:hover,
+  .technologyCard:focus-within,
+  .resultCard:hover,
+  .resultCard:focus-within,
+  .relatedCard:hover,
+  .relatedCard:focus-within,
+  .galleryItem:hover img {
+    transform: none;
   }
 }

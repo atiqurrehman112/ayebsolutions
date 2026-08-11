@@ -169,6 +169,12 @@ The homepage retains the post-cleanup data boundary: hero copy, services, statis
 
 The premium presentation is composed from Server Components for the hero, technology strip, factual capability statistics, service cards, portfolio and blog previews, process timeline, technology grid, and final CTA. `TestimonialCarousel` is the only new Client Component; it receives an already-filtered immutable testimonial projection and owns only keyboard-operable carousel selection. It performs no fetching or persistence. All new motion is CSS- or existing motion-primitive-based and is disabled or neutralized under `prefers-reduced-motion`.
 
+## Sprint 11B portfolio presentation
+
+The dynamic Portfolio boundary established in Sprint 9A remains unchanged: `/portfolio` and `/portfolio/[slug]` consume published-only repository projections through the tagged five-minute cache layer, with database-backed static parameters and ISR fallback for detail routes. Sprint 11B changes only the portfolio presentation and route-level loading/error states. Listing search, category/tag filters, ordering, pagination, Media Library covers, detail context, related projects, and SEO projections continue to come from the existing CMS contracts.
+
+Both primary portfolio templates remain Server Components. Staggered reveals, cover zoom, card elevation, and CTA feedback are CSS-only and neutralized for reduced motion. Detail sections are conditional: overview, challenge, solution, process, technologies, results, gallery, FAQ, client, project year, and related work render only when their corresponding published CMS fields exist. The route does not infer missing client information, outcomes, media, dates, or process content.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries
