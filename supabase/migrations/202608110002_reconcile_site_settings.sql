@@ -104,15 +104,38 @@ alter table public.site_configuration
   add column if not exists homepage_cta_secondary_href text;
 
 insert into public.site_configuration (
-  id,
-  contact_email,
-  header_navigation,
-  footer_navigation
-) values (
-  '00000000-0000-4000-8000-000000000001',
-  null,
-  '[{"label":"Home","href":"/"},{"label":"Services","href":"/services"},{"label":"Portfolio","href":"/portfolio"},{"label":"Blog","href":"/blog"},{"label":"About","href":"/about"},{"label":"Contact","href":"/contact"}]'::jsonb,
-  '[{"title":"Company","links":[{"label":"About","href":"/about"},{"label":"Contact","href":"/contact"}]},{"title":"Services","links":[{"label":"Web Development","href":"/services/web-development"},{"label":"AI Automation","href":"/services/ai-automation"}]},{"title":"Resources","links":[{"label":"Portfolio","href":"/portfolio"},{"label":"Blog","href":"/blog"}]}]'::jsonb
+    id,
+    site_name,
+    tagline,
+    site_url,
+    default_language,
+    timezone,
+    default_meta_title,
+    default_meta_description,
+    robots,
+    canonical_base_url,
+    contact_email,
+    header_navigation,
+    footer_navigation,
+    footer_copyright,
+    status
+)
+values (
+    '00000000-0000-4000-8000-000000000001',
+    'Ayeb Solutions',
+    'Engineering intelligent digital growth.',
+    'https://ayebsolutions.com',
+    'en',
+    'UTC',
+    'Ayeb Solutions',
+    'Premium web development, AI automation, and digital product engineering for ambitious businesses.',
+    'index,follow',
+    'https://ayebsolutions.com',
+    'hello@ayebsolutions.com',
+    '[{"label":"Home","href":"/"},{"label":"Services","href":"/services"},{"label":"Portfolio","href":"/portfolio"},{"label":"Blog","href":"/blog"},{"label":"About","href":"/about"},{"label":"Contact","href":"/contact"}]'::jsonb,
+    '[{"title":"Company","links":[{"label":"About","href":"/about"},{"label":"Contact","href":"/contact"}]},{"title":"Services","links":[{"label":"Web Development","href":"/services/web-development"},{"label":"AI Automation","href":"/services/ai-automation"}]},{"title":"Resources","links":[{"label":"Portfolio","href":"/portfolio"},{"label":"Blog","href":"/blog"}]}]'::jsonb,
+    'All rights reserved.',
+    'published'
 )
 on conflict (id) do nothing;
 
