@@ -135,6 +135,12 @@ The canonical metadata sitemap remains the broad crawler entry, while `/sitemap-
 
 Analytics is configured exclusively through the typed Settings CMS. Google Analytics or Tag Manager, Microsoft Clarity, Plausible, and Vercel Web Analytics scripts are absent unless their configuration is published. Migration `202608110001_production_analytics.sql` adds Search Console verification, Plausible domain, and the Vercel Analytics toggle without introducing unrelated JSON storage. Existing repository cache tags, five-minute ISR, `next/image`/Cloudinary transformations, Geist self-hosted font integration, route loading/error boundaries, and link prefetching remain the performance foundation.
 
+## Cleanup CP1 static global shell
+
+The public global shell is intentionally independent of Supabase. `src/app/layout.tsx` owns immutable metadata and Organization/WebSite schemas from `src/config/site.ts` and `src/config/company.ts`. `SiteHeader` reads the hardcoded navigation configuration directly; `SiteFooter` reads the hardcoded company, footer-navigation, social, and consultation configuration directly. Neither accepts settings, branding, navigation, footer, media, feature-flag, or maintenance props.
+
+`getPublicSiteSettings()` is retained as a compatibility adapter for completed public feature modules that already consume its typed shape, but it now returns the immutable fallback object without importing Supabase, environment credentials, cache APIs, or `SettingsRepository`. This prevents changes to Portfolio, Blog, Testimonials, or Contact Leads while removing their indirect runtime dependency on site configuration persistence. The authenticated admin settings module and its repository remain available for future administration work, but they do not participate in public rendering or the global shell.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

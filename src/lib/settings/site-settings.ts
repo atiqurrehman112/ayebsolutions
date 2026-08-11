@@ -1,14 +1,8 @@
-import { cache } from "react";
-import { unstable_cache } from "next/cache";
-import { createClient } from "@supabase/supabase-js";
 import { company } from "@/config/company";
 import { footerNavigation } from "@/config/footer";
 import { primaryNavigation } from "@/config/navigation";
 import { siteConfig } from "@/config/site";
-import { env } from "@/lib/env";
-import { SettingsRepository } from "@/lib/database/repositories/settings-repository";
 import type { PublicSiteSettings } from "@/types/settings";
-import type { Database } from "@/types/database";
 
 export const fallbackSiteSettings: PublicSiteSettings = {
   id: "00000000-0000-4000-8000-000000000001",
@@ -66,17 +60,23 @@ export const fallbackSiteSettings: PublicSiteSettings = {
   logo: null,
   favicon: null,
   openGraphImage: null,
-  homepage_heading: null,
-  homepage_subheading: null,
-  homepage_badge: null,
-  homepage_primary_cta_label: null,
-  homepage_primary_cta_href: null,
-  homepage_secondary_cta_label: null,
-  homepage_secondary_cta_href: null,
+  homepage_heading: "Build Smarter. Automate Faster. Scale Without Limits.",
+  homepage_subheading:
+    "Ayeb Solutions helps businesses grow through premium websites, AI automation, custom software, and intelligent digital solutions that save time and increase revenue.",
+  homepage_badge: "AI Automation • Web Development • SaaS Solutions",
+  homepage_primary_cta_label: "Book Free Consultation",
+  homepage_primary_cta_href: "/contact",
+  homepage_secondary_cta_label: "View Our Work",
+  homepage_secondary_cta_href: "/portfolio",
   homepage_hero_media_id: null,
   homepage_background_media_id: null,
   homepage_statistics: [],
-  homepage_trust_indicators: [],
+  homepage_trust_indicators: [
+    "Fast Delivery",
+    "AI Powered",
+    "Secure Development",
+    "Long-Term Support",
+  ],
   homepage_services_limit: 6,
   homepage_portfolio_limit: 6,
   homepage_blog_limit: 3,
@@ -90,28 +90,6 @@ export const fallbackSiteSettings: PublicSiteSettings = {
   homepageHeroMedia: null,
   homepageBackgroundMedia: null,
 };
-const loadPublishedSettings = unstable_cache(
-  async () => {
-    try {
-      if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
-        return fallbackSiteSettings;
-      const client = createClient<Database>(
-        env.NEXT_PUBLIC_SUPABASE_URL,
-        env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        { auth: { autoRefreshToken: false, persistSession: false } },
-      );
-      return (
-        (await new SettingsRepository(client).findPublic()) ??
-        fallbackSiteSettings
-      );
-    } catch {
-      return fallbackSiteSettings;
-    }
-  },
-  ["published-site-settings"],
-  {
-    revalidate: 300,
-    tags: ["site-settings", "settings", "homepage", "media"],
-  },
-);
-export const getPublicSiteSettings = cache(loadPublishedSettings);
+export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
+  return fallbackSiteSettings;
+}

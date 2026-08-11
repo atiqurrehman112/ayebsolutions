@@ -35,7 +35,6 @@ import {
   solutionsDropdown,
 } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import type { MediaLibraryRow } from "@/types/database";
 import type { NavigationSection, ShellLink } from "@/types/global-settings";
 
 function isActivePath(pathname: string, href: string): boolean {
@@ -249,13 +248,9 @@ function MobileSection({
 }
 
 function MobileNavigation({
-  brandName,
   links = primaryNavigation,
-  logo,
 }: {
-  readonly brandName: string;
   readonly links?: readonly ShellLink[];
-  readonly logo?: MediaLibraryRow | null;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -285,9 +280,9 @@ function MobileNavigation({
         </DrawerClose>
         <DrawerHeader className="border-b text-left">
           <DrawerTitle>
-            <Logo linked={false} media={logo} name={brandName} />
+            <Logo linked={false} />
           </DrawerTitle>
-          <DrawerDescription>Navigate {brandName}</DrawerDescription>
+          <DrawerDescription>Navigate Ayeb Solutions</DrawerDescription>
         </DrawerHeader>
         <nav
           aria-label="Mobile navigation"
@@ -333,15 +328,7 @@ function MobileNavigation({
   );
 }
 
-function SiteHeader({
-  brandName = "Ayeb Solutions",
-  links = primaryNavigation,
-  logo = null,
-}: {
-  readonly brandName?: string;
-  readonly links?: readonly ShellLink[];
-  readonly logo?: MediaLibraryRow | null;
-}) {
+function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     function update() {
@@ -364,15 +351,15 @@ function SiteHeader({
         )}
       >
         <div className="mx-auto flex h-[var(--header-height)] w-full max-w-[min(87.5rem,100vw)] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <Logo media={logo} name={brandName} />
-          <DesktopNavigation links={links} />
+          <Logo />
+          <DesktopNavigation />
           <div className="flex items-center gap-0.5">
-            <GlobalSearch brandName={brandName} links={links} />
+            <GlobalSearch />
             <ThemeSwitcher />
             <Button asChild size="sm" className="ml-1 hidden xl:inline-flex">
               <Link href={consultationLink.href}>{consultationLink.label}</Link>
             </Button>
-            <MobileNavigation brandName={brandName} links={links} logo={logo} />
+            <MobileNavigation />
           </div>
         </div>
       </header>

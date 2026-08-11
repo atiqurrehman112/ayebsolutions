@@ -1,32 +1,16 @@
-import {
-  ArrowRight,
-  Github,
-  Instagram,
-  Linkedin,
-  Mail,
-  MapPin,
-  Twitter,
-  Youtube,
-} from "lucide-react";
+import { ArrowRight, Mail, MapPin } from "lucide-react";
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/logo";
 import { NewsletterForm } from "@/components/shell/newsletter-form";
 import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
+import { company } from "@/config/company";
+import { footerNavigation, socialChannels } from "@/config/footer";
 import { consultationLink } from "@/config/navigation";
-import type { PublicSiteSettings } from "@/types/settings";
 
-function SiteFooter({ settings }: { readonly settings: PublicSiteSettings }) {
+function SiteFooter() {
   const year = new Date().getFullYear();
-  const socials = [
-    ["Facebook", settings.facebook_url, Linkedin],
-    ["Instagram", settings.instagram_url, Instagram],
-    ["LinkedIn", settings.linkedin_url, Linkedin],
-    ["GitHub", settings.github_url, Github],
-    ["X", settings.x_url, Twitter],
-    ["YouTube", settings.youtube_url, Youtube],
-  ] as const;
   return (
     <footer className="border-t bg-muted/20">
       <div className="mx-auto w-full max-w-[min(87.5rem,100vw)] px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
@@ -49,48 +33,42 @@ function SiteFooter({ settings }: { readonly settings: PublicSiteSettings }) {
 
         <div className="grid gap-12 py-14 lg:grid-cols-[1.35fr_3fr]">
           <div>
-            <Logo media={settings.logo} name={settings.site_name} />
+            <Logo />
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
-              {settings.default_meta_description}
+              {company.description}
             </p>
             <address className="mt-6 space-y-3 not-italic">
-              {settings.contact_email ? (
-                <a
-                  href={`mailto:${settings.contact_email}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  <Mail className="size-4" aria-hidden="true" />
-                  {settings.contact_email}
-                </a>
-              ) : null}
-              {settings.address ? (
-                <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="size-4" aria-hidden="true" />
-                  {settings.address}
-                </p>
-              ) : null}
+              <a
+                href={`mailto:${company.email}`}
+                className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Mail className="size-4" aria-hidden="true" />
+                {company.email}
+              </a>
+              <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="size-4" aria-hidden="true" />
+                {company.location}
+              </p>
             </address>
             <div className="mt-6 flex gap-2">
-              {socials
-                .filter((social) => Boolean(social[1]))
-                .map(([label, href, Icon]) => (
-                  <IconButton
-                    key={label}
-                    asChild
-                    label={label}
-                    variant="outline"
-                    size="sm"
-                  >
-                    <a href={href ?? "#"} target="_blank" rel="noreferrer">
-                      <Icon className="size-4" aria-hidden="true" />
-                    </a>
-                  </IconButton>
-                ))}
+              {socialChannels.map(({ href, icon: Icon, label }) => (
+                <IconButton
+                  key={label}
+                  asChild
+                  label={label}
+                  variant="outline"
+                  size="sm"
+                >
+                  <a href={href} target="_blank" rel="noreferrer">
+                    <Icon className="size-4" aria-hidden="true" />
+                  </a>
+                </IconButton>
+              ))}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 xl:grid-cols-5">
-            {settings.footer_navigation.map((group) => {
+            {footerNavigation.map((group) => {
               const id = `footer-${group.title.toLowerCase()}`;
               return (
                 <nav key={group.title} aria-labelledby={id}>
@@ -115,24 +93,22 @@ function SiteFooter({ settings }: { readonly settings: PublicSiteSettings }) {
           </div>
         </div>
 
-        {settings.enable_newsletter ? (
-          <div className="grid gap-8 border-y py-8 lg:grid-cols-2 lg:items-center">
-            <div>
-              <h2 className="font-semibold">Ideas worth building on</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Occasional insights on product engineering, automation, and
-                digital growth.
-              </p>
-            </div>
-            <NewsletterForm />
+        <div className="grid gap-8 border-y py-8 lg:grid-cols-2 lg:items-center">
+          <div>
+            <h2 className="font-semibold">Ideas worth building on</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Occasional insights on product engineering, automation, and
+              digital growth.
+            </p>
           </div>
-        ) : null}
+          <NewsletterForm />
+        </div>
 
         <div className="flex flex-col gap-3 pt-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {year} {settings.site_name}. {settings.footer_copyright}
+            © {year} {company.name}. All rights reserved.
           </p>
-          <p>{settings.tagline}</p>
+          <p>{company.tagline}</p>
         </div>
       </div>
     </footer>
