@@ -831,6 +831,44 @@ function FaqSection() {
   );
 }
 
+function TeamSection() {
+  return (
+    <section
+      aria-labelledby="team-heading"
+      className="border-b py-20 sm:py-24 lg:py-30"
+    >
+      <Container className="max-w-[100rem]">
+        <div className="grid gap-10 rounded-2xl border bg-card p-7 shadow-soft sm:p-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+          <SectionIntroduction
+            eyebrow="Team"
+            id="team-heading"
+            title="A focused team structure shaped around the work."
+            description="Project roles and specialist involvement depend on scope. We do not publish invented biographies, headcounts, or titles; confirmed project responsibilities are made clear during planning."
+          />
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              "Product direction",
+              "Design & experience",
+              "Engineering & delivery",
+            ].map((role) => (
+              <div key={role} className="rounded-xl border bg-muted/20 p-5">
+                <Users
+                  className="size-5 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <h3 className="mt-5 font-semibold">{role}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Assigned according to the project’s actual needs.
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
 function AboutPage({
   heroMedia,
 }: {
@@ -879,6 +917,7 @@ function AboutPage({
       <ProcessSection />
       <TechnologiesSection />
       <PrinciplesSection />
+      <TeamSection />
       <FaqSection />
       <CTALayout
         eyebrow={

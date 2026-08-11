@@ -81,12 +81,14 @@ export const fallbackSiteSettings: PublicSiteSettings = {
   homepage_portfolio_limit: 6,
   homepage_blog_limit: 3,
   homepage_testimonials_limit: 6,
-  homepage_cta_heading: null,
-  homepage_cta_description: null,
-  homepage_cta_primary_label: null,
-  homepage_cta_primary_href: null,
-  homepage_cta_secondary_label: null,
-  homepage_cta_secondary_href: null,
+  homepage_cta_heading:
+    "Ready to Turn Your Ideas Into Powerful Digital Solutions?",
+  homepage_cta_description:
+    "Whether you're launching a startup, modernizing an existing business, or exploring AI automation, we're here to help plan and build the right solution.",
+  homepage_cta_primary_label: "Book Free Consultation",
+  homepage_cta_primary_href: "/contact",
+  homepage_cta_secondary_label: "View Services",
+  homepage_cta_secondary_href: "/services",
   homepageHeroMedia: null,
   homepageBackgroundMedia: null,
 };

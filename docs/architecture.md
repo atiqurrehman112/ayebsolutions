@@ -141,6 +141,12 @@ The public global shell is intentionally independent of Supabase. `src/app/layou
 
 `getPublicSiteSettings()` is retained as a compatibility adapter for completed public feature modules that already consume its typed shape, but it now returns the immutable fallback object without importing Supabase, environment credentials, cache APIs, or `SettingsRepository`. This prevents changes to Portfolio, Blog, Testimonials, or Contact Leads while removing their indirect runtime dependency on site configuration persistence. The authenticated admin settings module and its repository remain available for future administration work, but they do not participate in public rendering or the global shell.
 
+## Cleanup CP2 static marketing pages
+
+The About, Services, service-detail, Solutions, Contact presentation, FAQ, Privacy, Terms, Cookies, and Accessibility routes are static marketing boundaries. Their route modules use immutable company, site, and marketing configuration and do not import Site Settings, settings repositories, feature flags, homepage configuration, public media-role lookups, or service repositories. Existing About, Contact, Services, and service-detail presentation components remain in place; optional media inputs receive `null` and retain their code-rendered fallbacks.
+
+`src/config/marketing.ts` is the immutable service catalogue for Web Development, AI Automation, SaaS Development, UI/UX Design, E-commerce, and Custom Software. Both the homepage services section and `/services` consume this one source. Homepage Portfolio, Blog, and Testimonials remain CMS-backed with independent error containment; their existing components render honest static empty states when no records are available. The contact form remains the existing client interaction boundary over the production Server Action, validation, CRM persistence, and Resend workflow.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

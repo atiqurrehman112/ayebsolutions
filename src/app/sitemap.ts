@@ -3,16 +3,14 @@ import type { MetadataRoute } from "next";
 import { getPublicSiteSettings } from "@/lib/settings/site-settings";
 import { getPublishedPortfolioSlugs } from "@/lib/portfolio/public-portfolio";
 import { getPublishedBlogSlugs } from "@/lib/blog/public-blog";
-import { getPublishedServiceSlugs } from "@/lib/services/public-services";
+import { marketingServices } from "@/config/marketing";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [settings, portfolioProjects, blogArticles, services] =
-    await Promise.all([
-      getPublicSiteSettings(),
-      getPublishedPortfolioSlugs().catch(() => []),
-      getPublishedBlogSlugs().catch(() => []),
-      getPublishedServiceSlugs().catch(() => []),
-    ]);
+  const [settings, portfolioProjects, blogArticles] = await Promise.all([
+    getPublicSiteSettings(),
+    getPublishedPortfolioSlugs().catch(() => []),
+    getPublishedBlogSlugs().catch(() => []),
+  ]);
   const siteUrl = settings.canonical_base_url;
   const entries: MetadataRoute.Sitemap = [
     {
@@ -27,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.9,
     },
-    ...services.map((service) => ({
+    ...marketingServices.map((service) => ({
       url: `${siteUrl}/services/${service.slug}`,
       lastModified: new Date(service.updated_at),
       changeFrequency: "monthly" as const,
@@ -69,6 +67,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    ...["solutions", "faq", "privacy", "terms", "cookies", "accessibility"].map(
+      (path) => ({
+        url: `${siteUrl}/${path}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: path === "solutions" ? 0.8 : 0.4,
+      }),
+    ),
     {
       url: `${siteUrl}/rss.xml`,
       lastModified: new Date(),

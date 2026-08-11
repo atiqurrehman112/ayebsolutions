@@ -110,13 +110,13 @@ export function ServicesPage({
             ]}
           />
           <div className="mt-14 max-w-5xl">
-            <Eyebrow>Published services</Eyebrow>
+            <Eyebrow>Our services</Eyebrow>
             <h1 className="mt-5 text-balance text-[clamp(3rem,8vw,7rem)] font-bold leading-[.92] tracking-[-.06em]">
               Digital capability, shaped around the work.
             </h1>
             <p className="mt-7 max-w-3xl text-lg leading-8 text-muted-foreground">
-              Explore services currently published by Ayeb Solutions, with clear
-              capabilities, technologies, and delivery context from the CMS.
+              Explore focused web, software, automation, design, and commerce
+              capabilities shaped around real business workflows.
             </p>
           </div>
         </Container>
@@ -142,7 +142,7 @@ export function ServicesPage({
                   name="q"
                   defaultValue={filters.query}
                   className="focus-ring min-h-11 w-full rounded-lg border bg-background pl-10 pr-3"
-                  placeholder="Search published services"
+                  placeholder="Search services"
                 />
               </span>
             </label>
@@ -282,11 +282,11 @@ export function ServicesPage({
                 aria-hidden="true"
               />
               <h3 className="mt-5 text-2xl font-semibold">
-                No published services found
+                No matching services found
               </h3>
               <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
                 Adjust the filters or return when matching services have been
-                published.
+                available.
               </p>
               <Button asChild variant="outline" className="mt-6">
                 <Link href="/services">Clear filters</Link>

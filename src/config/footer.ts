@@ -47,10 +47,10 @@ export const footerNavigation = [
   {
     title: "Legal",
     links: [
-      { label: "Privacy", href: "/legal/privacy" },
-      { label: "Terms", href: "/legal/terms" },
-      { label: "Cookies", href: "/legal/cookies" },
-      { label: "Accessibility", href: "/legal/accessibility" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
+      { label: "Cookies", href: "/cookies" },
+      { label: "Accessibility", href: "/accessibility" },
     ],
   },
 ] as const satisfies readonly NavigationSection[];

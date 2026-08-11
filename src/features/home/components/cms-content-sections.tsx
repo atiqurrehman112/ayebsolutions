@@ -12,7 +12,33 @@ export function BlogPreviewSection({
 }: {
   readonly articles: readonly PublicBlogArticle[];
 }) {
-  if (!articles.length) return null;
+  if (!articles.length)
+    return (
+      <section
+        className="border-b py-20 sm:py-24"
+        aria-labelledby="latest-insights-heading"
+      >
+        <Container className="max-w-[100rem]">
+          <Eyebrow>Latest insights</Eyebrow>
+          <h2
+            id="latest-insights-heading"
+            className="mt-4 text-headline font-bold"
+          >
+            Practical thinking for modern digital work.
+          </h2>
+          <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">
+            Published articles will appear here when the insights library is
+            available.
+          </p>
+          <Button asChild variant="outline" className="mt-7">
+            <Link href="/blog">
+              Browse insights
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </Button>
+        </Container>
+      </section>
+    );
   return (
     <section
       className="border-b py-20 sm:py-24"
@@ -77,7 +103,27 @@ export function TestimonialsPreviewSection({
 }: {
   readonly testimonials: readonly PublicTestimonial[];
 }) {
-  if (!testimonials.length) return null;
+  if (!testimonials.length)
+    return (
+      <section
+        className="border-b bg-muted/[.12] py-20 sm:py-24"
+        aria-labelledby="testimonials-heading"
+      >
+        <Container className="max-w-[100rem]">
+          <Eyebrow>Testimonials</Eyebrow>
+          <h2
+            id="testimonials-heading"
+            className="mt-4 text-headline font-bold"
+          >
+            Feedback is published only with approval and consent.
+          </h2>
+          <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">
+            No verified testimonials are currently available. We do not
+            substitute sample quotes or fabricated reviews.
+          </p>
+        </Container>
+      </section>
+    );
   return (
     <section
       className="border-b bg-muted/[.12] py-20 sm:py-24"

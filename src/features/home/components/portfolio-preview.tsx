@@ -13,7 +13,34 @@ export function PortfolioPreviewSection({
 }: {
   readonly projects: readonly PublicPortfolioProject[];
 }) {
-  if (!projects.length) return null;
+  if (!projects.length)
+    return (
+      <section
+        className="border-b py-20 sm:py-24"
+        aria-labelledby="featured-work-heading"
+      >
+        <Container className="max-w-[100rem]">
+          <Eyebrow>Featured work</Eyebrow>
+          <h2
+            id="featured-work-heading"
+            className="mt-4 text-3xl font-bold tracking-tight sm:text-5xl"
+          >
+            Thoughtful solutions, documented honestly.
+          </h2>
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-muted-foreground">
+            Published portfolio projects will appear here when the project
+            library is available. Explore the portfolio for internal concepts,
+            prototypes, and demonstrations.
+          </p>
+          <Button asChild variant="outline" className="mt-7">
+            <Link href="/portfolio">
+              Explore portfolio
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </Button>
+        </Container>
+      </section>
+    );
   const featured = projects[0];
   if (!featured) return null;
   const remaining = projects.slice(1);
