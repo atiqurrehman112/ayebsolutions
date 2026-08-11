@@ -64,7 +64,6 @@ export default async function ArticleRoute({ params }: Props) {
       adjacent={data.adjacent}
       article={data.article}
       context={data.context}
-      newsletterEnabled={false}
       related={data.related}
       siteName={company.name}
       siteUrl={company.url}

@@ -175,6 +175,12 @@ The dynamic Portfolio boundary established in Sprint 9A remains unchanged: `/por
 
 Both primary portfolio templates remain Server Components. Staggered reveals, cover zoom, card elevation, and CTA feedback are CSS-only and neutralized for reduced motion. Detail sections are conditional: overview, challenge, solution, process, technologies, results, gallery, FAQ, client, project year, and related work render only when their corresponding published CMS fields exist. The route does not infer missing client information, outcomes, media, dates, or process content.
 
+## Sprint 11C Blog presentation
+
+The dynamic Blog boundary established in Sprint 9B remains unchanged: `/blog` and `/blog/[slug]` consume published-only `BlogRepository` projections through five-minute tagged caches, with database-backed static parameters and ISR fallback for articles. Sprint 11C changes only Blog presentation, article content interpretation, and route-level loading/error states. Search, category/tag filters, ordering, pagination, featured media, adjacent articles, related articles, and SEO continue to come from the existing CMS contracts.
+
+Listing and article templates remain Server Components. `ReadingProgress` and `CopyArticleLink` share one narrow Blog-owned Client Component and perform no fetching or persistence. The server-side article renderer safely interprets existing plain CMS section bodies as paragraphs, quotes, callouts, code blocks, lists, and tables without executing markup. Featured media, author, reading time, category, tags, article sections, FAQ, previous/next links, and related content remain conditional and are never inferred when absent.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries
