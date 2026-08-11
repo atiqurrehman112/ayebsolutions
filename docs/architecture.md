@@ -187,6 +187,12 @@ The `/about` route remains a fully static Server Component using immutable conte
 
 The page composes an editorial hero with a code-rendered fallback visual, story, factual capability snapshot, mission/vision, six values, business-first comparison, seven-stage process, six grouped technology disciplines, engineering principles, transparent team model, native FAQ disclosures, and final conversion CTA. Statistics are exact counts derived from the page's immutable collections and are explicitly distinguished from client, project, country, or experience claims. Motion is CSS-only and neutralized under `prefers-reduced-motion`.
 
+## Sprint 11E Contact presentation
+
+The `/contact` route remains a static Server Component presentation around the existing production `ContactForm` Client Component. Sprint 11E changes only Contact-owned copy, section composition, CSS presentation, and structured data. The form continues to bind directly to the unchanged production Server Action, preserving its Zod contract, same-origin and anti-spam protections, Supabase CRM transaction, audit trail, Resend delivery, error states, and focus-managed action state.
+
+The page now composes an editorial hero, six consultation-benefit cards, honest business-information cards, the existing production form, a five-stage post-submission journey, trust principles, native FAQ disclosures, and a final conversion CTA. Optional Media Library hero content retains the existing code-rendered fallback. Motion is CSS-only outside the existing form boundary and is neutralized under `prefers-reduced-motion`; no repository, fetch, database, authentication, middleware, admin, or unrelated route changed.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

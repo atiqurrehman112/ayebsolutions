@@ -12,6 +12,21 @@
     );
 }
 
+.hero::before {
+  position: absolute;
+  top: 8%;
+  right: -8rem;
+  width: 30rem;
+  height: 30rem;
+  border: 1px solid hsl(var(--foreground) / 0.08);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 5rem hsl(var(--foreground) / 0.018),
+    0 0 0 10rem hsl(var(--foreground) / 0.012);
+  content: "";
+  pointer-events: none;
+}
+
 .hero::after {
   position: absolute;
   inset: 0;
@@ -42,6 +57,49 @@
     transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
     border-color 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.benefitCard {
+  isolation: isolate;
+  animation: contact-reveal 600ms both;
+  transition:
+    transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.benefitCard::after {
+  position: absolute;
+  inset: auto -4rem -5rem auto;
+  z-index: -1;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 50%;
+  background: hsl(var(--primary) / 0.06);
+  filter: blur(1rem);
+  content: "";
+  transition: transform 300ms ease;
+}
+
+.benefitCard:hover,
+.benefitCard:focus-within {
+  border-color: hsl(var(--foreground) / 0.22);
+  box-shadow: 0 30px 70px -50px hsl(var(--foreground) / 0.5);
+  transform: translateY(-4px);
+}
+
+.benefitCard:hover::after {
+  transform: translate(-1rem, -1rem) scale(1.15);
+}
+
+.benefitCard:nth-child(2),
+.benefitCard:nth-child(5) {
+  animation-delay: 70ms;
+}
+
+.benefitCard:nth-child(3),
+.benefitCard:nth-child(6) {
+  animation-delay: 140ms;
 }
 
 .methodCard:hover,
@@ -75,6 +133,23 @@
     hsl(var(--primary));
 }
 
+.processStep {
+  animation: contact-reveal 600ms both;
+}
+
+@media (min-width: 1024px) {
+  .processStep:not(:last-child)::after {
+    position: absolute;
+    top: 2.55rem;
+    left: calc(100% + 0.25rem);
+    z-index: 2;
+    width: calc(0.5rem - 2px);
+    height: 1px;
+    background: hsl(var(--primary-foreground) / 0.3);
+    content: "";
+  }
+}
+
 .disclosure > summary::-webkit-details-marker {
   display: none;
 }
@@ -93,14 +168,34 @@
     hsl(var(--primary));
 }
 
+@keyframes contact-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .methodCard,
-  .serviceChoice {
+  .serviceChoice,
+  .benefitCard,
+  .processStep {
+    animation: none;
     transition: none;
   }
 
   .methodCard:hover,
   .methodCard:focus-within {
+    transform: none;
+  }
+
+  .benefitCard:hover,
+  .benefitCard:focus-within,
+  .benefitCard:hover::after {
     transform: none;
   }
 

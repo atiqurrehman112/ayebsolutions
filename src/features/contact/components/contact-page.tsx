@@ -1,15 +1,23 @@
 import {
   ArrowRight,
-  BriefcaseBusiness,
+  BadgeCheck,
   ChevronDown,
   CircleHelp,
   Clock3,
   Code2,
-  FileSearch,
+  FileText,
+  Gauge,
+  Globe2,
+  Handshake,
+  Headphones,
+  Lightbulb,
   Mail,
-  Palette,
+  MapPin,
+  MessageCircle,
   Search,
   Send,
+  ShieldCheck,
+  Sparkles,
   Workflow,
   Wrench,
   type LucideIcon,
@@ -51,64 +59,130 @@ const contactMethods: readonly ContactMethod[] = [
     icon: Mail,
   },
   {
-    title: "Project Inquiry",
+    title: "WhatsApp",
     description:
-      "Use the secure inquiry form below to share the project type, context, interests, and constraints.",
-    action: "Prepare project details",
+      "A verified public WhatsApp number is not currently listed. Begin securely through the inquiry form.",
+    action: "Start with the form",
     href: "#contact-form",
-    icon: BriefcaseBusiness,
+    icon: MessageCircle,
+  },
+  {
+    title: "Location",
+    description:
+      "We work remotely from Pakistan with businesses and project teams across time zones.",
+    action: company.location,
+    icon: MapPin,
   },
   {
     title: "Business Hours",
     description:
-      "Working sessions and availability are confirmed for each conversation rather than presented as universal office hours.",
-    action: "Scheduled by agreement",
+      "Consultations and working sessions are scheduled around confirmed project availability.",
+    action: "By appointment",
     icon: Clock3,
   },
+] as const;
+
+const consultationBenefits: readonly IconItem[] = [
   {
-    title: "Response Process",
+    title: "Discovery Call",
     description:
-      "We review the problem, scope, dependencies, constraints, and fit before recommending a useful next step.",
-    action: "Timing depends on availability",
-    icon: FileSearch,
+      "A focused conversation about your goals, users, constraints, and current workflow.",
+    icon: Search,
+  },
+  {
+    title: "Technical Planning",
+    description:
+      "A practical review of scope, architecture, integrations, risks, and the right next step.",
+    icon: Workflow,
+  },
+  {
+    title: "Clear Pricing",
+    description:
+      "Pricing is shaped by an agreed scope so decisions are grounded in real requirements.",
+    icon: BadgeCheck,
+  },
+  {
+    title: "Transparent Communication",
+    description:
+      "Milestones, decisions, dependencies, and changes are made visible throughout the work.",
+    icon: Handshake,
+  },
+  {
+    title: "Dedicated Support",
+    description:
+      "Project context carries from planning through delivery and the support arrangement you choose.",
+    icon: Headphones,
+  },
+  {
+    title: "Thoughtful Response",
+    description:
+      "Every inquiry is reviewed for fit, constraints, and the most useful way to move forward.",
+    icon: Sparkles,
   },
 ] as const;
 
 const timeline: readonly IconItem[] = [
   {
-    title: "Discovery",
+    title: "Request received",
     description:
-      "Clarify the problem, users, current workflow, evidence, and constraints.",
-    icon: Search,
-  },
-  {
-    title: "Planning",
-    description:
-      "Define scope, decisions, risks, architecture questions, and responsibilities.",
-    icon: Workflow,
-  },
-  {
-    title: "Design",
-    description:
-      "Shape information, user flows, states, accessibility, and responsive behavior.",
-    icon: Palette,
-  },
-  {
-    title: "Development",
-    description:
-      "Build typed interfaces, product logic, data, and approved integrations.",
-    icon: Code2,
-  },
-  {
-    title: "Launch",
-    description:
-      "Deploy through controlled environments and verify production behavior.",
+      "Your validated inquiry enters the review queue with the context you provide.",
     icon: Send,
   },
   {
-    title: "Ongoing Support",
+    title: "Initial review",
     description:
-      "Maintain context through documentation, monitoring, review, and planned change.",
+      "We assess goals, scope signals, dependencies, and whether more context is needed.",
+    icon: Search,
+  },
+  {
+    title: "Discovery meeting",
+    description:
+      "When there is a potential fit, we clarify the problem and define a useful direction.",
+    icon: Lightbulb,
+  },
+  {
+    title: "Proposal",
+    description:
+      "A proposal can outline the agreed scope, approach, responsibilities, and commercial terms.",
+    icon: FileText,
+  },
+  {
+    title: "Project kickoff",
+    description:
+      "Approved work begins with clear access, communication, milestones, and ownership.",
+    icon: Workflow,
+  },
+] as const;
+
+const trustItems: readonly IconItem[] = [
+  {
+    title: "Modern technologies",
+    description:
+      "Technology choices follow the product, operational, and maintenance needs of the project.",
+    icon: Code2,
+  },
+  {
+    title: "Security-minded delivery",
+    description:
+      "Our process considers access, validation, dependencies, data handling, and deployment risk.",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Performance by design",
+    description:
+      "Responsive behavior, efficient delivery, and real-user experience inform implementation decisions.",
+    icon: Gauge,
+  },
+  {
+    title: "Transparent workflow",
+    description:
+      "Decisions, assumptions, milestones, and changes remain visible to the people responsible for them.",
+    icon: Globe2,
+  },
+  {
+    title: "Long-term support",
+    description:
+      "Maintenance, documentation, monitoring, and future improvements can be scoped after launch.",
     icon: Wrench,
   },
 ] as const;
@@ -275,17 +349,17 @@ function Hero({ heroMedia }: { readonly heroMedia?: MediaLibraryRow | null }) {
         <SiteBreadcrumbs items={[{ label: "Contact", href: "/contact" }]} />
         <div className="mt-12 grid min-w-0 items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div className="min-w-0">
-            <Eyebrow className="mb-5 text-xs">Contact Ayeb Solutions</Eyebrow>
+            <Eyebrow className="mb-5 text-xs">A thoughtful first step</Eyebrow>
             <h1
               id="contact-title"
               className="text-balance text-display font-bold"
             >
-              Let&apos;s Build Something Great
+              Bring the idea. We&apos;ll help shape the right way forward.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              Tell us about your project. We&apos;ll review your requirements
-              and recommend an appropriate approach based on the problem,
-              constraints, and available context.
+              Share what you are building, improving, or automating. We&apos;ll
+              turn the context into a focused conversation about scope,
+              technology, and the most useful next step.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className="group h-12">
@@ -298,13 +372,27 @@ function Hero({ heroMedia }: { readonly heroMedia?: MediaLibraryRow | null }) {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="h-12">
-                <Link href="/book-consultation">Book Consultation</Link>
+                <Link href="#contact-form">Schedule a Consultation</Link>
               </Button>
             </div>
-            <p className="mt-9 border-l-2 border-primary pl-5 text-sm leading-7 text-muted-foreground">
-              No phone number, office address, fixed business hours, or
-              guaranteed response time is claimed on this page.
-            </p>
+            <ul
+              className="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm text-muted-foreground"
+              aria-label="Consultation principles"
+            >
+              {[
+                "No-obligation discovery",
+                "Clear next steps",
+                "Human review",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <BadgeCheck
+                    className="size-4 text-primary"
+                    aria-hidden="true"
+                  />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="min-w-0">
             {heroMedia ? (
@@ -327,6 +415,48 @@ function Hero({ heroMedia }: { readonly heroMedia?: MediaLibraryRow | null }) {
   );
 }
 
+function BenefitsSection() {
+  return (
+    <section
+      aria-labelledby="consultation-benefits-heading"
+      className="border-b py-20 sm:py-24 lg:py-30"
+    >
+      <Container className="max-w-[100rem]">
+        <SectionIntroduction
+          eyebrow="A useful first conversation"
+          id="consultation-benefits-heading"
+          title="Clarity before commitment."
+          description="A good consultation should make the opportunity, constraints, and next decision easier to understand—not pressure you into an oversized solution."
+        />
+        <ul className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {consultationBenefits.map(
+            ({ title, description, icon: Icon }, index) => (
+              <li
+                key={title}
+                className={cn(
+                  "group relative overflow-hidden rounded-2xl border bg-card p-6 sm:p-7",
+                  styles.benefitCard,
+                )}
+              >
+                <span className="font-mono text-[0.6rem] tracking-[0.18em] text-muted-foreground">
+                  0{index + 1}
+                </span>
+                <span className="mt-8 grid size-11 place-items-center rounded-xl border bg-background shadow-sm">
+                  <Icon className="size-5" aria-hidden="true" />
+                </span>
+                <h3 className="mt-6 text-xl font-semibold">{title}</h3>
+                <p className="mt-3 max-w-sm text-sm leading-7 text-muted-foreground">
+                  {description}
+                </p>
+              </li>
+            ),
+          )}
+        </ul>
+      </Container>
+    </section>
+  );
+}
+
 function ContactMethodsSection() {
   return (
     <section
@@ -338,7 +468,7 @@ function ContactMethodsSection() {
           eyebrow="Contact methods"
           id="contact-methods-heading"
           title="Choose the clearest path for your current context."
-          description="Use a real contact channel for an inquiry, or review how project information will be structured when lead capture is connected in a later sprint."
+          description="Choose the channel that suits the context. The project form is the best place to share requirements, while email works well for an existing brief."
         />
         <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {contactMethods.map(
@@ -438,25 +568,28 @@ function TimelineSection() {
       <Container className="max-w-[100rem]">
         <div className="max-w-3xl">
           <Eyebrow className="mb-4 text-xs text-primary-foreground/55">
-            Project timeline
+            What happens next
           </Eyebrow>
           <h2
             id="project-timeline-heading"
             className="text-balance text-headline font-bold"
           >
-            A visible path from first context to ongoing care.
+            From inquiry to a confident kickoff.
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-primary-foreground/65">
-            These stages explain the delivery journey, not a fixed duration.
-            Scope, research, dependencies, approvals, and complexity affect the
-            actual plan.
+            Every conversation follows a clear review path. The exact timing
+            depends on availability, scope, dependencies, and how much context
+            is available at each stage.
           </p>
         </div>
-        <ol className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <ol className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {timeline.map(({ title, description, icon: Icon }, index) => (
             <li
               key={title}
-              className="rounded-xl border border-primary-foreground/15 bg-primary-foreground/[0.06] p-5"
+              className={cn(
+                "relative rounded-xl border border-primary-foreground/15 bg-primary-foreground/[0.06] p-5",
+                styles.processStep,
+              )}
             >
               <span className="grid size-11 place-items-center rounded-xl bg-primary-foreground text-primary">
                 <Icon className="size-4" aria-hidden="true" />
@@ -471,6 +604,49 @@ function TimelineSection() {
             </li>
           ))}
         </ol>
+      </Container>
+    </section>
+  );
+}
+
+function TrustSection() {
+  return (
+    <section
+      aria-labelledby="contact-trust-heading"
+      className="border-b bg-muted/[0.12] py-20 sm:py-24 lg:py-30"
+    >
+      <Container className="max-w-[100rem]">
+        <div className="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:items-start lg:gap-16">
+          <SectionIntroduction
+            eyebrow="Built on responsible practice"
+            id="contact-trust-heading"
+            title="The first conversation reflects how we work."
+            description="Clear assumptions, thoughtful technical choices, and visible decisions create a stronger foundation for delivery and long-term ownership."
+          />
+          <ul className="grid gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-2">
+            {trustItems.map(({ title, description, icon: Icon }, index) => (
+              <li
+                key={title}
+                className={cn(
+                  "bg-card p-6 sm:p-7",
+                  index === trustItems.length - 1 && "sm:col-span-2",
+                )}
+              >
+                <div className="flex items-start gap-4">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground">
+                    <Icon className="size-4" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <h3 className="font-semibold">{title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      {description}
+                    </p>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </Container>
     </section>
   );
@@ -565,13 +741,42 @@ function ContactPage({
       acceptedAnswer: { "@type": "Answer", text: answer },
     })),
   } as const;
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: company.name,
+    legalName: company.legalName,
+    url: company.url,
+    email: company.email,
+    description: company.description,
+  } as const;
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: company.url,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Contact",
+        item: pageUrl,
+      },
+    ],
+  } as const;
 
   return (
     <>
       <Hero heroMedia={heroMedia} />
+      <BenefitsSection />
       <ContactMethodsSection />
       <ContactFormSection />
       <TimelineSection />
+      <TrustSection />
       <FaqSection />
       <CTALayout
         eyebrow={
@@ -582,8 +787,9 @@ function ContactPage({
         title="Ready to discuss your project with Ayeb Solutions?"
         description={
           <p className="max-w-2xl leading-relaxed text-primary-foreground/70">
-            Send a secure project inquiry, use email for a written conversation,
-            or book a consultation when you are ready to discuss the next step.
+            Share the context today and take the next step with a clearer
+            technical direction, an honest scope conversation, and a process
+            built around your business goals.
           </p>
         }
         actions={
@@ -600,7 +806,7 @@ function ContactPage({
               variant="outline"
               className="border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
             >
-              <Link href="/book-consultation">Book Consultation</Link>
+              <Link href="#contact-form">Discuss Your Project</Link>
             </Button>
           </div>
         }
@@ -609,6 +815,8 @@ function ContactPage({
       <StructuredData data={contactPageSchema} />
       <StructuredData data={webPageSchema} />
       <StructuredData data={faqSchema} />
+      <StructuredData data={organizationSchema} />
+      <StructuredData data={breadcrumbSchema} />
     </>
   );
 }
