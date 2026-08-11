@@ -3,7 +3,6 @@ import {
   ArrowRight,
   Blocks,
   Bot,
-  Braces,
   ChevronDown,
   CircleGauge,
   Cloud,
@@ -13,9 +12,7 @@ import {
   FileCheck2,
   GitBranch,
   Globe2,
-  Handshake,
   HeartHandshake,
-  Layers3,
   Lightbulb,
   LockKeyhole,
   MessageSquare,
@@ -59,22 +56,22 @@ interface DifferenceItem extends IconItem {
 
 const values: readonly IconItem[] = [
   {
+    title: "Quality",
+    description:
+      "Treat correctness, accessibility, maintainability, and operational readiness as connected product concerns.",
+    icon: Sparkles,
+  },
+  {
+    title: "Innovation",
+    description:
+      "Explore new tools when they solve a justified problem, while keeping evidence and long-term ownership visible.",
+    icon: Lightbulb,
+  },
+  {
     title: "Transparency",
     description:
       "Communicate decisions, assumptions, constraints, progress, and uncertainty in understandable terms.",
     icon: MessageSquare,
-  },
-  {
-    title: "Quality",
-    description:
-      "Treat maintainability, correctness, accessibility, and operational readiness as product concerns.",
-    icon: Sparkles,
-  },
-  {
-    title: "Accessibility",
-    description:
-      "Consider keyboard, semantics, contrast, motion, input methods, and assistive technologies throughout delivery.",
-    icon: Accessibility,
   },
   {
     title: "Performance",
@@ -83,22 +80,10 @@ const values: readonly IconItem[] = [
     icon: CircleGauge,
   },
   {
-    title: "Scalability",
+    title: "Reliability",
     description:
-      "Design for credible product needs without adding premature infrastructure or avoidable coupling.",
-    icon: Blocks,
-  },
-  {
-    title: "Collaboration",
-    description:
-      "Connect business context, user needs, design reasoning, and engineering constraints through shared decisions.",
-    icon: Users,
-  },
-  {
-    title: "Continuous Learning",
-    description:
-      "Review evidence, challenge assumptions, document lessons, and adapt when context changes.",
-    icon: Lightbulb,
+      "Build review, validation, recovery thinking, and clear operating expectations into the delivery approach.",
+    icon: ShieldCheck,
   },
   {
     title: "Long-Term Partnership",
@@ -161,16 +146,10 @@ const process = [
     icon: Search,
   },
   {
-    title: "Planning",
+    title: "Strategy",
     description:
       "Define scope, priorities, architecture questions, risks, and decision ownership.",
     icon: GitBranch,
-  },
-  {
-    title: "Research",
-    description:
-      "Gather appropriate user, product, technical, and operational context.",
-    icon: Lightbulb,
   },
   {
     title: "Design",
@@ -197,27 +176,59 @@ const process = [
     icon: Cloud,
   },
   {
-    title: "Continuous Improvement",
+    title: "Growth",
     description:
       "Use evidence, monitoring, support context, and new needs to guide responsible change.",
     icon: Sparkles,
   },
 ] as const;
 
-const technologies = [
-  ["Next.js", "Application routing and rendering", Globe2],
-  ["React", "Composable interface systems", Component],
-  ["TypeScript", "Typed application contracts", Braces],
-  ["Node.js", "Server-side product logic", ServerCog],
-  ["PostgreSQL", "Relational product data", Database],
-  ["Supabase", "Managed platform capabilities", Database],
-  ["Docker", "Consistent runtime packaging", Blocks],
-  ["OpenAI", "Bounded AI-assisted workflows", Bot],
-  ["Stripe", "Supported payment workflows", Handshake],
-  ["Tailwind CSS", "Token-aligned responsive styling", Layers3],
-  ["Cloudflare", "Selected network and delivery services", ShieldCheck],
-  ["Vercel", "Selected application deployment", Cloud],
-] as const satisfies readonly (readonly [string, string, LucideIcon])[];
+const technologyGroups = [
+  {
+    title: "Frontend",
+    description: "Accessible interfaces and responsive product systems.",
+    technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+    icon: Component,
+  },
+  {
+    title: "Backend",
+    description: "Typed server logic, APIs, integrations, and workflows.",
+    technologies: ["Node.js", "REST APIs", "Webhooks", "OAuth"],
+    icon: ServerCog,
+  },
+  {
+    title: "Cloud",
+    description: "Deployment, delivery, managed media, and edge services.",
+    technologies: ["Vercel", "Cloudflare", "Cloudinary"],
+    icon: Cloud,
+  },
+  {
+    title: "AI & automation",
+    description: "Bounded intelligent workflows with human oversight.",
+    technologies: ["OpenAI", "AI agents", "Workflow automation"],
+    icon: Bot,
+  },
+  {
+    title: "Databases",
+    description: "Relational data models and managed data platforms.",
+    technologies: ["PostgreSQL", "Supabase", "Prisma"],
+    icon: Database,
+  },
+  {
+    title: "DevOps",
+    description:
+      "Repeatable environments, source control, and delivery checks.",
+    technologies: ["Docker", "GitHub", "CI/CD"],
+    icon: Blocks,
+  },
+] as const;
+
+const capabilityStatistics = [
+  { value: "06", label: "Core solution disciplines" },
+  { value: "07", label: "Connected delivery stages" },
+  { value: "06", label: "Technology expertise groups" },
+  { value: "08", label: "Engineering working principles" },
+] as const;
 
 const workingPrinciples: readonly IconItem[] = [
   {
@@ -445,12 +456,15 @@ function Hero({ heroMedia }: { readonly heroMedia?: MediaLibraryRow | null }) {
         <SiteBreadcrumbs items={[{ label: "About", href: "/about" }]} />
         <div className="mt-12 grid min-w-0 items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div className="min-w-0">
-            <Eyebrow className="mb-5 text-xs">About Ayeb Solutions</Eyebrow>
+            <span className="inline-flex items-center gap-2 rounded-full border bg-background/65 px-3 py-1.5 text-xs font-semibold text-muted-foreground backdrop-blur">
+              <ShieldCheck className="size-3.5" aria-hidden="true" />
+              Business-first digital product partner
+            </span>
             <h1
               id="about-title"
-              className="text-balance text-display font-bold"
+              className="mt-7 text-balance text-[clamp(3.25rem,8vw,7rem)] font-bold leading-[.88] tracking-[-.07em]"
             >
-              Building Modern Digital Products With Purpose
+              Building digital products with purpose and precision.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
               Ayeb Solutions approaches business problems through modern
@@ -460,8 +474,8 @@ function Hero({ heroMedia }: { readonly heroMedia?: MediaLibraryRow | null }) {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className="group h-12">
-                <Link href="/book-consultation">
-                  Book Consultation{" "}
+                <Link href="/contact">
+                  Book Consultation
                   <ArrowRight
                     className="size-4 transition-transform group-hover:translate-x-1"
                     aria-hidden="true"
@@ -472,10 +486,21 @@ function Hero({ heroMedia }: { readonly heroMedia?: MediaLibraryRow | null }) {
                 <Link href="/portfolio">View Portfolio</Link>
               </Button>
             </div>
-            <p className="mt-9 border-l-2 border-primary pl-5 text-sm leading-7 text-muted-foreground">
-              This page does not claim a founding date, team size, client count,
-              revenue, award, certification, partnership, or office location.
-            </p>
+            <ul className="mt-9 flex flex-wrap justify-center gap-x-6 gap-y-3 text-sm text-muted-foreground lg:justify-start">
+              {[
+                "Strategy before tools",
+                "Accessible by design",
+                "Built for ownership",
+              ].map((item) => (
+                <li className="flex items-center gap-2" key={item}>
+                  <span
+                    className="size-1.5 rounded-full bg-foreground/35"
+                    aria-hidden="true"
+                  />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="min-w-0">
             {heroMedia ? (
@@ -533,6 +558,52 @@ function StorySection() {
             </p>
           </div>
         </div>
+      </Container>
+    </section>
+  );
+}
+
+function StatisticsSection() {
+  return (
+    <section
+      aria-labelledby="about-statistics-heading"
+      className="border-b bg-muted/[0.12] py-14 sm:py-18"
+    >
+      <Container className="max-w-[100rem]">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <Eyebrow>Capability snapshot</Eyebrow>
+            <h2
+              id="about-statistics-heading"
+              className="mt-3 text-2xl font-bold tracking-tight"
+            >
+              Structure you can see before engagement begins.
+            </h2>
+          </div>
+          <p className="max-w-lg text-sm leading-6 text-muted-foreground">
+            These describe the static service and delivery model—not fabricated
+            client, project, country, or experience counts.
+          </p>
+        </div>
+        <dl className="mt-8 grid gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-2 lg:grid-cols-4">
+          {capabilityStatistics.map((stat, index) => (
+            <div className={styles.statistic} key={stat.label}>
+              <dd className="font-mono text-4xl font-semibold tracking-[-.06em] sm:text-5xl">
+                {stat.value}
+              </dd>
+              <dt className="mt-3 text-sm leading-6 text-muted-foreground">
+                {stat.label}
+              </dt>
+              <span
+                className="mt-6 block font-mono text-[.58rem] text-muted-foreground"
+                aria-hidden="true"
+              >
+                {String(index + 1).padStart(2, "0")} /{" "}
+                {String(capabilityStatistics.length).padStart(2, "0")}
+              </span>
+            </div>
+          ))}
+        </dl>
       </Container>
     </section>
   );
@@ -596,9 +667,12 @@ function ValuesSection() {
           title="Principles that shape how decisions are made."
           description="These values describe our intended working approach. They are not certifications, guarantees, or a substitute for project-specific expectations."
         />
-        <ul className="mt-12 grid gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-12 grid gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-2 lg:grid-cols-3">
           {values.map(({ title, description, icon: Icon }, index) => (
-            <li key={title} className="group bg-background p-6">
+            <li
+              key={title}
+              className={`${styles.valueCard} group bg-background p-6 sm:p-7`}
+            >
               <div className="flex items-center justify-between">
                 <Icon className="size-5" aria-hidden="true" />
                 <span className="font-mono text-[0.58rem] text-muted-foreground">
@@ -682,12 +756,15 @@ function ProcessSection() {
         <SectionIntroduction
           eyebrow="Our process"
           id="about-process-heading"
-          title="Eight stages for deliberate product delivery."
+          title="Seven connected stages from discovery to growth."
           description="The process connects business context, research, design, engineering, verification, and improvement. It describes disciplines—not a fixed schedule or guaranteed outcome."
         />
-        <ol className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
           {process.map(({ title, description, icon: Icon }, index) => (
-            <li key={title} className="rounded-xl border bg-card p-5">
+            <li
+              key={title}
+              className={`${styles.processStep} relative rounded-xl border bg-card p-5`}
+            >
               <span className="grid size-11 place-items-center rounded-xl bg-primary text-primary-foreground">
                 <Icon className="size-4" aria-hidden="true" />
               </span>
@@ -695,7 +772,7 @@ function ProcessSection() {
                 STAGE {String(index + 1).padStart(2, "0")}
               </span>
               <h3 className="mt-2 font-semibold">{title}</h3>
-              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 {description}
               </p>
             </li>
@@ -719,23 +796,38 @@ function TechnologiesSection() {
           title="Tools selected around product requirements."
           description="Our capabilities span interface, application, data, automation, payments, delivery, and infrastructure. Final selection follows project context rather than a fixed stack."
         />
-        <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-2 lg:grid-cols-4">
-          {technologies.map(([name, role, Icon], index) => (
-            <div key={name} className="bg-card p-5">
-              <div className="flex items-center justify-between">
-                <span className="grid size-9 place-items-center rounded-lg bg-muted">
-                  <Icon className="size-4" aria-hidden="true" />
-                </span>
-                <span className="font-mono text-[0.56rem] text-muted-foreground">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <h3 className="mt-5 text-sm font-semibold">{name}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                {role}
-              </p>
-            </div>
-          ))}
+        <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {technologyGroups.map(
+            ({ title, description, technologies, icon: Icon }, index) => (
+              <article
+                key={title}
+                className={`${styles.technologyGroup} rounded-2xl border bg-card p-6 sm:p-7`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="grid size-11 place-items-center rounded-xl bg-primary text-primary-foreground">
+                    <Icon className="size-5" aria-hidden="true" />
+                  </span>
+                  <span className="font-mono text-[0.56rem] text-muted-foreground">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <h3 className="mt-6 text-xl font-semibold">{title}</h3>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                  {description}
+                </p>
+                <ul
+                  className="mt-6 flex flex-wrap gap-2"
+                  aria-label={`${title} technologies`}
+                >
+                  {technologies.map((technology) => (
+                    <li key={technology}>
+                      <Badge variant="outline">{technology}</Badge>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ),
+          )}
         </div>
         <p className="mt-6 max-w-3xl text-xs leading-6 text-muted-foreground">
           Technology references do not imply partnerships, certifications,
@@ -907,10 +999,28 @@ function AboutPage({
       acceptedAnswer: { "@type": "Answer", text: answer },
     })),
   } as const;
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: company.name,
+    legalName: company.legalName,
+    description: company.description,
+    url: company.url,
+    email: company.email,
+  } as const;
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: company.url },
+      { "@type": "ListItem", position: 2, name: "About", item: pageUrl },
+    ],
+  } as const;
   return (
     <>
       <Hero heroMedia={heroMedia} />
       <StorySection />
+      <StatisticsSection />
       <DirectionSection />
       <ValuesSection />
       <DifferencesSection />
@@ -936,8 +1046,8 @@ function AboutPage({
         actions={
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" variant="secondary">
-              <Link href="/book-consultation">
-                Book Consultation{" "}
+              <Link href="/contact">
+                Book Consultation
                 <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
             </Button>
@@ -947,7 +1057,15 @@ function AboutPage({
               variant="outline"
               className="border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
             >
-              <Link href="/portfolio">View Portfolio</Link>
+              <Link href="/contact#contact-form">Start Project</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="ghost"
+              className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+            >
+              <Link href="/contact">Contact Us</Link>
             </Button>
           </div>
         }
@@ -955,6 +1073,8 @@ function AboutPage({
       />
       <StructuredData data={aboutSchema} />
       <StructuredData data={webPageSchema} />
+      <StructuredData data={organizationSchema} />
+      <StructuredData data={breadcrumbSchema} />
       <StructuredData data={faqSchema} />
     </>
   );

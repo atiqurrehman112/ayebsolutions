@@ -181,6 +181,12 @@ The dynamic Blog boundary established in Sprint 9B remains unchanged: `/blog` an
 
 Listing and article templates remain Server Components. `ReadingProgress` and `CopyArticleLink` share one narrow Blog-owned Client Component and perform no fetching or persistence. The server-side article renderer safely interprets existing plain CMS section bodies as paragraphs, quotes, callouts, code blocks, lists, and tables without executing markup. Featured media, author, reading time, category, tags, article sections, FAQ, previous/next links, and related content remain conditional and are never inferred when absent.
 
+## Sprint 11D About presentation
+
+The `/about` route remains a fully static Server Component using immutable content colocated within the About feature. Sprint 11D changes only the existing About presentation and static structured-data composition; it adds no repository, CMS, settings, database, API, action, or client-state boundary.
+
+The page composes an editorial hero with a code-rendered fallback visual, story, factual capability snapshot, mission/vision, six values, business-first comparison, seven-stage process, six grouped technology disciplines, engineering principles, transparent team model, native FAQ disclosures, and final conversion CTA. Statistics are exact counts derived from the page's immutable collections and are explicitly distinguished from client, project, country, or experience claims. Motion is CSS-only and neutralized under `prefers-reduced-motion`.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries
