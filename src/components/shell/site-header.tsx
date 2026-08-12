@@ -32,7 +32,7 @@ import {
   featuredNavigation,
   megaMenuSections,
   primaryNavigation,
-  solutionsDropdown,
+  solutionNavigation,
 } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import type { NavigationSection, ShellLink } from "@/types/global-settings";
@@ -180,7 +180,7 @@ function SolutionsMenu({ pathname }: { readonly pathname: string }) {
         sideOffset={12}
         className="w-[26rem] p-2"
       >
-        {solutionsDropdown.map((item) => (
+        {solutionNavigation.map((item) => (
           <MegaMenuLink key={item.href} item={item} />
         ))}
       </DropdownMenuContent>

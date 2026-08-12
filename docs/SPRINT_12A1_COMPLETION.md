@@ -10,18 +10,20 @@ Sprint 12A.1 replaced every remaining nonexistent Solutions destination with in-
 
 All Solutions navigation now resolves through the canonical `/solutions` page:
 
-| Navigation label        | Destination                         | Content target         |
-| ----------------------- | ----------------------------------- | ---------------------- |
-| AI Agents               | `/solutions#ai-agents`              | AI Automation          |
-| Workflow Automation     | `/solutions#workflow-automation`    | Workflow Automation    |
-| CRM Solutions           | `/solutions#crm`                    | CRM Solutions          |
-| Digital Transformation  | `/solutions#digital-transformation` | Digital Transformation |
-| For Startups            | `/solutions#startups`               | SaaS Platforms         |
-| For Enterprises         | `/solutions#enterprise`             | Digital Transformation |
-| For Local Businesses    | `/solutions#local-business`         | Business Automation    |
-| Technology Partnerships | `/solutions#partnerships`           | Technology ecosystem   |
+| Navigation label        | Destination                          | Content target         |
+| ----------------------- | ------------------------------------ | ---------------------- |
+| AI Agents               | `/solutions#ai-agents`               | AI Automation          |
+| Workflow Automation     | `/solutions#workflow-automation`     | Workflow Automation    |
+| CRM Solutions           | `/solutions#crm-solutions`           | CRM Solutions          |
+| Digital Transformation  | `/solutions#digital-transformation`  | Digital Transformation |
+| For Startups            | `/solutions#startups`                | SaaS Platforms         |
+| For Enterprises         | `/solutions#enterprises`             | Digital Transformation |
+| For Local Businesses    | `/solutions#local-businesses`        | Business Automation    |
+| Technology Partnerships | `/solutions#technology-partnerships` | Technology ecosystem   |
 
 Each fragment target appears exactly once in production HTML and uses sticky-header-aware scroll spacing. The page retains one canonical URL and no duplicate metadata or route was created.
+
+One exported `solutionNavigation` collection now supplies the desktop Solutions dropdown, the mobile Solutions group, the Services mega-menu Solutions preview, global search navigation, and the footer Solutions group. This removes the previously duplicated URL definitions that allowed fragment names to drift.
 
 ### Process
 

@@ -82,7 +82,7 @@ const solutions: readonly Solution[] = [
   },
   {
     anchorId: "business-automation",
-    audienceAnchorId: "local-business",
+    audienceAnchorId: "local-businesses",
     title: "Business Automation",
     description:
       "Connect recurring operational steps across the applications your team already depends on.",
@@ -98,7 +98,7 @@ const solutions: readonly Solution[] = [
     icon: RefreshCw,
   },
   {
-    anchorId: "crm",
+    anchorId: "crm-solutions",
     title: "CRM Solutions",
     description:
       "Shape customer data, pipeline stages, communication context, and ownership around the way your team actually sells and serves.",
@@ -180,7 +180,7 @@ const solutions: readonly Solution[] = [
   },
   {
     anchorId: "digital-transformation",
-    audienceAnchorId: "enterprise",
+    audienceAnchorId: "enterprises",
     title: "Digital Transformation",
     description:
       "Modernize high-friction systems through staged assessment, integration, redesign, and carefully managed replacement.",
@@ -771,7 +771,7 @@ export function SolutionsPage() {
       </section>
 
       <section
-        id="partnerships"
+        id="technology-partnerships"
         className={cn(
           styles.technologySection,
           "scroll-mt-24 border-b py-20 text-primary-foreground sm:py-24 lg:py-30",

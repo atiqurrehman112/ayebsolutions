@@ -37,6 +37,57 @@ export const primaryNavigation = [
   { label: "Contact", href: "/contact" },
 ] as const satisfies readonly ShellLink[];
 
+export const solutionNavigation = [
+  {
+    label: "AI Agents",
+    href: "/solutions#ai-agents",
+    description: "Purpose-built autonomous assistants.",
+    icon: Cpu,
+  },
+  {
+    label: "Workflow Automation",
+    href: "/solutions#workflow-automation",
+    description: "Connect teams, tools, and data.",
+    icon: Workflow,
+  },
+  {
+    label: "CRM Solutions",
+    href: "/solutions#crm-solutions",
+    description: "Customer operations without friction.",
+    icon: Network,
+  },
+  {
+    label: "Digital Transformation",
+    href: "/solutions#digital-transformation",
+    description: "Modernize systems with confidence.",
+    icon: Rocket,
+  },
+  {
+    label: "For Startups",
+    href: "/solutions#startups",
+    description: "Launch and scale with a focused product team.",
+    icon: Lightbulb,
+  },
+  {
+    label: "For Enterprises",
+    href: "/solutions#enterprises",
+    description: "Secure modernization for complex operations.",
+    icon: ShieldCheck,
+  },
+  {
+    label: "For Local Businesses",
+    href: "/solutions#local-businesses",
+    description: "Digital systems that create practical growth.",
+    icon: Globe2,
+  },
+  {
+    label: "Technology Partnerships",
+    href: "/solutions#technology-partnerships",
+    description: "Flexible delivery for agencies and product teams.",
+    icon: Handshake,
+  },
+] as const satisfies readonly ShellLink[];
+
 export const megaMenuSections = [
   {
     title: "Services",
@@ -75,32 +126,7 @@ export const megaMenuSections = [
   },
   {
     title: "Solutions",
-    links: [
-      {
-        label: "AI Agents",
-        href: "/solutions#ai-agents",
-        description: "Purpose-built autonomous assistants.",
-        icon: Cpu,
-      },
-      {
-        label: "Workflow Automation",
-        href: "/solutions#workflow-automation",
-        description: "Connect teams, tools, and data.",
-        icon: Workflow,
-      },
-      {
-        label: "CRM Solutions",
-        href: "/solutions#crm",
-        description: "Customer operations without friction.",
-        icon: Network,
-      },
-      {
-        label: "Digital Transformation",
-        href: "/solutions#digital-transformation",
-        description: "Modernize systems with confidence.",
-        icon: Rocket,
-      },
-    ],
+    links: solutionNavigation,
   },
   {
     title: "Resources",
@@ -150,33 +176,6 @@ export const megaMenuSections = [
   },
 ] as const satisfies readonly NavigationSection[];
 
-export const solutionsDropdown = [
-  {
-    label: "For Startups",
-    href: "/solutions#startups",
-    description: "Launch and scale with a focused product team.",
-    icon: Lightbulb,
-  },
-  {
-    label: "For Enterprises",
-    href: "/solutions#enterprise",
-    description: "Secure modernization for complex operations.",
-    icon: ShieldCheck,
-  },
-  {
-    label: "For Local Businesses",
-    href: "/solutions#local-business",
-    description: "Digital systems that create practical growth.",
-    icon: Globe2,
-  },
-  {
-    label: "Technology Partnerships",
-    href: "/solutions#partnerships",
-    description: "Flexible delivery for agencies and product teams.",
-    icon: Handshake,
-  },
-] as const satisfies readonly ShellLink[];
-
 export const featuredNavigation = {
   eyebrow: "Featured",
   title: "Turn repetitive work into an intelligent system",
@@ -199,7 +198,6 @@ function uniqueNavigationLinks(links: readonly ShellLink[]): ShellLink[] {
 export const searchNavigation: readonly ShellLink[] = uniqueNavigationLinks([
   ...primaryNavigation,
   ...flattenNavigationSections(megaMenuSections),
-  ...solutionsDropdown,
 ]);
 
 export const consultationLink = {

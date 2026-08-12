@@ -1,6 +1,7 @@
 import { Github, Linkedin, Twitter } from "lucide-react";
 
 import type { NavigationSection, SocialChannel } from "@/types/global-settings";
+import { solutionNavigation } from "@/config/navigation";
 
 export const footerNavigation = [
   {
@@ -24,15 +25,7 @@ export const footerNavigation = [
   },
   {
     title: "Solutions",
-    links: [
-      { label: "AI Agents", href: "/solutions#ai-agents" },
-      { label: "Workflow Automation", href: "/solutions#workflow-automation" },
-      { label: "CRM Solutions", href: "/solutions#crm" },
-      {
-        label: "Digital Transformation",
-        href: "/solutions#digital-transformation",
-      },
-    ],
+    links: solutionNavigation.slice(0, 4),
   },
   {
     title: "Resources",
