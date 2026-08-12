@@ -749,8 +749,9 @@ function DifferencesSection() {
 function ProcessSection() {
   return (
     <section
+      id="process"
       aria-labelledby="about-process-heading"
-      className="border-b py-20 sm:py-24 lg:py-30"
+      className="scroll-mt-24 border-b py-20 sm:py-24 lg:py-30"
     >
       <Container className="max-w-[100rem]">
         <SectionIntroduction

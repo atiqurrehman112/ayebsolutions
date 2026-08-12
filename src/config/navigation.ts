@@ -78,25 +78,25 @@ export const megaMenuSections = [
     links: [
       {
         label: "AI Agents",
-        href: "/solutions/ai-agents",
+        href: "/solutions#ai-agents",
         description: "Purpose-built autonomous assistants.",
         icon: Cpu,
       },
       {
         label: "Workflow Automation",
-        href: "/solutions/workflow-automation",
+        href: "/solutions#workflow-automation",
         description: "Connect teams, tools, and data.",
         icon: Workflow,
       },
       {
         label: "CRM Solutions",
-        href: "/solutions/crm",
+        href: "/solutions#crm",
         description: "Customer operations without friction.",
         icon: Network,
       },
       {
         label: "Digital Transformation",
-        href: "/solutions/digital-transformation",
+        href: "/solutions#digital-transformation",
         description: "Modernize systems with confidence.",
         icon: Rocket,
       },
@@ -136,7 +136,7 @@ export const megaMenuSections = [
       },
       {
         label: "Our Process",
-        href: "/about#about-process-heading",
+        href: "/about#process",
         description: "A transparent delivery framework.",
         icon: Blocks,
       },
@@ -153,25 +153,25 @@ export const megaMenuSections = [
 export const solutionsDropdown = [
   {
     label: "For Startups",
-    href: "/solutions/startups",
+    href: "/solutions#startups",
     description: "Launch and scale with a focused product team.",
     icon: Lightbulb,
   },
   {
     label: "For Enterprises",
-    href: "/solutions/enterprise",
+    href: "/solutions#enterprise",
     description: "Secure modernization for complex operations.",
     icon: ShieldCheck,
   },
   {
     label: "For Local Businesses",
-    href: "/solutions/local-business",
+    href: "/solutions#local-business",
     description: "Digital systems that create practical growth.",
     icon: Globe2,
   },
   {
     label: "Technology Partnerships",
-    href: "/solutions/partnerships",
+    href: "/solutions#partnerships",
     description: "Flexible delivery for agencies and product teams.",
     icon: Handshake,
   },

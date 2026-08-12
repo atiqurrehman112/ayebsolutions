@@ -7,7 +7,7 @@ export const footerNavigation = [
     title: "Company",
     links: [
       { label: "About", href: "/about" },
-      { label: "Process", href: "/about#about-process-heading" },
+      { label: "Process", href: "/about#process" },
       { label: "Team", href: "/about#team-heading" },
       { label: "Contact", href: "/contact" },
     ],
@@ -25,12 +25,12 @@ export const footerNavigation = [
   {
     title: "Solutions",
     links: [
-      { label: "AI Agents", href: "/solutions/ai-agents" },
-      { label: "Workflow Automation", href: "/solutions/workflow-automation" },
-      { label: "CRM Solutions", href: "/solutions/crm" },
+      { label: "AI Agents", href: "/solutions#ai-agents" },
+      { label: "Workflow Automation", href: "/solutions#workflow-automation" },
+      { label: "CRM Solutions", href: "/solutions#crm" },
       {
         label: "Digital Transformation",
-        href: "/solutions/digital-transformation",
+        href: "/solutions#digital-transformation",
       },
     ],
   },

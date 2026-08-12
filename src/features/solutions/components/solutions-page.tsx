@@ -47,6 +47,8 @@ import { cn } from "@/lib/utils";
 import styles from "./solutions-page.module.css";
 
 interface Solution {
+  readonly anchorId: string;
+  readonly audienceAnchorId?: string;
   readonly title: string;
   readonly description: string;
   readonly value: string;
@@ -63,6 +65,7 @@ interface IconItem {
 
 const solutions: readonly Solution[] = [
   {
+    anchorId: "ai-agents",
     title: "AI Automation",
     description:
       "Combine language models, structured business rules, and human review to support decisions that require context.",
@@ -78,6 +81,8 @@ const solutions: readonly Solution[] = [
     icon: Bot,
   },
   {
+    anchorId: "business-automation",
+    audienceAnchorId: "local-business",
     title: "Business Automation",
     description:
       "Connect recurring operational steps across the applications your team already depends on.",
@@ -93,6 +98,7 @@ const solutions: readonly Solution[] = [
     icon: RefreshCw,
   },
   {
+    anchorId: "crm",
     title: "CRM Solutions",
     description:
       "Shape customer data, pipeline stages, communication context, and ownership around the way your team actually sells and serves.",
@@ -108,6 +114,7 @@ const solutions: readonly Solution[] = [
     icon: Users,
   },
   {
+    anchorId: "workflow-automation",
     title: "Workflow Automation",
     description:
       "Turn multi-step processes into explicit flows with triggers, validation, approvals, and exception handling.",
@@ -123,6 +130,7 @@ const solutions: readonly Solution[] = [
     icon: Workflow,
   },
   {
+    anchorId: "internal-dashboards",
     title: "Internal Dashboards",
     description:
       "Bring operational data, tasks, permissions, and reporting into a focused workspace built around internal roles.",
@@ -138,6 +146,7 @@ const solutions: readonly Solution[] = [
     icon: ChartNoAxesCombined,
   },
   {
+    anchorId: "customer-portals",
     title: "Customer Portals",
     description:
       "Give customers a secure place to access information, submit requests, track progress, and manage their relationship.",
@@ -153,6 +162,8 @@ const solutions: readonly Solution[] = [
     icon: PanelTop,
   },
   {
+    anchorId: "saas-platforms",
+    audienceAnchorId: "startups",
     title: "SaaS Platforms",
     description:
       "Design and build focused software products with authentication, subscriptions, roles, workflows, and operating tools.",
@@ -168,6 +179,8 @@ const solutions: readonly Solution[] = [
     icon: Boxes,
   },
   {
+    anchorId: "digital-transformation",
+    audienceAnchorId: "enterprise",
     title: "Digital Transformation",
     description:
       "Modernize high-friction systems through staged assessment, integration, redesign, and carefully managed replacement.",
@@ -606,6 +619,8 @@ export function SolutionsPage() {
               (
                 {
                   title,
+                  anchorId,
+                  audienceAnchorId,
                   description,
                   value,
                   idealFor,
@@ -615,12 +630,20 @@ export function SolutionsPage() {
                 index,
               ) => (
                 <article
+                  id={anchorId}
                   key={title}
                   className={cn(
                     styles.solutionCard,
-                    "grid overflow-hidden rounded-3xl border bg-card lg:grid-cols-[.38fr_.62fr]",
+                    "relative grid scroll-mt-24 overflow-hidden rounded-3xl border bg-card lg:grid-cols-[.38fr_.62fr]",
                   )}
                 >
+                  {audienceAnchorId ? (
+                    <span
+                      id={audienceAnchorId}
+                      className="pointer-events-none absolute inset-x-0 top-0 scroll-mt-24"
+                      aria-hidden="true"
+                    />
+                  ) : null}
                   <div
                     className={cn(
                       styles.solutionIntro,
@@ -748,9 +771,10 @@ export function SolutionsPage() {
       </section>
 
       <section
+        id="partnerships"
         className={cn(
           styles.technologySection,
-          "border-b py-20 text-primary-foreground sm:py-24 lg:py-30",
+          "scroll-mt-24 border-b py-20 text-primary-foreground sm:py-24 lg:py-30",
         )}
         aria-labelledby="technology-heading"
       >
