@@ -193,6 +193,12 @@ The `/contact` route remains a static Server Component presentation around the e
 
 The page now composes an editorial hero, six consultation-benefit cards, honest business-information cards, the existing production form, a five-stage post-submission journey, trust principles, native FAQ disclosures, and a final conversion CTA. Optional Media Library hero content retains the existing code-rendered fallback. Motion is CSS-only outside the existing form boundary and is neutralized under `prefers-reduced-motion`; no repository, fetch, database, authentication, middleware, admin, or unrelated route changed.
 
+## Sprint 11F Testimonials presentation
+
+The dynamic `/testimonials` boundary established in Sprint 9E remains unchanged. Published testimonial queries continue through `TestimonialsRepository` and the existing five-minute `testimonials` cache, with approval and verified-consent predicates applied before records reach React. Sprint 11F changes only the public Testimonials Server Component and its route-owned loading/error presentation; it adds no repository method, query, action, schema, admin behavior, or client state.
+
+The page conditionally composes an editorial hero, up to two explicitly featured CMS records, existing server-side discovery controls, a responsive masonry archive, factual CMS-derived trust signals, delivery principles, a transparent review-workflow explanation, native FAQ disclosures, and a final conversion CTA. Avatar, company logo, rating, company, role, and industry render only when present on the eligible record. Review structured data remains derived from the same visible CMS rows. CSS owns all new reveal and elevation motion and neutralizes it under `prefers-reduced-motion`.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

@@ -1,48 +1,275 @@
 .hero {
   background:
     radial-gradient(
-      circle at 82% 20%,
-      hsl(var(--primary) / 0.1),
-      transparent 30rem
+      circle at 84% 18%,
+      hsl(var(--primary) / 0.12),
+      transparent 32rem
     ),
-    linear-gradient(to bottom, hsl(var(--muted) / 0.2), transparent 60%);
+    radial-gradient(
+      circle at 6% 88%,
+      hsl(var(--foreground) / 0.05),
+      transparent 26rem
+    ),
+    linear-gradient(to bottom, hsl(var(--muted) / 0.22), transparent 68%);
 }
-.card {
+
+.hero::before {
+  position: absolute;
+  top: 8%;
+  right: -10rem;
+  width: 34rem;
+  height: 34rem;
+  border: 1px solid hsl(var(--foreground) / 0.08);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 5rem hsl(var(--foreground) / 0.018),
+    0 0 0 10rem hsl(var(--foreground) / 0.012);
+  content: "";
+  pointer-events: none;
+}
+
+.hero::after {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    hsl(var(--foreground) / 0.13) 0.7px,
+    transparent 0.7px
+  );
+  background-size: 1.3rem 1.3rem;
+  mask-image: radial-gradient(circle at 82% 40%, black, transparent 48%);
+  content: "";
+  pointer-events: none;
+}
+
+.featuredCard {
+  isolation: isolate;
+  box-shadow: 0 40px 100px -68px hsl(var(--foreground) / 0.6);
+  animation: testimonial-reveal 650ms both;
   transition:
-    transform 250ms ease,
-    border-color 250ms ease,
-    box-shadow 250ms ease;
+    transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 280ms ease,
+    box-shadow 280ms ease;
 }
-.card:hover {
-  transform: translateY(-3px);
-  border-color: hsl(var(--primary) / 0.35);
-  box-shadow: var(--shadow-soft);
+
+.featuredCard:nth-child(2) {
+  animation-delay: 100ms;
 }
+
+.featuredCard::after {
+  position: absolute;
+  right: -8rem;
+  bottom: -10rem;
+  z-index: -1;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 50%;
+  background: hsl(var(--primary) / 0.06);
+  filter: blur(1rem);
+  content: "";
+  transition: transform 350ms ease;
+}
+
+.featuredCard:hover,
+.featuredCard:focus-within {
+  border-color: hsl(var(--foreground) / 0.22);
+  box-shadow: 0 48px 110px -70px hsl(var(--foreground) / 0.7);
+  transform: translateY(-4px);
+}
+
+.featuredCard:hover::after {
+  transform: translate(-2rem, -2rem) scale(1.08);
+}
+
+.filters {
+  background:
+    linear-gradient(145deg, hsl(var(--card)), hsl(var(--card) / 0.86)),
+    hsl(var(--card));
+}
+
 .filter {
   display: grid;
   min-width: 0;
-  gap: 0.45rem;
+  gap: 0.5rem;
   color: hsl(var(--muted-foreground));
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: 0.02em;
 }
-.avatar {
+
+.filterLabel {
+  margin-bottom: 0.5rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.control {
+  min-height: 3rem;
+  min-width: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  background: hsl(var(--background));
+  padding-inline: 1rem;
+  color: hsl(var(--foreground));
+  font-size: 0.875rem;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem;
+  min-height: 3rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  background: hsl(var(--background));
+  padding: 0.25rem;
+}
+
+.segment {
+  display: grid;
+  min-height: 2.4rem;
+  cursor: pointer;
+  place-items: center;
+  border-radius: 0.55rem;
+  padding-inline: 0.75rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.78rem;
+  font-weight: 650;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.segmented input:checked + .segment {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: var(--shadow-xs);
+}
+
+.segmented input:focus-visible + .segment {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.masonry {
+  columns: 1;
+  column-gap: 1.25rem;
+}
+
+.card {
+  --delay: calc(var(--card-index) * 45ms);
+
+  width: 100%;
+  margin-bottom: 1.25rem;
+  animation: testimonial-reveal 620ms var(--delay) both;
+  box-shadow: 0 22px 60px -52px hsl(var(--foreground) / 0.5);
+  transition:
+    transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.card:hover,
+.card:focus-within {
+  border-color: hsl(var(--foreground) / 0.22);
+  box-shadow: 0 34px 72px -54px hsl(var(--foreground) / 0.62);
+  transform: translateY(-4px);
+}
+
+.avatar,
+.avatarFallback {
+  display: grid;
   overflow: hidden;
   width: 3rem;
   height: 3rem;
-  border-radius: 999px;
+  flex: none;
+  place-items: center;
   border: 1px solid hsl(var(--border));
+  border-radius: 0.9rem;
+  background: hsl(var(--muted));
+  font-weight: 700;
 }
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+
+.featuredAvatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1.1rem;
 }
+
+.trustCard {
+  transition:
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.trustCard:hover,
+.trustCard:focus-within {
+  background: hsl(var(--muted) / 0.28);
+  box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.08);
+}
+
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.disclosure[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+.finalCta :global(.rounded-2xl) {
+  background:
+    radial-gradient(
+      circle at 12% 10%,
+      hsl(var(--primary-foreground) / 0.14),
+      transparent 22rem
+    ),
+    hsl(var(--primary));
+}
+
+@media (min-width: 768px) {
+  .masonry {
+    columns: 2;
+  }
+}
+
+@media (min-width: 1280px) {
+  .masonry {
+    columns: 3;
+  }
+}
+
+@keyframes testimonial-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .featuredCard,
   .card {
+    animation: none;
     transition: none;
   }
-  .card:hover {
+
+  .featuredCard:hover,
+  .featuredCard:focus-within,
+  .featuredCard:hover::after,
+  .card:hover,
+  .card:focus-within {
     transform: none;
+  }
+
+  .segment,
+  .trustCard,
+  .disclosure svg {
+    transition: none;
   }
 }
