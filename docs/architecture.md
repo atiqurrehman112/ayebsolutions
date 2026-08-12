@@ -211,6 +211,12 @@ The six static `/services/[slug]` pages continue to use the immutable `marketing
 
 The shared template composes an editorial hero and code-rendered service visual, overview, business benefits, ideal customers, seven implementation stages, service-specific technology, feature and deliverable collections, the latest published Portfolio preview, service-specific native FAQ disclosures, five related-service links, and a final CTA. The Portfolio preview is the only dynamic section: the route calls the existing five-minute cached public Portfolio helper and converts an unavailable source into an honest empty state. Each page retains route-owned metadata plus BreadcrumbList, Service, WebPage, and FAQPage schemas. Presentation motion is CSS-only and neutralized under `prefers-reduced-motion`.
 
+## Sprint 13A Team CMS
+
+The protected `/admin/team` module follows the established repository → Server Actions → server-rendered admin UI boundary. `TeamRepository` owns filtered, sorted, count-aware pagination, department discovery, CRUD, publication state, featured placement, and explicit display ordering. `src/lib/actions/team.ts` is the only mutation boundary; it applies shared authentication and role permissions, validates through the dedicated Zod contract, supplies audit identities, and revalidates the Team workspace. Administrators may permanently delete; editors create, edit, publish, draft, feature, and reorder; viewers remain read-only. PostgreSQL RLS independently enforces the same boundary.
+
+Migration `202608120001_team_cms.sql` adds normalized team profiles with a nullable Media Library portrait reference, unique slug, role and department, bounded bios, skill arrays, optional experience/contact/profile URLs, featured state, display order, draft/published lifecycle, audit identities, timestamps, indexes, trigger, and RLS. The admin page selects only published image media for portraits. Drag-and-drop ordering is paired with labeled move controls so keyboard users have the same capability. No public Team route or public repository adapter exists in Sprint 13A.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

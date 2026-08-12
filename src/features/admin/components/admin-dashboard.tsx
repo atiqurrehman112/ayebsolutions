@@ -8,6 +8,7 @@ import {
   Mail,
   MessageSquareQuote,
   ShieldAlert,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -47,6 +48,13 @@ const destinations: readonly DashboardDestination[] = [
     icon: MessageSquareQuote,
   },
   {
+    title: "Team",
+    description:
+      "Member profiles, expertise, Media Library portraits, and publishing order.",
+    href: "/admin/team",
+    icon: Users,
+  },
+  {
     title: "Contact Leads",
     description:
       "Inquiry intake, qualification context, assignment, and response history.",
@@ -66,6 +74,7 @@ const statistics = [
   ["Portfolio", "Connected", "Published project workflow available"],
   ["Blog", "Connected", "Editorial workflow available"],
   ["Testimonials", "Connected", "Consent-aware moderation available"],
+  ["Team", "Connected", "Profile publishing workflow available"],
   ["Contact Leads", "Connected", "CRM workflow available"],
 ] as const;
 

@@ -1,5 +1,16 @@
 # Master Completion Checklist
 
+## Sprint 13A — Team CMS
+
+- [x] Forward-only `team_members` migration with indexes, audit fields, trigger, and RLS
+- [x] Typed Team repository, generated-style database contracts, and Zod validation
+- [x] Role-aware Team Server Actions for CRUD, publication, featured placement, and ordering
+- [x] Protected Team list with search, filters, sorting, and 25/50/100 pagination
+- [x] Accessible create/edit/delete dialogs and Media Library portrait selection
+- [x] Drag-and-drop ordering with keyboard-accessible move controls
+- [x] Loading, error, empty, read-only, responsive, and reduced-motion states
+- [x] Admin sidebar and dashboard registration; no public Team route
+
 ## Foundation
 
 - [ ] Project created

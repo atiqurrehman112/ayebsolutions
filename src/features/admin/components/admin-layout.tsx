@@ -6,6 +6,7 @@ import {
   Mail,
   MenuSquare,
   MessageSquareQuote,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -36,6 +37,7 @@ const navigation: readonly AdminNavigationItem[] = [
     icon: FolderKanban,
   },
   { label: "Blog", href: "/admin/blog", icon: BookOpen },
+  { label: "Team", href: "/admin/team", icon: Users },
   {
     label: "Testimonials",
     href: "/admin/testimonials",

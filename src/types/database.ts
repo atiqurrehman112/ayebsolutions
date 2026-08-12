@@ -156,6 +156,26 @@ export interface TestimonialRow extends AuditColumns, Record<string, unknown> {
   readonly company_logo_media_id: string | null;
 }
 
+export interface TeamMemberRow extends AuditColumns, Record<string, unknown> {
+  readonly name: string;
+  readonly slug: string;
+  readonly profile_image: string | null;
+  readonly role: string;
+  readonly department: string | null;
+  readonly short_bio: string;
+  readonly full_bio: string | null;
+  readonly skills: readonly string[];
+  readonly years_experience: number | null;
+  readonly email: string | null;
+  readonly linkedin_url: string | null;
+  readonly github_url: string | null;
+  readonly twitter_url: string | null;
+  readonly portfolio_url: string | null;
+  readonly featured: boolean;
+  readonly display_order: number;
+  readonly status: "draft" | "published";
+}
+
 export interface ContactLeadRow extends AuditColumns, Record<string, unknown> {
   readonly name: string;
   readonly email: string;
@@ -272,6 +292,11 @@ export type TestimonialInsert = InsertShape<
   "reviewer_name" | "quote"
 >;
 export type TestimonialUpdate = UpdateShape<TestimonialRow>;
+export type TeamMemberInsert = InsertShape<
+  TeamMemberRow,
+  "name" | "slug" | "role" | "short_bio"
+>;
+export type TeamMemberUpdate = UpdateShape<TeamMemberRow>;
 export type ContactLeadInsert = InsertShape<
   ContactLeadRow,
   "name" | "email" | "project_type" | "message"
@@ -336,6 +361,11 @@ export interface Database {
         TestimonialRow,
         TestimonialInsert,
         TestimonialUpdate
+      >;
+      team_members: TableDefinition<
+        TeamMemberRow,
+        TeamMemberInsert,
+        TeamMemberUpdate
       >;
       contact_leads: TableDefinition<
         ContactLeadRow,
