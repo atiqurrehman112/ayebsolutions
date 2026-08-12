@@ -205,6 +205,12 @@ The `/solutions` route is a fully static Server Component rendered through the d
 
 The page composes a code-rendered solution-system hero, eight solution categories, six qualitative business outcomes, nine industry contexts, a static eleven-tool technology ecosystem, seven implementation stages, a six-topic approach comparison, native FAQ disclosures, and a final conversion CTA. Content uses balanced, non-guaranteed language and does not claim client results or measurable business statistics. Metadata remains route-owned, while BreadcrumbList, WebPage, and FAQPage structured data are colocated with the visible immutable sources. Motion is CSS-only and neutralized under `prefers-reduced-motion`.
 
+## Sprint 12B Service-detail presentation
+
+The six static `/services/[slug]` pages continue to use the immutable `marketingServices` route registry and one shared Server Component template. `src/features/services/service-detail-content.ts` adds a typed presentation profile for each established slug—Web Development, AI Automation, SaaS Development, UI/UX Design, E-commerce, and Custom Software—without introducing a Services CMS, repository mutation, database change, or client boundary.
+
+The shared template composes an editorial hero and code-rendered service visual, overview, business benefits, ideal customers, seven implementation stages, service-specific technology, feature and deliverable collections, the latest published Portfolio preview, service-specific native FAQ disclosures, five related-service links, and a final CTA. The Portfolio preview is the only dynamic section: the route calls the existing five-minute cached public Portfolio helper and converts an unavailable source into an honest empty state. Each page retains route-owned metadata plus BreadcrumbList, Service, WebPage, and FAQPage schemas. Presentation motion is CSS-only and neutralized under `prefers-reduced-motion`.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

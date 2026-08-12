@@ -64,6 +64,7 @@
 - [x] Premium Contact presentation with preserved production lead workflow (Sprint 11E)
 - [x] Premium Testimonials presentation with preserved consent-gated CMS workflow (Sprint 11F)
 - [x] Premium static business-solutions experience (Sprint 12A)
+- [x] Premium reusable long-form service-detail experience (Sprint 12B)
 - [x] Complete Cloudinary Media Library integration across public rendering and SEO (Sprint 10A)
 - [x] Homepage
 - [ ] Services
