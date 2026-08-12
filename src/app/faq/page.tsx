@@ -74,7 +74,11 @@ export const metadata: Metadata = {
 export default function FaqRoute() {
   return (
     <>
-      <section className="border-b py-20 sm:py-28">
+      <section className="relative isolate overflow-hidden border-b py-20 sm:py-28 lg:py-32">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_65%_0%,hsl(var(--foreground)/0.07),transparent_62%)]"
+          aria-hidden="true"
+        />
         <Container size="reading">
           <SiteBreadcrumbs
             items={[
@@ -83,12 +87,10 @@ export default function FaqRoute() {
             ]}
           />
           <Eyebrow className="mt-14">Frequently Asked Questions</Eyebrow>
-          <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight sm:text-7xl">
+          <h1 className="editorial-heading mt-5 text-5xl leading-[0.98] sm:text-7xl">
             Answers before we start building.
           </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            {description}
-          </p>
+          <p className="body-copy mt-6">{description}</p>
         </Container>
       </section>
       <section className="border-b py-16 sm:py-24">
@@ -97,16 +99,16 @@ export default function FaqRoute() {
             {faqs.map(([question, answer]) => (
               <details
                 key={question}
-                className="group rounded-xl border bg-card p-5"
+                className="interactive-surface group rounded-2xl border bg-card p-5 shadow-xs sm:p-6"
               >
-                <summary className="cursor-pointer list-none pr-8 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <summary className="focus-ring cursor-pointer list-none rounded-sm pr-8 font-semibold leading-6">
                   {question}
                 </summary>
                 <p className="mt-4 leading-7 text-muted-foreground">{answer}</p>
               </details>
             ))}
           </div>
-          <div className="mt-12 rounded-2xl border bg-muted/20 p-8">
+          <div className="mt-14 rounded-3xl border bg-muted/20 p-7 shadow-xs sm:p-9">
             <h2 className="text-2xl font-bold">
               Still have a project question?
             </h2>

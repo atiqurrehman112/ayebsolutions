@@ -21,7 +21,11 @@ export function LegalPage({
   return (
     <>
       <article>
-        <header className="border-b py-20 sm:py-28">
+        <header className="relative isolate overflow-hidden border-b py-20 sm:py-28 lg:py-32">
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_65%_0%,hsl(var(--foreground)/0.07),transparent_62%)]"
+            aria-hidden="true"
+          />
           <Container size="reading">
             <SiteBreadcrumbs
               items={[
@@ -30,19 +34,17 @@ export function LegalPage({
               ]}
             />
             <Eyebrow className="mt-14">Legal & standards</Eyebrow>
-            <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight sm:text-7xl">
+            <h1 className="editorial-heading mt-5 text-5xl leading-[0.98] sm:text-7xl">
               {title}
             </h1>
-            <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              {description}
-            </p>
+            <p className="body-copy mt-6">{description}</p>
           </Container>
         </header>
         <div className="py-16 sm:py-24">
-          <Container size="reading" className="space-y-12">
+          <Container size="reading" className="space-y-14">
             {sections.map((section) => (
               <section key={section.heading}>
-                <h2 className="text-2xl font-bold tracking-tight">
+                <h2 className="text-2xl font-bold leading-tight tracking-[-0.025em] sm:text-3xl">
                   {section.heading}
                 </h2>
                 {section.paragraphs.map((paragraph) => (

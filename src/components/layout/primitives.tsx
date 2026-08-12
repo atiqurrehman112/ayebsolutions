@@ -3,7 +3,7 @@ import type { ElementType, HTMLAttributes, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-const containerVariants = cva("mx-auto w-full px-4 sm:px-6 lg:px-8", {
+const containerVariants = cva("mx-auto w-full px-4 sm:px-6 lg:px-8 2xl:px-10", {
   variants: {
     size: {
       reading: "max-w-reading",
@@ -61,7 +61,7 @@ function Eyebrow({
   return (
     <Component
       className={cn(
-        "text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground",
+        "text-xs font-semibold uppercase leading-5 tracking-[0.18em] text-muted-foreground sm:text-sm",
         className,
       )}
       {...props}

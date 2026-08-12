@@ -26,7 +26,11 @@ export function StaticMarketingPage({
 }) {
   return (
     <>
-      <section className="relative overflow-hidden border-b py-20 sm:py-28">
+      <section className="relative isolate overflow-hidden border-b py-20 sm:py-28 lg:py-32">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(circle_at_70%_0%,hsl(var(--foreground)/0.08),transparent_60%)]"
+          aria-hidden="true"
+        />
         <Container className="max-w-[100rem]">
           <SiteBreadcrumbs
             items={[
@@ -36,12 +40,10 @@ export function StaticMarketingPage({
           />
           <div className="mt-14 max-w-5xl">
             <Eyebrow>{eyebrow}</Eyebrow>
-            <h1 className="mt-5 text-balance text-[clamp(3rem,8vw,7rem)] font-bold leading-[.92] tracking-[-.06em]">
+            <h1 className="editorial-heading mt-5 text-[clamp(3rem,8vw,7rem)] leading-[.92] tracking-[-.055em]">
               {title}
             </h1>
-            <p className="mt-7 max-w-3xl text-lg leading-8 text-muted-foreground">
-              {description}
-            </p>
+            <p className="body-copy mt-7 max-w-3xl">{description}</p>
           </div>
         </Container>
       </section>
@@ -62,12 +64,14 @@ export function StaticMarketingPage({
               ({ description: copy, icon: Icon, points, title: cardTitle }) => (
                 <article
                   key={cardTitle}
-                  className="flex h-full flex-col rounded-2xl border bg-card p-6 shadow-xs sm:p-8"
+                  className="interactive-surface flex h-full flex-col rounded-3xl border bg-card p-6 shadow-xs sm:p-8"
                 >
                   <span className="grid size-12 place-items-center rounded-xl border bg-muted/30">
                     <Icon className="size-5" aria-hidden="true" />
                   </span>
-                  <h3 className="mt-6 text-2xl font-bold">{cardTitle}</h3>
+                  <h3 className="mt-6 text-2xl font-bold tracking-[-0.025em]">
+                    {cardTitle}
+                  </h3>
                   <p className="mt-4 leading-7 text-muted-foreground">{copy}</p>
                   <ul className="mt-6 space-y-2">
                     {points.map((point) => (
