@@ -1,8 +1,6 @@
 import {
   Blocks,
-  BookOpen,
   Bot,
-  BriefcaseBusiness,
   Building2,
   ChartNoAxesCombined,
   CircleHelp,
@@ -34,7 +32,6 @@ export const primaryNavigation = [
   { label: "Services", href: "/services" },
   { label: "Solutions", href: "/solutions" },
   { label: "Portfolio", href: "/portfolio" },
-  { label: "Case Studies", href: "/case-studies" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
@@ -110,7 +107,7 @@ export const megaMenuSections = [
     links: [
       {
         label: "Case Studies",
-        href: "/case-studies",
+        href: "/portfolio",
         description: "Results from real engagements.",
         icon: ChartNoAxesCombined,
       },
@@ -119,12 +116,6 @@ export const megaMenuSections = [
         href: "/blog",
         description: "Practical product and automation insights.",
         icon: Newspaper,
-      },
-      {
-        label: "Guides",
-        href: "/resources/guides",
-        description: "Actionable technical resources.",
-        icon: BookOpen,
       },
       {
         label: "FAQ",
@@ -145,21 +136,15 @@ export const megaMenuSections = [
       },
       {
         label: "Our Process",
-        href: "/process",
+        href: "/about#about-process-heading",
         description: "A transparent delivery framework.",
         icon: Blocks,
       },
       {
         label: "Team",
-        href: "/team",
+        href: "/about#team-heading",
         description: "Meet the people behind the work.",
         icon: Users,
-      },
-      {
-        label: "Careers",
-        href: "/careers",
-        description: "Build meaningful technology with us.",
-        icon: BriefcaseBusiness,
       },
     ],
   },
@@ -219,6 +204,6 @@ export const searchNavigation: readonly ShellLink[] = uniqueNavigationLinks([
 
 export const consultationLink = {
   label: "Book Consultation",
-  href: "/book-consultation",
+  href: "/contact#contact-form",
   icon: Sparkles,
 } as const satisfies ShellLink;

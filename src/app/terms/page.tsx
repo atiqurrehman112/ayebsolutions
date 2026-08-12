@@ -3,6 +3,7 @@ import {
   LegalPage,
   type LegalSection,
 } from "@/components/marketing/legal-page";
+import { company } from "@/config/company";
 const title = "Website Terms";
 const description =
   "Terms governing informational use of the Ayeb Solutions public website.";
@@ -10,7 +11,13 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: "/terms" },
-  openGraph: { type: "website", url: "/terms", title, description },
+  openGraph: {
+    type: "website",
+    url: "/terms",
+    title,
+    description,
+    siteName: company.name,
+  },
   twitter: { card: "summary", title, description },
 };
 const sections: readonly LegalSection[] = [

@@ -3,6 +3,7 @@ import {
   LegalPage,
   type LegalSection,
 } from "@/components/marketing/legal-page";
+import { company } from "@/config/company";
 const title = "Cookie Policy";
 const description =
   "How essential storage and optional measurement technologies may be used on the Ayeb Solutions website.";
@@ -10,7 +11,13 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: "/cookies" },
-  openGraph: { type: "website", url: "/cookies", title, description },
+  openGraph: {
+    type: "website",
+    url: "/cookies",
+    title,
+    description,
+    siteName: company.name,
+  },
   twitter: { card: "summary", title, description },
 };
 const sections: readonly LegalSection[] = [

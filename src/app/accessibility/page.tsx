@@ -3,6 +3,7 @@ import {
   LegalPage,
   type LegalSection,
 } from "@/components/marketing/legal-page";
+import { company } from "@/config/company";
 const title = "Accessibility Statement";
 const description =
   "The accessibility principles guiding the Ayeb Solutions website and digital product work.";
@@ -10,7 +11,13 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: "/accessibility" },
-  openGraph: { type: "website", url: "/accessibility", title, description },
+  openGraph: {
+    type: "website",
+    url: "/accessibility",
+    title,
+    description,
+    siteName: company.name,
+  },
   twitter: { card: "summary", title, description },
 };
 const sections: readonly LegalSection[] = [

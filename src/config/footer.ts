@@ -7,9 +7,8 @@ export const footerNavigation = [
     title: "Company",
     links: [
       { label: "About", href: "/about" },
-      { label: "Process", href: "/process" },
-      { label: "Team", href: "/team" },
-      { label: "Careers", href: "/careers" },
+      { label: "Process", href: "/about#about-process-heading" },
+      { label: "Team", href: "/about#team-heading" },
       { label: "Contact", href: "/contact" },
     ],
   },
@@ -38,9 +37,8 @@ export const footerNavigation = [
   {
     title: "Resources",
     links: [
-      { label: "Case Studies", href: "/case-studies" },
+      { label: "Case Studies", href: "/portfolio" },
       { label: "Blog", href: "/blog" },
-      { label: "Guides", href: "/resources/guides" },
       { label: "FAQ", href: "/faq" },
     ],
   },

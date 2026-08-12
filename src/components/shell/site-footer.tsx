@@ -40,7 +40,7 @@ function SiteFooter() {
             <address className="mt-6 space-y-3 not-italic">
               <a
                 href={`mailto:${company.email}`}
-                className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="focus-ring flex min-h-11 items-center gap-2 rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 <Mail className="size-4" aria-hidden="true" />
                 {company.email}
@@ -80,7 +80,7 @@ function SiteFooter() {
                       <li key={link.href}>
                         <Link
                           href={link.href}
-                          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                          className="focus-ring inline-flex min-h-11 items-center rounded-md text-sm text-muted-foreground transition-colors hover:text-foreground"
                         >
                           {link.label}
                         </Link>

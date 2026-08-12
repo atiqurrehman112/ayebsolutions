@@ -48,7 +48,7 @@ function SiteBreadcrumbs({ items, className }: SiteBreadcrumbsProps) {
                 ) : (
                   <Link
                     href={item.href}
-                    className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
+                    className="focus-ring inline-flex min-h-11 items-center gap-1.5 rounded-md transition-colors hover:text-foreground"
                   >
                     {index === 0 ? (
                       <Home className="size-3.5" aria-hidden="true" />

@@ -18,7 +18,7 @@ export function SiteShell({ children }: SiteShellProps) {
       <main
         id="main-content"
         tabIndex={-1}
-        className="min-h-[50dvh] flex-1 outline-none"
+        className="min-h-[50dvh] flex-1 scroll-mt-[var(--header-height)] outline-none"
       >
         <PageTransition>{children}</PageTransition>
       </main>

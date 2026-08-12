@@ -3,6 +3,7 @@ import {
   LegalPage,
   type LegalSection,
 } from "@/components/marketing/legal-page";
+import { company } from "@/config/company";
 const title = "Privacy Policy";
 const description =
   "How Ayeb Solutions approaches personal information submitted through this website.";
@@ -10,7 +11,13 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: "/privacy" },
-  openGraph: { type: "website", url: "/privacy", title, description },
+  openGraph: {
+    type: "website",
+    url: "/privacy",
+    title,
+    description,
+    siteName: company.name,
+  },
   twitter: { card: "summary", title, description },
 };
 const sections: readonly LegalSection[] = [
