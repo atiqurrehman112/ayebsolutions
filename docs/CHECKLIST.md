@@ -63,6 +63,7 @@
 - [x] Production contact form with Supabase CRM capture and Resend delivery (Sprint 9F)
 - [x] Premium Contact presentation with preserved production lead workflow (Sprint 11E)
 - [x] Premium Testimonials presentation with preserved consent-gated CMS workflow (Sprint 11F)
+- [x] Premium static business-solutions experience (Sprint 12A)
 - [x] Complete Cloudinary Media Library integration across public rendering and SEO (Sprint 10A)
 - [x] Homepage
 - [ ] Services

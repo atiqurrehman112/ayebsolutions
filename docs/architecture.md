@@ -199,6 +199,12 @@ The dynamic `/testimonials` boundary established in Sprint 9E remains unchanged.
 
 The page conditionally composes an editorial hero, up to two explicitly featured CMS records, existing server-side discovery controls, a responsive masonry archive, factual CMS-derived trust signals, delivery principles, a transparent review-workflow explanation, native FAQ disclosures, and a final conversion CTA. Avatar, company logo, rating, company, role, and industry render only when present on the eligible record. Review structured data remains derived from the same visible CMS rows. CSS owns all new reveal and elevation motion and neutralizes it under `prefers-reduced-motion`.
 
+## Sprint 12A Solutions presentation
+
+The `/solutions` route is a fully static Server Component rendered through the dedicated `src/features/solutions` boundary. Sprint 12A replaces the former generic marketing-card composition with immutable, business-problem-oriented content; it adds no CMS source, repository, fetch, action, API, schema migration, client state, or runtime configuration.
+
+The page composes a code-rendered solution-system hero, eight solution categories, six qualitative business outcomes, nine industry contexts, a static eleven-tool technology ecosystem, seven implementation stages, a six-topic approach comparison, native FAQ disclosures, and a final conversion CTA. Content uses balanced, non-guaranteed language and does not claim client results or measurable business statistics. Metadata remains route-owned, while BreadcrumbList, WebPage, and FAQPage structured data are colocated with the visible immutable sources. Motion is CSS-only and neutralized under `prefers-reduced-motion`.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries
