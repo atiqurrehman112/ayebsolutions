@@ -217,6 +217,12 @@ The protected `/admin/team` module follows the established repository → Server
 
 Migration `202608120001_team_cms.sql` adds normalized team profiles with a nullable Media Library portrait reference, unique slug, role and department, bounded bios, skill arrays, optional experience/contact/profile URLs, featured state, display order, draft/published lifecycle, audit identities, timestamps, indexes, trigger, and RLS. The admin page selects only published image media for portraits. Drag-and-drop ordering is paired with labeled move controls so keyboard users have the same capability. No public Team route or public repository adapter exists in Sprint 13A.
 
+## Sprint 13B public Team presentation
+
+The public `/team` route is a Server Component with five-minute ISR. Static page-owned content supplies the editorial hero, founder spotlight, culture, values, conversion content, metadata, and structured data. `src/lib/team/public-team.ts` is the server-only public projection boundary: it creates an anonymous RLS-governed client, delegates member reads to `TeamRepository`, resolves optional portrait records through `MediaRepository`, and returns only published profiles. Members are deterministically ordered by featured state, explicit display order, and name. Presentation components never import Supabase or repositories.
+
+Missing Supabase configuration, an unavailable read, or zero published profiles produces the same honest member empty state while preserving the complete static founder and culture experience. Optional portrait, department, skills, and profile links render only when available. The global navigation configuration, footer, search-navigation projection, and canonical sitemap route Team traffic to `/team`; the former `/about#team-heading` destinations are retired without removing the existing About content. Team-page motion is CSS-only and neutralized for reduced motion.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

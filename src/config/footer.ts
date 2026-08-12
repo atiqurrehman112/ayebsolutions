@@ -9,7 +9,7 @@ export const footerNavigation = [
     links: [
       { label: "About", href: "/about" },
       { label: "Process", href: "/about#process" },
-      { label: "Team", href: "/about#team-heading" },
+      { label: "Team", href: "/team" },
       { label: "Contact", href: "/contact" },
     ],
   },

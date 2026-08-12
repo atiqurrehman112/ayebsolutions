@@ -168,7 +168,7 @@ export const megaMenuSections = [
       },
       {
         label: "Team",
-        href: "/about#team-heading",
+        href: "/team",
         description: "Meet the people behind the work.",
         icon: Users,
       },

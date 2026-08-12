@@ -1,5 +1,16 @@
 # Master Completion Checklist
 
+## Sprint 13B — Premium Team Page & CMS Integration
+
+- [x] Public `/team` route with five-minute ISR and graceful CMS failure handling
+- [x] Static editorial hero, founder spotlight, company culture, values, and hiring CTA
+- [x] Published-only Team CMS member projection through existing repositories and RLS
+- [x] Featured-first, display-order, name sorting with optional Media Library portraits
+- [x] Honest empty state with founder content preserved
+- [x] Header, mobile, mega-menu, footer, search, and sitemap Team destinations use `/team`
+- [x] Canonical, Open Graph, Twitter, Organization, WebPage, Person, and BreadcrumbList SEO
+- [x] One H1, semantic hierarchy, keyboard focus, dark mode, and reduced-motion support
+
 ## Sprint 13A — Team CMS
 
 - [x] Forward-only `team_members` migration with indexes, audit fields, trigger, and RLS
@@ -98,7 +109,7 @@
 - [x] Media library (Cloudinary and Supabase CRUD integration)
 - [x] Contact leads (Supabase CRM and Resend email history)
 - [x] Static SEO and company configuration (Settings CMS removed in CP3)
-- [ ] Team management
+- [x] Team management
 
 ## Quality
 
