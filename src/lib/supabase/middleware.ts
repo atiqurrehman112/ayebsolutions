@@ -57,6 +57,23 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
   const isLoginRoute = request.nextUrl.pathname === "/admin/login";
 
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("status")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!profile || profile.status !== "active") {
+      await supabase.auth.signOut();
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/admin/login";
+      loginUrl.search = "";
+      loginUrl.searchParams.set("error", "access");
+      return redirectWithCookies(loginUrl, response);
+    }
+  }
+
   if (!user && !isLoginRoute) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/admin/login";

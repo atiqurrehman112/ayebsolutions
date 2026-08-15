@@ -73,12 +73,16 @@ function AdminLogin({ error }: AdminLoginProps) {
                 title={
                   error === "configuration"
                     ? "Authentication is not configured"
-                    : "Sign in was unsuccessful"
+                    : error === "access"
+                      ? "Admin access is not active"
+                      : "Sign in was unsuccessful"
                 }
               >
                 {error === "configuration"
                   ? "Add the required Supabase environment variables before signing in."
-                  : "Check your email and password, then try again."}
+                  : error === "access"
+                    ? "Ask an administrator to activate your CMS profile before signing in."
+                    : "Check your email and password, then try again."}
               </AuthFeedback>
             ) : null}
             <div className="mt-6 grid gap-5">
