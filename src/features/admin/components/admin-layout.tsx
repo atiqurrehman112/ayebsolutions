@@ -38,6 +38,7 @@ const navigation: readonly AdminNavigationItem[] = [
   },
   { label: "Blog", href: "/admin/blog", icon: BookOpen },
   { label: "Team", href: "/admin/team", icon: Users },
+  { label: "Founder", href: "/admin/founder", icon: Users },
   {
     label: "Testimonials",
     href: "/admin/testimonials",

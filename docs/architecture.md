@@ -223,6 +223,12 @@ The public `/team` route is a Server Component with five-minute ISR. Static page
 
 Missing Supabase configuration, an unavailable read, or zero published profiles produces the same honest member empty state while preserving the complete static founder and culture experience. Optional portrait, department, skills, and profile links render only when available. The global navigation configuration, footer, search-navigation projection, and canonical sitemap route Team traffic to `/team`; the former `/about#team-heading` destinations are retired without removing the existing About content. Team-page motion is CSS-only and neutralized for reduced motion.
 
+## Sprint 13C Founder Profile CMS
+
+The Founder is a dedicated singleton rather than a Team member. Migration `202608150001_founder_profile_cms.sql` enforces one row through a checked unique singleton key, retains UUID identity and audit columns, references the existing Media Library for profile and cover imagery, applies the shared timestamp trigger, and exposes only published data to anonymous RLS reads. Authenticated editors may create or update the record; no delete workflow is exposed.
+
+`FounderRepository` owns singleton and published reads plus create-or-update persistence. `src/lib/actions/founder.ts` is the validated, role-aware mutation boundary and invalidates `/admin/founder`, `/team`, and the `founder` cache tag. The protected `/admin/founder` Server Component loads the singleton and eligible Media Library choices; only its accessible editor hydrates. `src/lib/founder/public-founder.ts` supplies a five-minute anonymous projection with resolved profile and cover media. The public Team page loads Founder and Team independently in parallel, renders only CMS Founder content, emits Person schema only for a published profile, and preserves an elegant founder empty state when configuration or data is unavailable.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

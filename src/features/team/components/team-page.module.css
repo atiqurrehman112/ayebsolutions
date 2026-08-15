@@ -175,6 +175,17 @@
   letter-spacing: -0.09em;
 }
 
+.founderPhoto {
+  position: relative;
+  z-index: 1;
+  width: min(72%, 24rem);
+  aspect-ratio: 4 / 5;
+  border: 1px solid hsl(var(--primary-foreground) / 0.2);
+  border-radius: 1.5rem;
+  object-fit: cover;
+  box-shadow: 0 35px 80px -45px hsl(0 0% 0% / 0.8);
+}
+
 .portraitLabel {
   position: absolute;
   bottom: 1.5rem;

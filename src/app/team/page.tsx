@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { company } from "@/config/company";
 import { TeamPage } from "@/features/team";
 import { getPublishedTeamMembers } from "@/lib/team/public-team";
+import { getPublishedFounderProfile } from "@/lib/founder/public-founder";
 
 const title = "Meet the Team";
 const description =
@@ -25,6 +26,9 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function TeamRoute() {
-  const members = await getPublishedTeamMembers().catch(() => []);
-  return <TeamPage members={members} />;
+  const [members, founder] = await Promise.all([
+    getPublishedTeamMembers().catch(() => []),
+    getPublishedFounderProfile().catch(() => null),
+  ]);
+  return <TeamPage founder={founder} members={members} />;
 }

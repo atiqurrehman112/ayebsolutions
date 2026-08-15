@@ -1,5 +1,15 @@
 # Master Completion Checklist
 
+## Sprint 13C — Founder Profile CMS
+
+- [x] Forward-only singleton Founder migration with Media Library relationships, audit fields, trigger, indexes, and RLS
+- [x] Typed Founder repository, database contracts, Zod validation, Server Action, and tagged public loader
+- [x] Protected `/admin/founder` editor with role-aware read/write behavior and published Media Library selection
+- [x] Full identity, biography, contact, social, experience, expertise, direction, availability, and publication fields
+- [x] Public `/team` founder centerpiece uses published CMS data and conditional Person schema
+- [x] Independent graceful fallback when no published Founder record exists
+- [x] Server-first rendering, responsive admin/public layouts, dark mode, visible focus, and reduced motion
+
 ## Sprint 13B — Premium Team Page & CMS Integration
 
 - [x] Public `/team` route with five-minute ISR and graceful CMS failure handling

@@ -7,4 +7,5 @@ export * from "./components/admin-testimonials";
 export * from "./components/admin-media";
 export * from "./components/admin-contact-leads";
 export * from "./components/admin-team";
+export * from "./components/admin-founder";
 export * from "./components/auth-feedback";

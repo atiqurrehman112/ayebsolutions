@@ -176,6 +176,37 @@ export interface TeamMemberRow extends AuditColumns, Record<string, unknown> {
   readonly status: "draft" | "published";
 }
 
+export interface FounderProfileRow
+  extends AuditColumns, Record<string, unknown> {
+  readonly singleton_key: boolean;
+  readonly full_name: string;
+  readonly role_title: string;
+  readonly professional_headline: string;
+  readonly biography: string;
+  readonly profile_photo: string | null;
+  readonly cover_image: string | null;
+  readonly email: string | null;
+  readonly phone: string | null;
+  readonly linkedin_url: string | null;
+  readonly github_url: string | null;
+  readonly twitter_url: string | null;
+  readonly facebook_url: string | null;
+  readonly instagram_url: string | null;
+  readonly portfolio_url: string | null;
+  readonly resume_url: string | null;
+  readonly years_experience: number | null;
+  readonly projects_completed: number | null;
+  readonly happy_clients: number | null;
+  readonly technologies: readonly string[];
+  readonly certifications: readonly string[];
+  readonly skills: readonly string[];
+  readonly vision_statement: string | null;
+  readonly mission_statement: string | null;
+  readonly personal_quote: string | null;
+  readonly availability_status: "available" | "busy" | "not_accepting" | null;
+  readonly status: "draft" | "published";
+}
+
 export interface ContactLeadRow extends AuditColumns, Record<string, unknown> {
   readonly name: string;
   readonly email: string;
@@ -297,6 +328,11 @@ export type TeamMemberInsert = InsertShape<
   "name" | "slug" | "role" | "short_bio"
 >;
 export type TeamMemberUpdate = UpdateShape<TeamMemberRow>;
+export type FounderProfileInsert = InsertShape<
+  FounderProfileRow,
+  "full_name" | "role_title" | "professional_headline" | "biography"
+>;
+export type FounderProfileUpdate = UpdateShape<FounderProfileRow>;
 export type ContactLeadInsert = InsertShape<
   ContactLeadRow,
   "name" | "email" | "project_type" | "message"
@@ -366,6 +402,11 @@ export interface Database {
         TeamMemberRow,
         TeamMemberInsert,
         TeamMemberUpdate
+      >;
+      founder_profile: TableDefinition<
+        FounderProfileRow,
+        FounderProfileInsert,
+        FounderProfileUpdate
       >;
       contact_leads: TableDefinition<
         ContactLeadRow,

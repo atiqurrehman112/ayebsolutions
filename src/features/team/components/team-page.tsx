@@ -7,14 +7,18 @@ import {
   Bot,
   Braces,
   ExternalLink,
+  Facebook,
   Github,
   HeartHandshake,
+  Instagram,
   Lightbulb,
   Linkedin,
   Mail,
+  Phone,
   ShieldCheck,
   Sparkles,
   Target,
+  Twitter,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -28,11 +32,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
 import { company } from "@/config/company";
 import type { PublicTeamMember } from "@/lib/team/public-team";
+import type { PublicFounderProfile } from "@/lib/founder/public-founder";
 import { cn } from "@/lib/utils";
 
 import styles from "./team-page.module.css";
 
 interface TeamPageProps {
+  readonly founder: PublicFounderProfile | null;
   readonly members: readonly PublicTeamMember[];
 }
 
@@ -41,15 +47,6 @@ interface Principle {
   readonly icon: LucideIcon;
   readonly title: string;
 }
-
-const founderExpertise = [
-  "Full Stack Development",
-  "AI Automation",
-  "SaaS Engineering",
-  "UI/UX Design",
-  "Cloud Deployment",
-  "Business Automation",
-] as const;
 
 const culturePrinciples: readonly Principle[] = [
   {
@@ -234,13 +231,65 @@ function Hero() {
   );
 }
 
-function FounderSpotlight() {
+function FounderSpotlight({
+  founder,
+}: {
+  readonly founder: PublicFounderProfile | null;
+}) {
+  if (!founder) {
+    return (
+      <section
+        id="founder"
+        aria-labelledby="founder-heading"
+        className="border-b py-20 sm:py-24 lg:py-30"
+      >
+        <Container className="max-w-[100rem]">
+          <div className={styles.emptyState} role="status">
+            <Users className="size-7" aria-hidden="true" />
+            <div>
+              <Eyebrow>Founder spotlight</Eyebrow>
+              <h2 id="founder-heading" className="mt-3 text-2xl font-bold">
+                Founder profile coming soon.
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                The founder profile has not been published yet. Team and culture
+                information remain available below.
+              </p>
+            </div>
+          </div>
+        </Container>
+      </section>
+    );
+  }
   const founderLinks = [
-    { label: "LinkedIn", href: "https://www.linkedin.com", icon: Linkedin },
-    { label: "GitHub", href: "https://github.com", icon: Github },
-    { label: "Email", href: `mailto:${company.email}`, icon: Mail },
-    { label: "Website", href: company.url, icon: ExternalLink },
-  ] as const;
+    { label: "LinkedIn", href: founder.linkedin_url, icon: Linkedin },
+    { label: "GitHub", href: founder.github_url, icon: Github },
+    { label: "X", href: founder.twitter_url, icon: Twitter },
+    { label: "Facebook", href: founder.facebook_url, icon: Facebook },
+    { label: "Instagram", href: founder.instagram_url, icon: Instagram },
+    {
+      label: "Email",
+      href: founder.email ? `mailto:${founder.email}` : null,
+      icon: Mail,
+    },
+    {
+      label: "Phone",
+      href: founder.phone ? `tel:${founder.phone}` : null,
+      icon: Phone,
+    },
+    { label: "Website", href: founder.portfolio_url, icon: ExternalLink },
+    { label: "Resume", href: founder.resume_url, icon: ExternalLink },
+  ].filter((item): item is { href: string; label: string; icon: LucideIcon } =>
+    Boolean(item.href),
+  );
+  const expertise = [...new Set([...founder.skills, ...founder.technologies])];
+  const founderFacts = [
+    { label: "Years of experience", value: founder.years_experience },
+    { label: "Projects completed", value: founder.projects_completed },
+    { label: "Happy clients", value: founder.happy_clients },
+  ].filter(
+    (item): item is { label: string; value: number } => item.value !== null,
+  );
 
   return (
     <section
@@ -250,13 +299,44 @@ function FounderSpotlight() {
     >
       <Container className="max-w-[100rem]">
         <div className={styles.founderCard}>
-          <div
-            className={styles.founderPortrait}
-            role="img"
-            aria-label="Portrait placeholder for Atiq Ur Rehman"
-          >
-            <span className={styles.founderMonogram}>AR</span>
-            <span className={styles.portraitLabel}>Founder portrait</span>
+          <div className={styles.founderPortrait}>
+            {founder.coverImage ? (
+              <CmsMedia
+                media={founder.coverImage}
+                decorative
+                fill
+                className="object-cover opacity-35"
+              />
+            ) : null}
+            {founder.profilePhoto ? (
+              <CmsMedia
+                media={founder.profilePhoto}
+                alt={
+                  founder.profilePhoto.alt ?? `Portrait of ${founder.full_name}`
+                }
+                sizes="(min-width: 1024px) 40vw, 92vw"
+                className={styles.founderPhoto}
+              />
+            ) : (
+              <div
+                role="img"
+                aria-label={`Portrait placeholder for ${founder.full_name}`}
+              >
+                <span className={styles.founderMonogram}>
+                  {founder.full_name
+                    .split(/\s+/)
+                    .map((part) => part[0])
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase()}
+                </span>
+              </div>
+            )}
+            <span className={styles.portraitLabel}>
+              {founder.availability_status
+                ? founder.availability_status.replaceAll("_", " ")
+                : "Founder"}
+            </span>
           </div>
           <div className="p-7 sm:p-10 lg:p-14">
             <Eyebrow>Founder spotlight</Eyebrow>
@@ -264,59 +344,108 @@ function FounderSpotlight() {
               id="founder-heading"
               className="mt-4 text-balance text-headline font-bold"
             >
-              Atiq Ur Rehman
+              {founder.full_name}
             </h2>
             <p className="mt-3 text-lg font-semibold text-muted-foreground">
-              Founder &amp; Software Engineer
+              {founder.role_title}
             </p>
-            <div className="mt-8 grid gap-6 text-base leading-8 text-muted-foreground xl:grid-cols-2">
-              <p>
-                Atiq leads Ayeb Solutions with a practical approach to digital
-                product engineering: understand the business problem first,
-                design the system around real workflows, and build with enough
-                clarity for the product to evolve responsibly.
-              </p>
-              <p>
-                His engineering philosophy connects thoughtful interfaces,
-                maintainable architecture, automation, and dependable delivery.
-                The mission is simple: turn complex ideas into useful digital
-                systems without losing sight of the people who use and own them.
-              </p>
+            <p className="mt-5 text-xl font-medium leading-8">
+              {founder.professional_headline}
+            </p>
+            <div className="mt-8 whitespace-pre-line text-base leading-8 text-muted-foreground">
+              {founder.biography}
             </div>
-            <div className="mt-9 border-t pt-8">
-              <h3 className="text-sm font-semibold uppercase tracking-[.14em] text-muted-foreground">
-                Core expertise
-              </h3>
-              <ul
-                className="mt-5 flex flex-wrap gap-2"
-                aria-label="Founder expertise"
-              >
-                {founderExpertise.map((item) => (
-                  <li key={item}>
-                    <Badge variant="outline" className="px-3 py-1.5">
-                      {item}
-                    </Badge>
-                  </li>
+            {founder.personal_quote ? (
+              <blockquote className="mt-8 border-l-2 pl-5 text-lg italic leading-8">
+                “{founder.personal_quote}”
+              </blockquote>
+            ) : null}
+            {expertise.length ? (
+              <div className="mt-9 border-t pt-8">
+                <h3 className="text-sm font-semibold uppercase tracking-[.14em] text-muted-foreground">
+                  Core expertise
+                </h3>
+                <ul
+                  className="mt-5 flex flex-wrap gap-2"
+                  aria-label="Founder expertise"
+                >
+                  {expertise.map((item) => (
+                    <li key={item}>
+                      <Badge variant="outline" className="px-3 py-1.5">
+                        {item}
+                      </Badge>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {founderFacts.length ? (
+              <dl className="mt-8 grid gap-px overflow-hidden rounded-xl border bg-border sm:grid-cols-3">
+                {founderFacts.map(({ label, value }) => (
+                  <div key={label} className="bg-card p-4">
+                    <dt className="text-xs text-muted-foreground">{label}</dt>
+                    <dd className="mt-2 text-2xl font-bold">{value}</dd>
+                  </div>
                 ))}
-              </ul>
-            </div>
-            <div
-              className="mt-8 flex flex-wrap gap-2"
-              aria-label="Founder links"
-            >
-              {founderLinks.map(({ label, href, icon: Icon }) => (
-                <Button key={label} asChild size="sm" variant="ghost">
-                  <a
-                    href={href}
-                    target={href.startsWith("http") ? "_blank" : undefined}
-                    rel={href.startsWith("http") ? "noreferrer" : undefined}
-                  >
-                    <Icon className="size-4" aria-hidden="true" />
-                    {label}
-                  </a>
-                </Button>
-              ))}
-            </div>
+              </dl>
+            ) : null}
+            {founder.certifications.length ? (
+              <div className="mt-8">
+                <h3 className="text-sm font-semibold uppercase tracking-[.14em] text-muted-foreground">
+                  Certifications
+                </h3>
+                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  {founder.certifications.map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <BadgeCheck
+                        className="mt-0.5 size-4 shrink-0"
+                        aria-hidden="true"
+                      />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {founder.vision_statement || founder.mission_statement ? (
+              <div className="mt-8 grid gap-5 sm:grid-cols-2">
+                {founder.vision_statement ? (
+                  <div>
+                    <h3 className="font-semibold">Vision</h3>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                      {founder.vision_statement}
+                    </p>
+                  </div>
+                ) : null}
+                {founder.mission_statement ? (
+                  <div>
+                    <h3 className="font-semibold">Mission</h3>
+                    <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                      {founder.mission_statement}
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+            {founderLinks.length ? (
+              <div
+                className="mt-8 flex flex-wrap gap-2"
+                aria-label="Founder links"
+              >
+                {founderLinks.map(({ label, href, icon: Icon }) => (
+                  <Button key={label} asChild size="sm" variant="ghost">
+                    <a
+                      href={href}
+                      target={href.startsWith("http") ? "_blank" : undefined}
+                      rel={href.startsWith("http") ? "noreferrer" : undefined}
+                    >
+                      <Icon className="size-4" aria-hidden="true" />
+                      {label}
+                    </a>
+                  </Button>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       </Container>
@@ -438,7 +567,7 @@ function TeamMemberCard({
   );
 }
 
-function TeamGrid({ members }: TeamPageProps) {
+function TeamGrid({ members }: Pick<TeamPageProps, "members">) {
   return (
     <section
       id="team-members"
@@ -546,12 +675,12 @@ function ValuesSection() {
   );
 }
 
-export function TeamPage({ members }: TeamPageProps) {
+export function TeamPage({ founder, members }: TeamPageProps) {
   const pageUrl = new URL("/team", company.url).toString();
   return (
     <>
       <Hero />
-      <FounderSpotlight />
+      <FounderSpotlight founder={founder} />
       <TeamGrid members={members} />
       <CultureSection />
       <ValuesSection />
@@ -617,30 +746,35 @@ export function TeamPage({ members }: TeamPageProps) {
           legalName: company.legalName,
           url: company.url,
           email: company.email,
-          founder: {
+          founder: founder
+            ? {
+                "@type": "Person",
+                name: founder.full_name,
+                jobTitle: founder.role_title,
+                url: `${pageUrl}#founder`,
+              }
+            : undefined,
+        }}
+      />
+      {founder ? (
+        <StructuredData
+          data={{
+            "@context": "https://schema.org",
             "@type": "Person",
-            name: "Atiq Ur Rehman",
-            jobTitle: "Founder & Software Engineer",
+            name: founder.full_name,
+            jobTitle: founder.role_title,
+            worksFor: {
+              "@type": "Organization",
+              name: company.name,
+              url: company.url,
+            },
             url: `${pageUrl}#founder`,
-          },
-        }}
-      />
-      <StructuredData
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Person",
-          name: "Atiq Ur Rehman",
-          jobTitle: "Founder & Software Engineer",
-          worksFor: {
-            "@type": "Organization",
-            name: company.name,
-            url: company.url,
-          },
-          url: `${pageUrl}#founder`,
-          email: company.email,
-          knowsAbout: founderExpertise,
-        }}
-      />
+            email: founder.email ?? undefined,
+            image: founder.profilePhoto?.secure_url,
+            knowsAbout: [...founder.skills, ...founder.technologies],
+          }}
+        />
+      ) : null}
       <StructuredData
         data={{
           "@context": "https://schema.org",
