@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  ChartNoAxesCombined,
   FolderKanban,
   LayoutDashboard,
   LogOut,
@@ -51,6 +52,11 @@ const navigation: readonly AdminNavigationItem[] = [
     label: "Contact Leads",
     href: "/admin/contact-leads",
     icon: Mail,
+  },
+  {
+    label: "CRM Analytics",
+    href: "/admin/contact-leads/analytics",
+    icon: ChartNoAxesCombined,
   },
 ] as const;
 

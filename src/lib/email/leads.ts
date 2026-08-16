@@ -5,7 +5,10 @@ import { Resend } from "resend";
 import { env } from "@/lib/env";
 
 export async function sendLeadEmail(input: {
+  readonly bcc?: readonly string[];
   readonly body: string;
+  readonly cc?: readonly string[];
+  readonly html?: string;
   readonly recipient: string;
   readonly replyTo?: string;
   readonly subject: string;
@@ -19,6 +22,9 @@ export async function sendLeadEmail(input: {
     replyTo: input.replyTo,
     subject: input.subject,
     text: input.body,
+    html: input.html,
+    cc: input.cc ? [...input.cc] : undefined,
+    bcc: input.bcc ? [...input.bcc] : undefined,
   });
   if (error) throw new Error("Email delivery failed.");
   return data?.id ?? null;

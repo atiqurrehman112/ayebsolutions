@@ -29,14 +29,19 @@ import {
   deleteLead,
   restoreLead,
   setLeadImportant,
-  sendLeadMessage,
 } from "@/lib/actions/contact-leads";
 import type {
   LeadContext,
   LeadPriority,
 } from "@/lib/database/repositories/contact-leads-repository";
-import type { ContactLeadRow, LeadStatus, ProfileRow } from "@/types/database";
+import type {
+  ContactLeadRow,
+  EmailTemplateRow,
+  LeadStatus,
+  ProfileRow,
+} from "@/types/database";
 import styles from "./admin-contact-leads.module.css";
+import { LeadEmailCenter } from "./lead-email-center";
 
 interface Props {
   readonly assignees: readonly Pick<
@@ -46,8 +51,10 @@ interface Props {
   readonly canDelete: boolean;
   readonly canEdit: boolean;
   readonly canManageNotes: boolean;
+  readonly canCommunicate: boolean;
   readonly context: LeadContext;
   readonly lead: ContactLeadRow;
+  readonly templates: readonly EmailTemplateRow[];
 }
 const statuses: readonly LeadStatus[] = [
   "new",
@@ -64,8 +71,10 @@ export function LeadRowActions({
   canDelete,
   canEdit,
   canManageNotes,
+  canCommunicate,
   context,
   lead,
+  templates,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -259,62 +268,31 @@ export function LeadRowActions({
                 ) : (
                   <li>No email has been sent from the CRM.</li>
                 )}
+                {context.notes.map((item) => (
+                  <li key={item.id}>
+                    <strong>Internal note</strong>
+                    <span>
+                      {item.body} · {new Date(item.created_at).toLocaleString()}
+                    </span>
+                  </li>
+                ))}
+                {context.followUps.map((item) => (
+                  <li key={item.id}>
+                    <strong>Follow-up {item.status}</strong>
+                    <span>
+                      {item.note || "No note"} ·{" "}
+                      {new Date(item.scheduled_for).toLocaleString()}
+                    </span>
+                  </li>
+                ))}
               </ol>
             </section>
-            {canEdit ? (
-              <section>
-                <h3>Send email</h3>
-                <form
-                  action={(formData) =>
-                    run(() =>
-                      sendLeadMessage({
-                        id: lead.id,
-                        recipient: String(formData.get("recipient")),
-                        subject: String(formData.get("subject")),
-                        body: String(formData.get("body")),
-                        email_type: String(formData.get("email_type")) as
-                          "reply" | "acknowledgement" | "internal_notification",
-                      }),
-                    )
-                  }
-                >
-                  <label>
-                    Message type
-                    <select name="email_type">
-                      <option value="reply">Reply</option>
-                      <option value="acknowledgement">Acknowledgement</option>
-                      <option value="internal_notification">
-                        Internal notification
-                      </option>
-                    </select>
-                  </label>
-                  <label>
-                    Recipient
-                    <input
-                      defaultValue={lead.email}
-                      name="recipient"
-                      required
-                      type="email"
-                    />
-                  </label>
-                  <label>
-                    Subject
-                    <input
-                      defaultValue={`Re: ${lead.subject || lead.project_type}`}
-                      name="subject"
-                      required
-                    />
-                  </label>
-                  <label>
-                    Message
-                    <textarea name="body" required />
-                  </label>
-                  <Button disabled={pending} type="submit">
-                    <Mail aria-hidden="true" />
-                    Send with Resend
-                  </Button>
-                </form>
-              </section>
+            {canCommunicate ? (
+              <LeadEmailCenter
+                followUps={context.followUps}
+                lead={lead}
+                templates={templates}
+              />
             ) : null}
           </div>
           <DialogFooter>

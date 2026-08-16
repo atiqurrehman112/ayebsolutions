@@ -16,6 +16,33 @@ export const leadReplySchema = z.strictObject({
   body: z.string().trim().min(2).max(10_000),
   recipient: z.email(),
   email_type: z.enum(["reply", "acknowledgement", "internal_notification"]),
+  cc: z.array(z.email()).max(10).default([]),
+  bcc: z.array(z.email()).max(10).default([]),
+  reply_to: z.email().nullable().optional(),
+});
+
+export const emailTemplateSchema = z.strictObject({
+  id: z.uuid().nullable().optional(),
+  name: z.string().trim().min(2).max(120),
+  category: z.enum([
+    "thank_you",
+    "proposal",
+    "meeting",
+    "discovery_call",
+    "project_started",
+    "quote",
+    "follow_up",
+    "custom",
+  ]),
+  subject: z.string().trim().min(2).max(240),
+  body: z.string().trim().min(2).max(20_000),
+});
+
+export const followUpSchema = z.strictObject({
+  id: z.uuid().nullable().optional(),
+  lead_id: z.uuid(),
+  scheduled_for: z.iso.datetime(),
+  note: z.string().trim().max(2_000).nullable().optional(),
 });
 
 const optionalText = (maximum: number) =>

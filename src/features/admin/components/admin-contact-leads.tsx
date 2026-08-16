@@ -18,7 +18,13 @@ import type {
   LeadPriority,
   LeadSort,
 } from "@/lib/database/repositories/contact-leads-repository";
-import type { ContactLeadRow, LeadStatus, ProfileRow } from "@/types/database";
+import type {
+  ContactLeadRow,
+  EmailTemplateRow,
+  LeadFollowUpRow,
+  LeadStatus,
+  ProfileRow,
+} from "@/types/database";
 import { LeadRowActions } from "./lead-row-actions";
 import { bulkLeadAction } from "@/lib/actions/contact-leads";
 import styles from "./admin-contact-leads.module.css";
@@ -34,6 +40,8 @@ export interface LeadFilters {
   readonly status?: LeadStatus;
   readonly service?: string;
   readonly budget?: string;
+  readonly hasReply?: boolean;
+  readonly needsFollowUp?: boolean;
 }
 interface Props {
   readonly assignees: readonly Pick<
@@ -43,6 +51,7 @@ interface Props {
   readonly canDelete: boolean;
   readonly canEdit: boolean;
   readonly canManageNotes: boolean;
+  readonly canCommunicate: boolean;
   readonly context: Readonly<Record<string, LeadContext>>;
   readonly filters: LeadFilters;
   readonly leads: PaginatedResult<ContactLeadRow>;
@@ -50,6 +59,19 @@ interface Props {
     readonly budgets: readonly string[];
     readonly services: readonly string[];
   };
+  readonly templates: readonly EmailTemplateRow[];
+  readonly dueFollowUps: readonly LeadFollowUpRow[];
+  readonly metrics: {
+    readonly averageResponseHours: number | null;
+    readonly emailsSent: number;
+    readonly lostToday: number;
+    readonly openLeads: number;
+    readonly pendingReplies: number;
+    readonly todaysFollowUps: number;
+    readonly replyRate: number | null;
+    readonly unreadReplies: number;
+    readonly wonToday: number;
+  } | null;
 }
 const statusLabels: Readonly<Record<LeadStatus, string>> = {
   archived: "Archived",
@@ -74,10 +96,14 @@ export function AdminContactLeads({
   canDelete,
   canEdit,
   canManageNotes,
+  canCommunicate,
   context,
   filters,
   leads,
   filterOptions,
+  templates,
+  metrics,
+  dueFollowUps,
 }: Props) {
   const names = new Map(
     assignees.map((profile) => [
@@ -100,9 +126,60 @@ export function AdminContactLeads({
             decisions, and keep every response accountable.
           </p>
         </div>
-        <Badge variant="secondary">Supabase connected</Badge>
+        <div className={styles.rowActions}>
+          <Badge variant="secondary">Supabase connected</Badge>
+          <Button asChild variant="outline">
+            <Link href="/admin/contact-leads/analytics">View analytics</Link>
+          </Button>
+        </div>
       </header>
       <section aria-label="Lead summary" className={styles.summary}>
+        {metrics ? (
+          <>
+            <article>
+              <span>Today&apos;s follow-ups</span>
+              <strong>{metrics.todaysFollowUps}</strong>
+            </article>
+            <article>
+              <span>Unread replies</span>
+              <strong>{metrics.unreadReplies}</strong>
+            </article>
+            <article>
+              <span>Pending replies</span>
+              <strong>{metrics.pendingReplies}</strong>
+            </article>
+            <article>
+              <span>Emails sent</span>
+              <strong>{metrics.emailsSent}</strong>
+            </article>
+            <article>
+              <span>Reply rate</span>
+              <strong>
+                {metrics.replyRate === null
+                  ? "—"
+                  : `${metrics.replyRate.toFixed(1)}%`}
+              </strong>
+            </article>
+            <article>
+              <span>Average response</span>
+              <strong>
+                {metrics.averageResponseHours === null
+                  ? "—"
+                  : `${metrics.averageResponseHours.toFixed(1)}h`}
+              </strong>
+            </article>
+            <article>
+              <span>Open leads</span>
+              <strong>{metrics.openLeads}</strong>
+            </article>
+            <article>
+              <span>Won / lost today</span>
+              <strong>
+                {metrics.wonToday} / {metrics.lostToday}
+              </strong>
+            </article>
+          </>
+        ) : null}
         <article>
           <span>Matching leads</span>
           <strong>{leads.count}</strong>
@@ -118,6 +195,29 @@ export function AdminContactLeads({
           <strong>{canEdit ? "Manage" : "Read only"}</strong>
         </article>
       </section>
+      {canCommunicate ? (
+        <section aria-labelledby="follow-up-reminders" className={styles.panel}>
+          <div className={styles.panelHeading}>
+            <div>
+              <span className={styles.eyebrow}>Communication queue</span>
+              <h2 id="follow-up-reminders">Follow-up reminders</h2>
+            </div>
+            <Badge variant="secondary">{dueFollowUps.length} due soon</Badge>
+          </div>
+          {dueFollowUps.length ? (
+            <ol className={styles.timeline}>
+              {dueFollowUps.map((item) => (
+                <li key={item.id}>
+                  <strong>{item.note || "Lead follow-up"}</strong>
+                  <span>{new Date(item.scheduled_for).toLocaleString()}</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p>No follow-ups are due through tomorrow.</p>
+          )}
+        </section>
+      ) : null}
       <section aria-labelledby="lead-inbox-heading" className={styles.panel}>
         <div className={styles.panelHeading}>
           <div>
@@ -173,6 +273,18 @@ export function AdminContactLeads({
               ),
             ]}
             value={filters.assignedTo}
+          />
+          <Filter
+            label="Reply state"
+            name="hasReply"
+            options={[["true", "Has reply"]]}
+            value={filters.hasReply ? "true" : undefined}
+          />
+          <Filter
+            label="Follow-up"
+            name="needsFollowUp"
+            options={[["true", "Needs follow-up"]]}
+            value={filters.needsFollowUp ? "true" : undefined}
           />
           <label>
             <span>From</span>
@@ -384,10 +496,17 @@ export function AdminContactLeads({
                           canDelete={canDelete}
                           canEdit={canEdit}
                           canManageNotes={canManageNotes}
+                          canCommunicate={canCommunicate}
                           context={
-                            context[lead.id] ?? { emails: [], statuses: [] }
+                            context[lead.id] ?? {
+                              emails: [],
+                              followUps: [],
+                              notes: [],
+                              statuses: [],
+                            }
                           }
                           lead={lead}
+                          templates={templates}
                         />
                       </td>
                     </tr>

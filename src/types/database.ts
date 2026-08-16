@@ -285,6 +285,8 @@ export interface ContactLeadRow extends AuditColumns, Record<string, unknown> {
   readonly ip_hash: string | null;
   readonly referrer: string | null;
   readonly user_agent: string | null;
+  readonly next_follow_up_at: string | null;
+  readonly follow_up_completed_at: string | null;
 }
 export interface LeadStatusHistoryRow extends Record<string, unknown> {
   readonly id: string;
@@ -304,6 +306,55 @@ export interface LeadEmailHistoryRow extends Record<string, unknown> {
   readonly provider_id: string | null;
   readonly sent_by: string | null;
   readonly sent_at: string;
+  readonly direction: "incoming" | "outgoing";
+  readonly status: "queued" | "sent" | "failed" | "received";
+  readonly delivery_status:
+    "pending" | "accepted" | "delivered" | "failed" | "bounced" | "received";
+  readonly message_id: string | null;
+  readonly reply_to: string | null;
+  readonly cc: readonly string[];
+  readonly bcc: readonly string[];
+  readonly html_body: string | null;
+  readonly attachments: Json;
+  readonly read_at: string | null;
+}
+
+export interface EmailTemplateRow
+  extends AuditColumns, Record<string, unknown> {
+  readonly name: string;
+  readonly category:
+    | "thank_you"
+    | "proposal"
+    | "meeting"
+    | "discovery_call"
+    | "project_started"
+    | "quote"
+    | "follow_up"
+    | "custom";
+  readonly subject: string;
+  readonly body_html: string;
+  readonly body_text: string;
+  readonly variables: readonly string[];
+  readonly is_system: boolean;
+  readonly is_active: boolean;
+}
+
+export interface LeadFollowUpRow extends AuditColumns, Record<string, unknown> {
+  readonly lead_id: string;
+  readonly scheduled_for: string;
+  readonly status: "scheduled" | "completed" | "cancelled";
+  readonly note: string | null;
+  readonly assigned_to: string | null;
+  readonly completed_at: string | null;
+  readonly completed_by: string | null;
+}
+
+export interface LeadNoteHistoryRow extends Record<string, unknown> {
+  readonly id: string;
+  readonly lead_id: string;
+  readonly body: string;
+  readonly created_by: string | null;
+  readonly created_at: string;
 }
 
 export interface MediaLibraryRow extends AuditColumns, Record<string, unknown> {
@@ -421,6 +472,18 @@ type LeadStatusHistoryInsert = Omit<LeadStatusHistoryRow, "id" | "created_at">;
 type LeadStatusHistoryUpdate = Partial<LeadStatusHistoryInsert>;
 type LeadEmailHistoryInsert = Omit<LeadEmailHistoryRow, "id" | "sent_at">;
 type LeadEmailHistoryUpdate = Partial<LeadEmailHistoryInsert>;
+export type EmailTemplateInsert = InsertShape<
+  EmailTemplateRow,
+  "name" | "subject" | "body_html" | "body_text"
+>;
+export type EmailTemplateUpdate = UpdateShape<EmailTemplateRow>;
+export type LeadFollowUpInsert = InsertShape<
+  LeadFollowUpRow,
+  "lead_id" | "scheduled_for"
+>;
+export type LeadFollowUpUpdate = UpdateShape<LeadFollowUpRow>;
+type LeadNoteHistoryInsert = Omit<LeadNoteHistoryRow, "id" | "created_at">;
+type LeadNoteHistoryUpdate = Partial<LeadNoteHistoryInsert>;
 
 interface TableDefinition<Row, Insert, Update> {
   Row: Row;
@@ -491,6 +554,21 @@ export interface Database {
         LeadEmailHistoryInsert,
         LeadEmailHistoryUpdate
       >;
+      email_templates: TableDefinition<
+        EmailTemplateRow,
+        EmailTemplateInsert,
+        EmailTemplateUpdate
+      >;
+      lead_follow_ups: TableDefinition<
+        LeadFollowUpRow,
+        LeadFollowUpInsert,
+        LeadFollowUpUpdate
+      >;
+      lead_note_history: TableDefinition<
+        LeadNoteHistoryRow,
+        LeadNoteHistoryInsert,
+        LeadNoteHistoryUpdate
+      >;
       media_library: TableDefinition<
         MediaLibraryRow,
         MediaLibraryInsert,
@@ -524,6 +602,10 @@ export interface Database {
       is_admin: {
         Args: Record<string, never>;
         Returns: boolean;
+      };
+      crm_dashboard_analytics: {
+        Args: { p_from: string; p_to: string };
+        Returns: Json;
       };
       submit_contact_lead: {
         Args: {

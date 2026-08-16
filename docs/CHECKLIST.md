@@ -123,6 +123,8 @@
 - [x] Media library (Cloudinary and Supabase CRUD integration)
 - [x] Contact leads (Supabase CRM and Resend email history)
 - [x] Production Contact Leads CRM lifecycle, read state, important flags, request context, and bulk actions (Sprint 14A)
+- [x] CRM Email Center with Resend replies, reusable templates, unified history, follow-up scheduling, reminders, analytics, and admin-only communication controls (Sprint 14B)
+- [x] CRM analytics dashboard with SQL aggregation, Chart.js reporting, funnels, KPIs, reminders, activity, smart signals, conditional leaderboard, and exports (Sprint 14C)
 - [x] Global Site Settings singleton CMS with Media Library branding and public integration (Sprint 13D)
 - [x] Team management
 - [x] Founder singleton management

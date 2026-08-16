@@ -6,6 +6,10 @@ import type {
   LeadStatus,
   LeadStatusHistoryRow,
   ProfileRow,
+  EmailTemplateInsert,
+  EmailTemplateRow,
+  LeadFollowUpRow,
+  LeadNoteHistoryRow,
 } from "@/types/database";
 import type { DatabaseClient } from "../client";
 import { type PaginatedResult, LeadRepository } from "./base-repository";
@@ -24,10 +28,86 @@ export interface LeadQuery {
   readonly status?: LeadStatus;
   readonly service?: string;
   readonly budget?: string;
+  readonly hasReply?: boolean;
+  readonly needsFollowUp?: boolean;
 }
 export interface LeadContext {
   readonly emails: readonly LeadEmailHistoryRow[];
   readonly statuses: readonly LeadStatusHistoryRow[];
+  readonly followUps: readonly LeadFollowUpRow[];
+  readonly notes: readonly LeadNoteHistoryRow[];
+}
+export interface AnalyticsDatum {
+  readonly label: string;
+  readonly value: number;
+}
+export interface CrmAnalytics {
+  readonly activity: readonly {
+    readonly id: string;
+    readonly kind: string;
+    readonly label: string;
+    readonly lead_id: string;
+    readonly occurred_at: string;
+  }[];
+  readonly followUps: {
+    readonly nextSevenDays: number;
+    readonly overdue: number;
+    readonly today: number;
+    readonly tomorrow: number;
+  };
+  readonly kpis: {
+    readonly averageCloseHours: number | null;
+    readonly averageResponseHours: number | null;
+    readonly conversionRate: number | null;
+    readonly replyRate: number | null;
+    readonly winRate: number | null;
+  };
+  readonly leadSources: readonly AnalyticsDatum[];
+  readonly leaderboard: readonly {
+    readonly id: string;
+    readonly leads_handled: number;
+    readonly name: string;
+    readonly response_hours: number | null;
+    readonly won: number;
+  }[];
+  readonly monthlyLeads: readonly AnalyticsDatum[];
+  readonly smart: {
+    readonly biggestBudget: {
+      readonly budget_range: string;
+      readonly id: string;
+      readonly name: string;
+    } | null;
+    readonly highestPriorityLead: {
+      readonly id: string;
+      readonly name: string;
+      readonly priority: string;
+    } | null;
+    readonly longestInactiveLead: {
+      readonly id: string;
+      readonly last_activity: string;
+      readonly name: string;
+    } | null;
+    readonly mostRequestedService: AnalyticsDatum | null;
+    readonly newestLead: {
+      readonly company: string | null;
+      readonly created_at: string;
+      readonly id: string;
+      readonly name: string;
+    } | null;
+  };
+  readonly statistics: {
+    readonly active: number;
+    readonly archived: number;
+    readonly emailsSent: number;
+    readonly estimatedRevenue: number | null;
+    readonly lost: number;
+    readonly new: number;
+    readonly pendingFollowUps: number;
+    readonly todaysFollowUps: number;
+    readonly total: number;
+    readonly won: number;
+  };
+  readonly statusDistribution: readonly AnalyticsDatum[];
 }
 export interface PublicLeadSubmission {
   readonly budget: string | null;
@@ -59,6 +139,14 @@ export class ContactLeadsRepository extends LeadRepository<
 > {
   constructor(client: DatabaseClient) {
     super(client);
+  }
+  async getDashboardAnalytics(from: string, to: string): Promise<CrmAnalytics> {
+    const { data, error } = await this.client.rpc("crm_dashboard_analytics", {
+      p_from: from,
+      p_to: to,
+    });
+    this.throwIfError(error);
+    return data as unknown as CrmAnalytics;
   }
   async findAll() {
     return (await this.findPage({ pageSize: 100 })).data;
@@ -184,11 +272,31 @@ export class ContactLeadsRepository extends LeadRepository<
     let query = this.client
       .from("contact_leads")
       .select("*", { count: "exact" });
-    const term = options.query?.trim().replaceAll(",", "");
-    if (term)
+    const term = options.query?.trim().replace(/[,%()]/g, "");
+    let conversationLeadIds: readonly string[] = [];
+    if (term) {
+      const [emails, notes] = await Promise.all([
+        this.client
+          .from("lead_email_history")
+          .select("lead_id")
+          .or(`subject.ilike.%${term}%,body.ilike.%${term}%`),
+        this.client
+          .from("lead_note_history")
+          .select("lead_id")
+          .ilike("body", `%${term}%`),
+      ]);
+      this.throwIfError(emails.error);
+      this.throwIfError(notes.error);
+      conversationLeadIds = [
+        ...new Set([
+          ...(emails.data ?? []).map((item) => item.lead_id),
+          ...(notes.data ?? []).map((item) => item.lead_id),
+        ]),
+      ];
       query = query.or(
-        `name.ilike.%${term}%,email.ilike.%${term}%,company.ilike.%${term}%,subject.ilike.%${term}%,message.ilike.%${term}%`,
+        `name.ilike.%${term}%,email.ilike.%${term}%,company.ilike.%${term}%,subject.ilike.%${term}%,message.ilike.%${term}%${conversationLeadIds.length ? `,id.in.(${conversationLeadIds.join(",")})` : ""}`,
       );
+    }
     if (options.status) query = query.eq("status", options.status);
     if (options.priority) query = query.eq("priority", options.priority);
     if (options.service) query = query.eq("project_type", options.service);
@@ -201,6 +309,14 @@ export class ContactLeadsRepository extends LeadRepository<
     if (options.dateFrom) query = query.gte("created_at", options.dateFrom);
     if (options.dateTo)
       query = query.lte("created_at", `${options.dateTo}T23:59:59.999Z`);
+    if (options.hasReply !== undefined)
+      query = options.hasReply
+        ? query.not("replied_at", "is", null)
+        : query.is("replied_at", null);
+    if (options.needsFollowUp !== undefined)
+      query = options.needsFollowUp
+        ? query.not("next_follow_up_at", "is", null)
+        : query.is("next_follow_up_at", null);
     const sort = options.sort ?? "newest";
     const order =
       sort === "company"
@@ -251,7 +367,7 @@ export class ContactLeadsRepository extends LeadRepository<
     leadIds: readonly string[],
   ): Promise<Readonly<Record<string, LeadContext>>> {
     if (!leadIds.length) return {};
-    const [statuses, emails] = await Promise.all([
+    const [statuses, emails, followUps, notes] = await Promise.all([
       this.client
         .from("lead_status_history")
         .select("*")
@@ -262,15 +378,31 @@ export class ContactLeadsRepository extends LeadRepository<
         .select("*")
         .in("lead_id", [...leadIds])
         .order("sent_at", { ascending: false }),
+      this.client
+        .from("lead_follow_ups")
+        .select("*")
+        .in("lead_id", [...leadIds])
+        .order("scheduled_for", { ascending: false }),
+      this.client
+        .from("lead_note_history")
+        .select("*")
+        .in("lead_id", [...leadIds])
+        .order("created_at", { ascending: false }),
     ]);
     this.throwIfError(statuses.error);
     this.throwIfError(emails.error);
+    this.throwIfError(followUps.error);
+    this.throwIfError(notes.error);
     return Object.fromEntries(
       leadIds.map((id) => [
         id,
         {
           statuses: (statuses.data ?? []).filter((item) => item.lead_id === id),
           emails: (emails.data ?? []).filter((item) => item.lead_id === id),
+          followUps: (followUps.data ?? []).filter(
+            (item) => item.lead_id === id,
+          ),
+          notes: (notes.data ?? []).filter((item) => item.lead_id === id),
         },
       ]),
     );
@@ -310,9 +442,13 @@ export class ContactLeadsRepository extends LeadRepository<
   }
   async recordEmail(input: {
     readonly body: string;
+    readonly bcc?: readonly string[];
+    readonly cc?: readonly string[];
     readonly emailType: string;
     readonly leadId: string;
     readonly providerId: string | null;
+    readonly htmlBody?: string;
+    readonly replyTo?: string | null;
     readonly recipient: string;
     readonly sentBy: string | null;
     readonly subject: string;
@@ -324,8 +460,202 @@ export class ContactLeadsRepository extends LeadRepository<
       subject: input.subject,
       body: input.body,
       provider_id: input.providerId,
+      message_id: input.providerId,
+      direction: "outgoing",
+      status: input.providerId ? "sent" : "failed",
+      delivery_status: input.providerId ? "accepted" : "failed",
+      reply_to: input.replyTo ?? null,
+      cc: [...(input.cc ?? [])],
+      bcc: [...(input.bcc ?? [])],
+      html_body: input.htmlBody ?? null,
       sent_by: input.sentBy,
     });
     this.throwIfError(error);
+  }
+
+  async countRecentOutgoing(userId: string, since: string) {
+    const { count, error } = await this.client
+      .from("lead_email_history")
+      .select("id", { count: "exact", head: true })
+      .eq("sent_by", userId)
+      .eq("direction", "outgoing")
+      .gte("sent_at", since);
+    this.throwIfError(error);
+    return count ?? 0;
+  }
+
+  async findTemplates(): Promise<readonly EmailTemplateRow[]> {
+    const { data, error } = await this.client
+      .from("email_templates")
+      .select("*")
+      .eq("is_active", true)
+      .order("is_system", { ascending: false })
+      .order("name");
+    this.throwIfError(error);
+    return data ?? [];
+  }
+
+  async saveTemplate(input: EmailTemplateInsert) {
+    const { id: candidateId, ...values } = input;
+    const id = typeof candidateId === "string" ? candidateId : undefined;
+    const request = id
+      ? this.client.from("email_templates").update(values).eq("id", id)
+      : this.client.from("email_templates").insert(values);
+    const { error } = await request;
+    this.throwIfError(error);
+  }
+
+  async deleteTemplate(id: string) {
+    const { error } = await this.client
+      .from("email_templates")
+      .delete()
+      .eq("id", id)
+      .eq("is_system", false);
+    this.throwIfError(error);
+  }
+
+  async scheduleFollowUp(input: {
+    readonly leadId: string;
+    readonly scheduledFor: string;
+    readonly note: string | null;
+    readonly userId: string;
+  }) {
+    const { error } = await this.client.from("lead_follow_ups").insert({
+      lead_id: input.leadId,
+      scheduled_for: input.scheduledFor,
+      note: input.note,
+      assigned_to: input.userId,
+      created_by: input.userId,
+      updated_by: input.userId,
+    });
+    this.throwIfError(error);
+    await this.update(input.leadId, {
+      next_follow_up_at: input.scheduledFor,
+      follow_up_completed_at: null,
+      updated_by: input.userId,
+    });
+  }
+
+  async completeFollowUp(id: string, leadId: string, userId: string) {
+    const completedAt = new Date().toISOString();
+    const { error } = await this.client
+      .from("lead_follow_ups")
+      .update({
+        status: "completed",
+        completed_at: completedAt,
+        completed_by: userId,
+        updated_by: userId,
+      })
+      .eq("id", id)
+      .eq("lead_id", leadId);
+    this.throwIfError(error);
+    await this.update(leadId, {
+      next_follow_up_at: null,
+      follow_up_completed_at: completedAt,
+      updated_by: userId,
+    });
+  }
+
+  async recordNote(leadId: string, body: string, userId: string) {
+    const { error } = await this.client.from("lead_note_history").insert({
+      lead_id: leadId,
+      body,
+      created_by: userId,
+    });
+    this.throwIfError(error);
+  }
+
+  async findDueFollowUps(limit = 8): Promise<readonly LeadFollowUpRow[]> {
+    const { data, error } = await this.client
+      .from("lead_follow_ups")
+      .select("*")
+      .eq("status", "scheduled")
+      .lte("scheduled_for", new Date(Date.now() + 86_400_000).toISOString())
+      .order("scheduled_for")
+      .limit(limit);
+    this.throwIfError(error);
+    return data ?? [];
+  }
+
+  async getEmailCenterMetrics() {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const todayIso = today.toISOString();
+    const count = async (
+      table: "contact_leads" | "lead_email_history" | "lead_follow_ups",
+      apply: (
+        query: ReturnType<DatabaseClient["from"]>,
+      ) => ReturnType<DatabaseClient["from"]>,
+    ) => {
+      const query = this.client
+        .from(table)
+        .select("id", { count: "exact", head: true });
+      const { count: value, error } = await apply(query);
+      this.throwIfError(error);
+      return value ?? 0;
+    };
+    const [
+      emailsSent,
+      incomingReplies,
+      unreadReplies,
+      todaysFollowUps,
+      pendingReplies,
+      wonToday,
+      lostToday,
+      openLeads,
+      responseRows,
+    ] = await Promise.all([
+      count("lead_email_history", (query) => query.eq("direction", "outgoing")),
+      count("lead_email_history", (query) => query.eq("direction", "incoming")),
+      count("lead_email_history", (query) =>
+        query.eq("direction", "incoming").is("read_at", null),
+      ),
+      count("lead_follow_ups", (query) =>
+        query
+          .eq("status", "scheduled")
+          .gte("scheduled_for", todayIso)
+          .lte(
+            "scheduled_for",
+            new Date(today.getTime() + 86_400_000).toISOString(),
+          ),
+      ),
+      count("contact_leads", (query) =>
+        query.is("replied_at", null).not("status", "in", "(won,lost,archived)"),
+      ),
+      count("contact_leads", (query) =>
+        query.eq("status", "won").gte("status_changed_at", todayIso),
+      ),
+      count("contact_leads", (query) =>
+        query.eq("status", "lost").gte("status_changed_at", todayIso),
+      ),
+      count("contact_leads", (query) =>
+        query.not("status", "in", "(won,lost,archived)"),
+      ),
+      this.client
+        .from("contact_leads")
+        .select("created_at,replied_at")
+        .not("replied_at", "is", null),
+    ]);
+    this.throwIfError(responseRows.error);
+    const responseHours = (responseRows.data ?? []).map(
+      (row) =>
+        (new Date(row.replied_at as string).getTime() -
+          new Date(row.created_at).getTime()) /
+        3_600_000,
+    );
+    return {
+      averageResponseHours: responseHours.length
+        ? responseHours.reduce((total, value) => total + value, 0) /
+          responseHours.length
+        : null,
+      emailsSent,
+      lostToday,
+      openLeads,
+      pendingReplies,
+      replyRate: emailsSent ? (incomingReplies / emailsSent) * 100 : null,
+      todaysFollowUps,
+      unreadReplies,
+      wonToday,
+    };
   }
 }

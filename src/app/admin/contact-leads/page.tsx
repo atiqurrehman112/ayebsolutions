@@ -63,15 +63,25 @@ export default async function AdminContactLeadsRoute({ searchParams }: Props) {
     status: statuses.includes(statusValue) ? statusValue : undefined,
     service: first(params.service) || undefined,
     budget: first(params.budget) || undefined,
+    hasReply: first(params.hasReply) === "true" ? true : undefined,
+    needsFollowUp: first(params.needsFollowUp) === "true" ? true : undefined,
   };
-  const [leads, assignees, filterOptions] = await Promise.all([
-    repository.findPage({
-      ...filters,
-      page: Math.max(1, Number(first(params.page)) || 1),
-    }),
-    repository.findAssignees(),
-    repository.findFilterOptions(),
-  ]);
+  const [leads, assignees, filterOptions, templates, metrics, dueFollowUps] =
+    await Promise.all([
+      repository.findPage({
+        ...filters,
+        page: Math.max(1, Number(first(params.page)) || 1),
+      }),
+      repository.findAssignees(),
+      repository.findFilterOptions(),
+      user.role === "admin" ? repository.findTemplates() : Promise.resolve([]),
+      user.role === "admin"
+        ? repository.getEmailCenterMetrics()
+        : Promise.resolve(null),
+      user.role === "admin"
+        ? repository.findDueFollowUps()
+        : Promise.resolve([]),
+    ]);
   const context = await repository.findContext(
     leads.data.map((lead) => lead.id),
   );
@@ -88,10 +98,14 @@ export default async function AdminContactLeadsRoute({ searchParams }: Props) {
       canDelete={user.role === "admin"}
       canEdit={getPermissions(user.role).canManageContent}
       canManageNotes={user.role === "admin"}
+      canCommunicate={user.role === "admin"}
       context={context}
       filters={filters}
       leads={visibleLeads}
       filterOptions={filterOptions}
+      templates={templates}
+      metrics={metrics}
+      dueFollowUps={dueFollowUps}
     />
   );
 }

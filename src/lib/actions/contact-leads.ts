@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/auth/auth";
@@ -11,7 +12,13 @@ import {
   type LeadPriority,
 } from "@/lib/database/repositories/contact-leads-repository";
 import { sendLeadEmail } from "@/lib/email/leads";
-import { leadReplySchema, leadStatusSchema } from "@/lib/validation/contact";
+import { interpolateEmail, richTextToHtml } from "@/lib/email/content";
+import {
+  emailTemplateSchema,
+  followUpSchema,
+  leadReplySchema,
+  leadStatusSchema,
+} from "@/lib/validation/contact";
 
 export interface LeadActionState {
   readonly message: string;
@@ -45,6 +52,14 @@ function refresh() {
 }
 async function repository() {
   return new ContactLeadsRepository(await createDatabaseClient());
+}
+async function assertSameOrigin() {
+  const requestHeaders = await headers();
+  const origin = requestHeaders.get("origin");
+  const host =
+    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  if (origin && host && new URL(origin).host !== host)
+    throw new LeadPermissionError("The request origin could not be verified.");
 }
 
 export async function assignLead(
@@ -117,11 +132,13 @@ export async function addLeadNote(
   notes: string,
 ): Promise<LeadActionState> {
   try {
-    await access();
+    const user = await access(true);
     const parsed = z
       .object({ id: z.uuid(), notes: z.string().trim().min(2).max(10_000) })
       .parse({ id, notes });
-    await (await repository()).update(parsed.id, { notes: parsed.notes });
+    const repo = await repository();
+    await repo.update(parsed.id, { notes: parsed.notes, updated_by: user.id });
+    await repo.recordNote(parsed.id, parsed.notes, user.id);
     refresh();
     return { message: "Internal notes saved.", status: "success" };
   } catch (error) {
@@ -224,24 +241,57 @@ export async function sendLeadMessage(
   input: z.input<typeof leadReplySchema>,
 ): Promise<LeadActionState> {
   try {
-    const user = await access();
+    await assertSameOrigin();
+    const user = await access(true);
     const parsed = leadReplySchema.parse(input);
     const repo = await repository();
     const lead = await repo.findById(parsed.id);
     if (!lead) return { message: "The lead was not found.", status: "error" };
+    const recent = await repo.countRecentOutgoing(
+      user.id,
+      new Date(Date.now() - 5 * 60_000).toISOString(),
+    );
+    if (recent >= 10)
+      return {
+        message:
+          "Email limit reached. Wait a few minutes before sending again.",
+        status: "error",
+      };
+    if (lead.email.toLowerCase() !== parsed.recipient.toLowerCase())
+      return {
+        message: "Recipient does not match this lead.",
+        status: "error",
+      };
+    const variables = {
+      budget: lead.budget_range ?? "",
+      company: lead.company ?? "",
+      name: lead.name,
+      service: lead.project_type,
+    };
+    const subject = interpolateEmail(parsed.subject, variables);
+    const body = interpolateEmail(parsed.body, variables);
+    const html = richTextToHtml(body);
     const providerId = await sendLeadEmail({
-      body: parsed.body,
+      bcc: parsed.bcc,
+      body,
+      cc: parsed.cc,
+      html,
       recipient: parsed.recipient,
-      subject: parsed.subject,
+      replyTo: parsed.reply_to || undefined,
+      subject,
     });
     await repo.recordEmail({
-      body: parsed.body,
+      bcc: parsed.bcc,
+      body,
+      cc: parsed.cc,
       emailType: parsed.email_type,
       leadId: parsed.id,
       providerId,
+      htmlBody: html,
+      replyTo: parsed.reply_to || null,
       recipient: parsed.recipient,
       sentBy: user.id,
-      subject: parsed.subject,
+      subject,
     });
     const timestamp = new Date().toISOString();
     await repo.update(parsed.id, {
@@ -255,6 +305,89 @@ export async function sendLeadMessage(
       await repo.recordStatus(parsed.id, lead.status, "replied", user.id);
     refresh();
     return { message: "Email sent and recorded.", status: "success" };
+  } catch (error) {
+    return failure(error);
+  }
+}
+
+export async function saveEmailTemplate(
+  input: z.input<typeof emailTemplateSchema>,
+): Promise<LeadActionState> {
+  try {
+    await assertSameOrigin();
+    const user = await access(true);
+    const parsed = emailTemplateSchema.parse(input);
+    await (
+      await repository()
+    ).saveTemplate({
+      id: parsed.id ?? undefined,
+      name: parsed.name,
+      category: parsed.category,
+      subject: parsed.subject,
+      body_text: parsed.body,
+      body_html: richTextToHtml(parsed.body),
+      created_by: user.id,
+      updated_by: user.id,
+      variables: ["name", "company", "service", "budget"],
+    });
+    refresh();
+    return { message: "Email template saved.", status: "success" };
+  } catch (error) {
+    return failure(error);
+  }
+}
+
+export async function deleteEmailTemplate(
+  id: string,
+): Promise<LeadActionState> {
+  try {
+    await assertSameOrigin();
+    await access(true);
+    await (await repository()).deleteTemplate(z.uuid().parse(id));
+    refresh();
+    return { message: "Custom template deleted.", status: "success" };
+  } catch (error) {
+    return failure(error);
+  }
+}
+
+export async function scheduleLeadFollowUp(
+  input: z.input<typeof followUpSchema>,
+): Promise<LeadActionState> {
+  try {
+    await assertSameOrigin();
+    const user = await access(true);
+    const parsed = followUpSchema.parse(input);
+    await (
+      await repository()
+    ).scheduleFollowUp({
+      leadId: parsed.lead_id,
+      note: parsed.note || null,
+      scheduledFor: parsed.scheduled_for,
+      userId: user.id,
+    });
+    refresh();
+    return { message: "Follow-up scheduled.", status: "success" };
+  } catch (error) {
+    return failure(error);
+  }
+}
+
+export async function completeLeadFollowUp(
+  id: string,
+  leadId: string,
+): Promise<LeadActionState> {
+  try {
+    await assertSameOrigin();
+    const user = await access(true);
+    const parsed = z
+      .object({ id: z.uuid(), leadId: z.uuid() })
+      .parse({ id, leadId });
+    await (
+      await repository()
+    ).completeFollowUp(parsed.id, parsed.leadId, user.id);
+    refresh();
+    return { message: "Follow-up completed.", status: "success" };
   } catch (error) {
     return failure(error);
   }
