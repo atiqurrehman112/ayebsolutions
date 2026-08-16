@@ -12,6 +12,7 @@ import type {
 export interface PublicFounderProfile extends FounderProfileRow {
   readonly profilePhoto: MediaLibraryRow | null;
   readonly coverImage: MediaLibraryRow | null;
+  readonly openGraphImage: MediaLibraryRow | null;
 }
 
 export const getPublishedFounderProfile = unstable_cache(
@@ -26,15 +27,18 @@ export const getPublishedFounderProfile = unstable_cache(
     const profile = await new FounderRepository(client).findPublished();
     if (!profile) return null;
     const mediaRepository = new MediaRepository(client);
-    const [profilePhoto, coverImage] = await Promise.all([
+    const [profilePhoto, coverImage, openGraphImage] = await Promise.all([
       profile.profile_photo
         ? mediaRepository.findById(profile.profile_photo)
         : null,
       profile.cover_image
         ? mediaRepository.findById(profile.cover_image)
         : null,
+      profile.open_graph_image
+        ? mediaRepository.findById(profile.open_graph_image)
+        : null,
     ]);
-    return { ...profile, profilePhoto, coverImage };
+    return { ...profile, profilePhoto, coverImage, openGraphImage };
   },
   ["published-founder-profile"],
   { revalidate: 300, tags: ["founder", "media"] },

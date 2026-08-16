@@ -14,6 +14,7 @@ import {
   Lightbulb,
   Linkedin,
   Mail,
+  MapPin,
   Phone,
   ShieldCheck,
   Sparkles,
@@ -291,6 +292,11 @@ function FounderSpotlight({
     (item): item is { label: string; value: number } => item.value !== null,
   );
 
+  const badgeLabel =
+    founder.featured_badge ||
+    founder.availability_status?.replaceAll("_", " ") ||
+    "Founder";
+
   return (
     <section
       id="founder"
@@ -332,11 +338,7 @@ function FounderSpotlight({
                 </span>
               </div>
             )}
-            <span className={styles.portraitLabel}>
-              {founder.availability_status
-                ? founder.availability_status.replaceAll("_", " ")
-                : "Founder"}
-            </span>
+            <span className={styles.portraitLabel}>{badgeLabel}</span>
           </div>
           <div className="p-7 sm:p-10 lg:p-14">
             <Eyebrow>Founder spotlight</Eyebrow>
@@ -349,12 +351,16 @@ function FounderSpotlight({
             <p className="mt-3 text-lg font-semibold text-muted-foreground">
               {founder.role_title}
             </p>
+            {founder.location ? (
+              <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="size-4" aria-hidden="true" />
+                {founder.location}
+              </p>
+            ) : null}
             <p className="mt-5 text-xl font-medium leading-8">
-              {founder.professional_headline}
+              {founder.short_introduction}
             </p>
-            <div className="mt-8 whitespace-pre-line text-base leading-8 text-muted-foreground">
-              {founder.biography}
-            </div>
+            <FounderBiography content={founder.biography} />
             {founder.personal_quote ? (
               <blockquote className="mt-8 border-l-2 pl-5 text-lg italic leading-8">
                 “{founder.personal_quote}”
@@ -450,6 +456,48 @@ function FounderSpotlight({
         </div>
       </Container>
     </section>
+  );
+}
+
+function FounderBiography({ content }: { readonly content: string }) {
+  const blocks = content.trim().split(/\n{2,}/);
+  return (
+    <div className="mt-8 space-y-5 text-base leading-8 text-muted-foreground">
+      {blocks.map((block, index) => {
+        const lines = block.split("\n");
+        if (block.startsWith("## "))
+          return (
+            <h3
+              key={`${index}-${block}`}
+              className="text-xl font-semibold text-foreground"
+            >
+              {block.slice(3)}
+            </h3>
+          );
+        if (block.startsWith("> "))
+          return (
+            <blockquote
+              key={`${index}-${block}`}
+              className="border-l-2 pl-5 italic text-foreground"
+            >
+              {block.slice(2)}
+            </blockquote>
+          );
+        if (lines.every((line) => line.startsWith("- ")))
+          return (
+            <ul key={`${index}-${block}`} className="list-disc space-y-2 pl-5">
+              {lines.map((line, lineIndex) => (
+                <li key={`${lineIndex}-${line}`}>{line.slice(2)}</li>
+              ))}
+            </ul>
+          );
+        return (
+          <p key={`${index}-${block}`} className="whitespace-pre-line">
+            {block}
+          </p>
+        );
+      })}
+    </div>
   );
 }
 
@@ -763,6 +811,7 @@ export function TeamPage({ founder, members }: TeamPageProps) {
             "@type": "Person",
             name: founder.full_name,
             jobTitle: founder.role_title,
+            description: founder.short_introduction,
             worksFor: {
               "@type": "Organization",
               name: company.name,
@@ -771,7 +820,18 @@ export function TeamPage({ founder, members }: TeamPageProps) {
             url: `${pageUrl}#founder`,
             email: founder.email ?? undefined,
             image: founder.profilePhoto?.secure_url,
+            homeLocation: founder.location
+              ? { "@type": "Place", name: founder.location }
+              : undefined,
             knowsAbout: [...founder.skills, ...founder.technologies],
+            sameAs: [
+              founder.linkedin_url,
+              founder.github_url,
+              founder.twitter_url,
+              founder.facebook_url,
+              founder.instagram_url,
+              founder.portfolio_url,
+            ].filter((url): url is string => Boolean(url)),
           }}
         />
       ) : null}

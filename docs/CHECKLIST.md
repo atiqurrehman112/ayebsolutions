@@ -9,6 +9,10 @@
 - [x] Public `/team` founder centerpiece uses published CMS data and conditional Person schema
 - [x] Independent graceful fallback when no published Founder record exists
 - [x] Server-first rendering, responsive admin/public layouts, dark mode, visible focus, and reduced motion
+- [x] Forward-only Founder expansion for short introduction, location, badge, display order, SEO fields, and OpenGraph media
+- [x] Explicit save-draft, publish, and unpublish workflows with success/error/loading/empty states
+- [x] Safe rich biography formatting, responsive live preview, and unsaved-change protection
+- [x] CMS-driven Team metadata and Person schema with graceful optional-field omission
 
 ## Sprint 13B — Premium Team Page & CMS Integration
 

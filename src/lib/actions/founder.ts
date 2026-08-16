@@ -29,15 +29,18 @@ const list = (value: FormDataEntryValue | null) =>
     .filter(Boolean);
 
 function values(formData: FormData) {
+  const intent = formData.get("intent");
   return {
     full_name: formData.get("full_name"),
     role_title: formData.get("role_title"),
     professional_headline: formData.get("professional_headline"),
+    short_introduction: formData.get("short_introduction"),
     biography: formData.get("biography"),
     profile_photo: nullable(formData.get("profile_photo")),
     cover_image: nullable(formData.get("cover_image")),
     email: nullable(formData.get("email")),
     phone: nullable(formData.get("phone")),
+    location: nullable(formData.get("location")),
     linkedin_url: nullable(formData.get("linkedin_url")),
     github_url: nullable(formData.get("github_url")),
     twitter_url: nullable(formData.get("twitter_url")),
@@ -55,7 +58,17 @@ function values(formData: FormData) {
     mission_statement: nullable(formData.get("mission_statement")),
     personal_quote: nullable(formData.get("personal_quote")),
     availability_status: nullable(formData.get("availability_status")),
-    status: formData.get("status"),
+    featured_badge: nullable(formData.get("featured_badge")),
+    display_order: numberOrNull(formData.get("display_order")) ?? 0,
+    seo_title: nullable(formData.get("seo_title")),
+    seo_description: nullable(formData.get("seo_description")),
+    open_graph_image: nullable(formData.get("open_graph_image")),
+    status:
+      intent === "publish"
+        ? "published"
+        : intent === "draft" || intent === "unpublish"
+          ? "draft"
+          : formData.get("status"),
   };
 }
 

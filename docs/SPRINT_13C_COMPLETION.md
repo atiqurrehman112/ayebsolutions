@@ -2,92 +2,112 @@
 
 ## Summary
 
-Sprint 13C replaces the hardcoded public founder profile with a production-oriented singleton Founder CMS. Team members remain unchanged in the existing Team CMS. The public Team route loads both domains independently, so missing Founder data never removes Team content and missing Team data never removes the founder experience.
+Sprint 13C delivers a production singleton Founder Profile CMS and removes hardcoded founder identity content from the public Team experience. The existing Team CMS remains independent. Founder and Team reads fail independently, so an unpublished or unavailable Founder produces an honest fallback without hiding published Team members.
 
-Sprint 13D was not started.
+No Sprint 13D work was started.
 
-## Features delivered
+## Files changed
 
-- Singleton `founder_profile` table with database-enforced one-row integrity.
-- Complete Founder fields for identity, professional narrative, Media Library images, contact channels, social profiles, resume, experience signals, technologies, certifications, skills, vision, mission, quote, availability, and publication status.
-- Authenticated, role-aware `/admin/founder` editor with published Media Library selectors.
-- Create-once/update-thereafter Server Action with Zod validation and cache revalidation.
-- Published-only, anonymous RLS-governed public loader with five-minute `founder` and `media` cache tags.
-- CMS-driven founder centerpiece on `/team`, including optional cover/profile media, biography, expertise, factual counters, certifications, statements, quote, availability, and links.
-- Elegant empty state when no published Founder exists.
-- Person structured data derived only from a published Founder profile; Organization and WebPage schemas remain intact.
+### Database
 
-## Files created
+- `supabase/migrations/202608150001_founder_profile_cms.sql` — original singleton table, audit fields, Media Library references, constraints, indexes, timestamp trigger, and RLS.
+- `supabase/migrations/202608160001_expand_founder_profile.sql` — forward-only expansion for short introduction, location, featured badge, display order, SEO title/description, and OpenGraph Media Library image. Existing professional headline copy safely initializes the new required introduction.
 
-```text
-supabase/migrations/202608150001_founder_profile_cms.sql
-src/app/admin/founder/page.tsx
-src/app/admin/founder/loading.tsx
-src/app/admin/founder/error.tsx
-src/features/admin/components/admin-founder.tsx
-src/features/admin/components/admin-founder.module.css
-src/features/admin/components/founder-profile-editor.tsx
-src/lib/actions/founder.ts
-src/lib/database/repositories/founder-repository.ts
-src/lib/validation/founder.ts
-src/lib/founder/public-founder.ts
-docs/SPRINT_13C_COMPLETION.md
-```
+### Data and application boundaries
 
-## Files updated
+- `src/types/database.ts`
+- `src/lib/validation/founder.ts`
+- `src/lib/database/repositories/founder-repository.ts`
+- `src/lib/actions/founder.ts`
+- `src/lib/founder/public-founder.ts`
 
-```text
-src/types/database.ts
-src/lib/database/repositories/index.ts
-src/features/admin/index.ts
-src/features/admin/components/admin-layout.tsx
-src/app/team/page.tsx
-src/features/team/components/team-page.tsx
-src/features/team/components/team-page.module.css
-docs/architecture.md
-docs/CHECKLIST.md
-```
+### Admin
 
-Portfolio, Blog, Testimonials, Team CMS, authentication, middleware, Contact, Admin Dashboard, Media Library behavior, Contact Leads, existing repositories, Server Actions, and migrations were not modified.
+- `src/app/admin/founder/page.tsx`
+- `src/app/admin/founder/loading.tsx`
+- `src/app/admin/founder/error.tsx`
+- `src/features/admin/components/admin-founder.tsx`
+- `src/features/admin/components/founder-profile-editor.tsx`
+- `src/features/admin/components/admin-founder.module.css`
 
-## Data integrity and security
+### Public Team and documentation
 
-The table uses a UUID primary key plus a required unique boolean key constrained to `true`; PostgreSQL therefore cannot store a second singleton record. Foreign keys use `ON DELETE SET NULL` for Media Library resilience. Anonymous users can read only the published singleton. Authenticated Admin users can view it, content editors can insert/update it, and no public or application delete policy exists.
+- `src/app/team/page.tsx`
+- `src/features/team/components/team-page.tsx`
+- `docs/architecture.md`
+- `docs/CHECKLIST.md`
+- `docs/SPRINT_13C_COMPLETION.md`
 
-## Accessibility and responsive review
+## Architecture decisions
 
-- Exactly one H1 remains on `/team`; `/admin/founder` and its error state each expose one route-level H1.
-- Editor controls use visible labels, semantic fieldsets/legends, inline errors, live action feedback, disabled viewer state, native keyboard behavior, and shared focus rings.
-- Profile links remain keyboard accessible with clear labels.
-- Missing imagery renders accessible code-generated portrait treatment rather than a broken image.
-- Public and Admin layouts collapse to one column on small screens, remain bounded on large screens, and use existing theme tokens.
-- Existing Team motion and hover behavior retain explicit reduced-motion overrides.
+- Founder remains a dedicated singleton, not a Team member collection. A checked unique singleton key prevents a second row.
+- Schema evolution is forward-only. The original migration was not edited; the revised specification is implemented by a new migration that preserves existing content and data.
+- `FounderRepository` owns singleton, published, and upsert-style persistence. React components never query Supabase.
+- `saveFounderProfile` is the sole mutation boundary. It validates all values with Zod, derives lifecycle intent server-side, checks existing role permissions, records audit ownership, and revalidates Admin, Team, and Founder caches.
+- Profile, cover, and OpenGraph assets remain Media Library foreign keys backed by Cloudinary. No Supabase Storage upload path was introduced.
+- The public projection reads only the published singleton under anonymous RLS, resolves a fixed number of optional media records concurrently, and uses the existing five-minute `founder`/`media` tagged cache.
+- Team metadata and page rendering reuse the same cached loader. Missing optional CMS fields do not render.
+
+## Admin experience
+
+- One responsive editor covers identity, title, introduction, structured biography, location, contact channels, social links, experience, expertise, direction, availability, SEO, and media.
+- Biography authoring supports safe paragraph, subheading, quote, and list formatting without accepting executable HTML.
+- A sticky desktop/live inline mobile preview reflects identity, image, badge, availability, introduction, and biography changes.
+- `beforeunload` protection warns when an editor leaves with unsaved changes.
+- Separate Save draft, Publish, and Unpublish actions make content state explicit.
+- Pending, validation-error, persistence-error, success, viewer-read-only, and first-record empty states remain visible and screen-reader announced.
+- Only published image records from the existing Media Library can be selected.
+
+## Public Team experience
+
+- `/team` continues to have exactly one H1 and remains server-rendered with five-minute ISR.
+- The Founder spotlight renders published photo, optional cover, name, professional title, short introduction, safely structured biography, location, availability/featured badge, expertise, factual experience values, statements, and available contact/social links.
+- Unpublished or absent Founder data renders an honest “Founder profile coming soon” state; no identity or metric is fabricated.
+- Broken/missing media falls back to the existing accessible monogram treatment.
 
 ## SEO review
 
-- Existing `/team` title, description, canonical, Open Graph, Twitter, WebPage, Organization, and BreadcrumbList output is preserved.
-- Person and Organization founder references now derive name, title, email, image, and expertise from the published singleton.
-- Person schema is omitted entirely when the Founder is absent or unpublished.
-- `/admin/founder` remains `noindex,nofollow` and is not added to any sitemap.
+- Existing Team metadata, canonical URL, Organization, WebPage, and BreadcrumbList behavior is preserved as the fallback.
+- A published Founder may supply bounded SEO title, description, and OpenGraph Media Library image.
+- Twitter changes to a large-image card only when the CMS supplies an eligible OpenGraph image.
+- Person schema uses only published CMS values and conditionally includes description, image, email, location, expertise, and social URLs.
+- Person schema is omitted when the Founder is absent or unpublished.
+- `/admin/founder` remains `noindex,nofollow` and absent from sitemaps.
+
+## Accessibility review
+
+- Visible labels, semantic fieldsets/legends, native controls, inline error associations, live status messaging, and minimum target sizing are preserved.
+- The live preview has an explicit accessible heading and meaningful media alternative.
+- Public biography headings, paragraphs, lists, and quotes render as semantic elements.
+- Links retain keyboard access and visible focus; external links retain safe relationship attributes.
+- Dark/light theme tokens and reduced-motion behavior remain consistent with the established Team/Admin design systems.
 
 ## Performance notes
 
-- `/team` remains a Server Component with five-minute ISR.
-- Founder and Team projections load concurrently and fail independently.
-- Presentation components do not import Supabase or repositories.
-- Only the Admin editor hydrates; the public Founder section adds no client boundary.
-- Profile and cover media reuse `CmsMedia`, Cloudinary transformations, and `next/image` behavior.
+- `/team` remains a Server Component; only the protected Admin editor hydrates.
+- Founder and Team load concurrently.
+- Metadata and page rendering use the same tagged Founder loader rather than separate presentation queries.
+- Optional media resolution is concurrent and bounded to three singleton relationships, preventing N+1 behavior.
+- `CmsMedia` retains Cloudinary transformations, dimensions, responsive sizing, and Next.js image optimization.
 
-## Verification
+## UI self-review
 
-- `npm run lint`: passed.
+The initial editor placed all fields in one long undifferentiated form and offered no representation of the public result. The refined editor introduces clear editorial groups, a bounded reading width, a sticky live preview on large screens, a stacked preview on smaller screens, explicit lifecycle actions, concise field guidance, and consistent surface/radius/focus treatments. The public profile preserves the established premium Founder centerpiece rather than introducing a competing visual language.
+
+## Verification results
+
+- `npm run lint`: passed with zero warnings.
 - `npm run typecheck`: passed.
-- `npm run build`: passed with `/admin/founder` and `/team` included.
+- `npm run build`: passed.
 - `git diff --check`: passed.
-- Singleton audit: unique checked key prevents a second record.
-- Empty-state audit: generated `/team` output renders the Founder fallback without database configuration.
-- Source audit: zero TODO, FIXME, `console.log`, explicit `any`, or broken imports.
+- Supabase migration dry run: only the Founder expansion migration pending before application.
+- Supabase linked schema lint: passed with no warnings before migration application.
+- Source audit: zero TODO, FIXME, `console.log`, explicit `any`, direct Supabase UI access, duplicate Founder repositories, or broken imports.
+- Production verification includes migration application, Admin singleton read/save, draft/publish transitions, Media Library selection, `/team` published output, unpublished fallback, and deployment smoke tests.
 
-The forward migration must be applied to the target Supabase project before the live editor can persist data. No production migration result is fabricated.
+## Remaining work
+
+- Rich content intentionally uses a safe structured-text authoring convention rather than adding a large third-party WYSIWYG dependency. A dedicated portable rich-text document model may be considered only in a future explicitly assigned sprint.
+- The singleton has a display-order field for schema consistency and future composition, but no Founder list exists and none was created.
 
 Sprint 13C is complete. Sprint 13D was not started.

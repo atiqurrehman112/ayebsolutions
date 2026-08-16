@@ -182,11 +182,13 @@ export interface FounderProfileRow
   readonly full_name: string;
   readonly role_title: string;
   readonly professional_headline: string;
+  readonly short_introduction: string;
   readonly biography: string;
   readonly profile_photo: string | null;
   readonly cover_image: string | null;
   readonly email: string | null;
   readonly phone: string | null;
+  readonly location: string | null;
   readonly linkedin_url: string | null;
   readonly github_url: string | null;
   readonly twitter_url: string | null;
@@ -204,6 +206,11 @@ export interface FounderProfileRow
   readonly mission_statement: string | null;
   readonly personal_quote: string | null;
   readonly availability_status: "available" | "busy" | "not_accepting" | null;
+  readonly featured_badge: string | null;
+  readonly display_order: number;
+  readonly seo_title: string | null;
+  readonly seo_description: string | null;
+  readonly open_graph_image: string | null;
   readonly status: "draft" | "published";
 }
 
