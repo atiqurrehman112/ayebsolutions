@@ -35,6 +35,7 @@ const statusLabels: Readonly<Record<ContentStatus, string>> = {
   draft: "Draft",
   published: "Published",
   review: "In review",
+  scheduled: "Scheduled",
 };
 
 function pageHref(filters: PortfolioFilters, page: number) {

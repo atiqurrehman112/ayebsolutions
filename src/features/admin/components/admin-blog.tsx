@@ -9,6 +9,7 @@ import type {
   BlogArticleRow,
   CategoryRow,
   ContentStatus,
+  MediaLibraryRow,
 } from "@/types/database";
 import { BlogArticleDialog } from "./blog-article-dialog";
 import { BlogRowActions } from "./blog-row-actions";
@@ -28,12 +29,20 @@ interface Props {
   readonly canEdit: boolean;
   readonly categories: readonly Pick<CategoryRow, "id" | "name" | "slug">[];
   readonly filters: BlogFilters;
+  readonly authors: readonly {
+    readonly id: string;
+    readonly display_name: string | null;
+    readonly role: AppRole;
+  }[];
+  readonly media: readonly MediaLibraryRow[];
+  readonly galleryMap: Readonly<Record<string, readonly string[]>>;
 }
 const statusLabels: Readonly<Record<ContentStatus, string>> = {
   archived: "Archived",
   draft: "Draft",
   published: "Published",
   review: "In review",
+  scheduled: "Scheduled",
 };
 const roleLabels: Readonly<Record<AppRole, string>> = {
   admin: "Admin",
@@ -59,6 +68,9 @@ export function AdminBlog({
   canEdit,
   categories,
   filters,
+  authors,
+  media,
+  galleryMap,
 }: Props) {
   const categoryNames = new Map(
     categories.map((category) => [category.id, category.name]),
@@ -86,7 +98,12 @@ export function AdminBlog({
           </p>
         </div>
         {canEdit ? (
-          <BlogArticleDialog categories={categories} mode="create" />
+          <BlogArticleDialog
+            authors={authors}
+            categories={categories}
+            media={media}
+            mode="create"
+          />
         ) : null}
       </header>
       <section aria-label="Article summary" className={styles.summary}>
@@ -235,6 +252,9 @@ export function AdminBlog({
                         canDelete={canDelete}
                         canEdit={canEdit}
                         categories={categories}
+                        authors={authors}
+                        media={media}
+                        galleryIds={galleryMap[article.id] ?? []}
                       />
                     </td>
                   </tr>
@@ -252,7 +272,12 @@ export function AdminBlog({
                 : "Create your first article to begin the editorial library."}
             </p>
             {canEdit && !filtered ? (
-              <BlogArticleDialog categories={categories} mode="create" />
+              <BlogArticleDialog
+                authors={authors}
+                categories={categories}
+                media={media}
+                mode="create"
+              />
             ) : (
               <Button asChild variant="outline">
                 <Link href="/admin/blog">Reset filters</Link>

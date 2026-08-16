@@ -20,6 +20,7 @@ interface Props {
 const statuses: readonly ContentStatus[] = [
   "draft",
   "review",
+  "scheduled",
   "published",
   "archived",
 ];
@@ -54,7 +55,7 @@ export default async function AdminBlogRoute({ searchParams }: Props) {
       : undefined,
   } as const;
   const repository = new BlogRepository(await createDatabaseClient());
-  const [articles, categories] = await Promise.all([
+  const [articles, categories, authors, media] = await Promise.all([
     repository.findPage({
       authorRole: filters.authorRole,
       categoryId: filters.category,
@@ -68,7 +69,12 @@ export default async function AdminBlogRoute({ searchParams }: Props) {
       status: filters.status,
     }),
     repository.findCategories(),
+    repository.findAuthors(),
+    repository.findEditorMedia(),
   ]);
+  const galleryMap = await repository.findGalleryMap(
+    articles.data.map((article) => article.id),
+  );
   const permissions = getPermissions(user.role);
   return (
     <AdminBlog
@@ -77,6 +83,9 @@ export default async function AdminBlogRoute({ searchParams }: Props) {
       canEdit={permissions.canManageContent}
       categories={categories}
       filters={filters}
+      authors={authors}
+      media={media}
+      galleryMap={galleryMap}
     />
   );
 }

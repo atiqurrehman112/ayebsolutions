@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
 import type { PublicBlogContext } from "@/lib/database/repositories/blog-repository";
 import { mediaSeoUrl } from "@/lib/media/media";
-import type { BlogArticleRow } from "@/types/database";
+import type { BlogArticleRow, MediaLibraryRow } from "@/types/database";
 import { CopyArticleLink, ReadingProgress } from "./article-tools";
 import styles from "./blog-article-page.module.css";
 
@@ -55,6 +55,12 @@ type ContentBlock =
   | { readonly type: "paragraph"; readonly text: string }
   | { readonly type: "quote"; readonly text: string }
   | {
+      readonly type: "media";
+      readonly id: string;
+      readonly mediaType: "image" | "video";
+      readonly alt: string;
+    }
+  | {
       readonly headers: readonly string[];
       readonly rows: readonly (readonly string[])[];
       readonly type: "table";
@@ -79,7 +85,19 @@ function faqItems(value: BlogArticleRow["faq"]): readonly Faq[] {
 function contentSections(
   value: BlogArticleRow["content"],
 ): readonly ContentSection[] {
-  if (typeof value === "string") return value.trim() ? [{ body: value }] : [];
+  const fromBody = (body: string): readonly ContentSection[] => {
+    const parts = body.split(/^##\s+(.+)$/gm);
+    if (parts.length === 1) return body.trim() ? [{ body }] : [];
+    const sections: ContentSection[] = [];
+    if (parts[0]?.trim()) sections.push({ body: parts[0] });
+    for (let index = 1; index < parts.length; index += 2)
+      sections.push({
+        heading: parts[index]?.trim(),
+        body: parts[index + 1]?.trim() ?? "",
+      });
+    return sections;
+  };
+  if (typeof value === "string") return fromBody(value);
   if (value && typeof value === "object" && !Array.isArray(value)) {
     if ("sections" in value && Array.isArray(value.sections))
       return value.sections.flatMap((item) =>
@@ -99,7 +117,7 @@ function contentSections(
           : [],
       );
     if ("body" in value && typeof value.body === "string")
-      return [{ body: value.body }];
+      return fromBody(value.body);
   }
   return [];
 }
@@ -125,6 +143,18 @@ function blocks(body: string): readonly ContentBlock[] {
     .map((item) => item.trim())
     .filter(Boolean)
     .flatMap((chunk): readonly ContentBlock[] => {
+      const media = chunk.match(
+        /^\[(image|video):([0-9a-f-]{36}):([^\]]+)\]$/i,
+      );
+      if (media)
+        return [
+          {
+            type: "media",
+            mediaType: media[1]?.toLowerCase() === "video" ? "video" : "image",
+            id: media[2] ?? "",
+            alt: media[3] ?? "Article media",
+          },
+        ];
       if (chunk.startsWith("```") && chunk.endsWith("```")) {
         const lines = chunk.slice(3, -3).trim().split("\n");
         const language = lines[0]?.match(/^[a-zA-Z0-9+#-]+$/)
@@ -180,22 +210,53 @@ function blocks(body: string): readonly ContentBlock[] {
 }
 
 function inlineText(text: string): ReactNode {
-  return text.split(/(https?:\/\/[^\s]+)/g).map((part, index) =>
-    /^https?:\/\//.test(part) ? (
-      <a
-        className="focus-ring rounded-sm font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
-        href={part}
-        key={`${part}-${index}`}
-        rel="noreferrer"
-        target="_blank"
-      >
-        {part}
-        <span className="sr-only"> (opens in a new tab)</span>
-      </a>
-    ) : (
-      part
-    ),
-  );
+  return text
+    .split(
+      /(\[(?:button:)?[^\]]+\]\((?:https?:\/\/|\/)[^)]+\)|https?:\/\/[^\s]+)/g,
+    )
+    .map((part, index) => {
+      const markdown = part.match(
+        /^\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)]+)\)$/,
+      );
+      if (markdown) {
+        const button = markdown[1]?.startsWith("button:");
+        const label = button ? markdown[1]?.slice(7) : markdown[1];
+        const href = markdown[2] ?? "/";
+        const external = href.startsWith("http");
+        return (
+          <a
+            className={
+              button
+                ? "focus-ring inline-flex min-h-11 items-center rounded-full bg-foreground px-5 font-semibold text-background"
+                : "focus-ring rounded-sm font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
+            }
+            href={href}
+            key={`${href}-${index}`}
+            rel={external ? "noreferrer" : undefined}
+            target={external ? "_blank" : undefined}
+          >
+            {label}
+            {external ? (
+              <span className="sr-only"> (opens in a new tab)</span>
+            ) : null}
+          </a>
+        );
+      }
+      return /^https?:\/\//.test(part) ? (
+        <a
+          className="focus-ring rounded-sm font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
+          href={part}
+          key={`${part}-${index}`}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {part}
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      ) : (
+        part
+      );
+    });
 }
 
 export function BlogArticlePage({
@@ -247,7 +308,7 @@ export function BlogArticlePage({
       ? { "@type": "Person", name: article.author_name }
       : { "@type": "Organization", name: siteName },
     publisher: { "@type": "Organization", name: siteName, url: siteUrl },
-    image: mediaSeoUrl(context.featuredMedia),
+    image: mediaSeoUrl(context.openGraphMedia ?? context.featuredMedia),
     keywords: [
       ...article.keywords,
       ...context.tags.map((tag) => tag.name),
@@ -407,12 +468,46 @@ export function BlogArticlePage({
                       {blocks(section.body).map((block, blockIndex) => (
                         <ContentBlockView
                           block={block}
+                          media={context.gallery}
                           key={`${block.type}-${blockIndex}`}
                         />
                       ))}
                     </section>
                   ))}
                 </div>
+              </div>
+            </Container>
+          </section>
+        ) : null}
+
+        {context.gallery.length ? (
+          <section
+            className="border-b py-14"
+            aria-labelledby="article-gallery-heading"
+          >
+            <Container size="content">
+              <h2 id="article-gallery-heading" className="text-2xl font-bold">
+                Article gallery
+              </h2>
+              <div className="mt-7 grid gap-5 sm:grid-cols-2">
+                {context.gallery.map((item) => (
+                  <figure
+                    className="overflow-hidden rounded-2xl border bg-card"
+                    key={item.id}
+                  >
+                    <CmsMedia
+                      className="aspect-video w-full object-cover"
+                      media={item}
+                      alt={item.alt ?? item.file_name}
+                      sizes="(max-width: 640px) 100vw, 384px"
+                    />
+                    {item.alt ? (
+                      <figcaption className="p-3 text-sm text-muted-foreground">
+                        {item.alt}
+                      </figcaption>
+                    ) : null}
+                  </figure>
+                ))}
               </div>
             </Container>
           </section>
@@ -656,7 +751,27 @@ function Meta({
   );
 }
 
-function ContentBlockView({ block }: { readonly block: ContentBlock }) {
+function ContentBlockView({
+  block,
+  media,
+}: {
+  readonly block: ContentBlock;
+  readonly media: readonly MediaLibraryRow[];
+}) {
+  if (block.type === "media") {
+    const item = media.find((entry) => entry.id === block.id);
+    return item ? (
+      <figure>
+        <CmsMedia
+          className="w-full rounded-2xl object-cover"
+          media={item}
+          alt={block.alt}
+          sizes="(max-width: 768px) 100vw, 768px"
+        />
+        <figcaption>{block.alt}</figcaption>
+      </figure>
+    ) : null;
+  }
   if (block.type === "quote")
     return (
       <blockquote>

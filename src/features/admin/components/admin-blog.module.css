@@ -211,6 +211,76 @@
   gap: 1rem;
   margin-top: 1rem;
 }
+
+.richEditor {
+  display: grid;
+  gap: 0.75rem;
+}
+.editorToolbar {
+  align-items: center;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.toolSelect {
+  align-items: center;
+  display: flex;
+  gap: 0.25rem;
+}
+.toolSelect svg {
+  height: 1rem;
+  width: 1rem;
+}
+.toolSelect select {
+  min-height: 40px;
+  width: 7rem;
+}
+.livePreview {
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px dashed var(--border);
+  border-radius: 0.85rem;
+  max-height: 12rem;
+  overflow: auto;
+  padding: 1rem;
+}
+.livePreview p {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-top: 0.5rem;
+  white-space: pre-wrap;
+}
+.galleryPicker {
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-height: 14rem;
+  overflow: auto;
+  padding: 1rem;
+}
+.galleryPicker legend {
+  font-weight: 700;
+  padding-inline: 0.35rem;
+}
+.galleryPicker label {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  min-height: 44px;
+}
+@media (max-width: 700px) {
+  .galleryPicker {
+    grid-template-columns: 1fr;
+  }
+}
 .formGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

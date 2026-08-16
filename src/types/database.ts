@@ -1,4 +1,5 @@
-export type ContentStatus = "draft" | "review" | "published" | "archived";
+export type ContentStatus =
+  "draft" | "review" | "scheduled" | "published" | "archived";
 type ProfileStatus = "active" | "suspended" | "invited";
 export type LeadStatus =
   "new" | "read" | "in_progress" | "replied" | "won" | "lost" | "archived";
@@ -67,6 +68,14 @@ export interface PortfolioProjectRow
   readonly results: readonly string[];
   readonly faq: Json;
 }
+export interface BlogArticleMediaRow extends Record<string, unknown> {
+  readonly article_id: string;
+  readonly media_id: string;
+  readonly sort_order: number;
+  readonly caption: string | null;
+  readonly created_at: string;
+  readonly created_by: string | null;
+}
 interface PortfolioProjectMediaRow extends Record<string, unknown> {
   readonly project_id: string;
   readonly media_id: string;
@@ -95,6 +104,10 @@ export interface BlogArticleRow extends AuditColumns, Record<string, unknown> {
   readonly author_name: string | null;
   readonly featured_media_id: string | null;
   readonly faq: Json;
+  readonly canonical_url: string | null;
+  readonly open_graph_media_id: string | null;
+  readonly allow_comments: boolean;
+  readonly scheduled_at: string | null;
 }
 
 export interface ServiceRow extends AuditColumns, Record<string, unknown> {
@@ -583,6 +596,13 @@ export interface Database {
         ProjectTagRow,
         ProjectTagInsert,
         ProjectTagUpdate
+      >;
+      blog_article_media: TableDefinition<
+        BlogArticleMediaRow,
+        Omit<BlogArticleMediaRow, "created_at">,
+        Partial<
+          Omit<BlogArticleMediaRow, "article_id" | "media_id" | "created_at">
+        >
       >;
     };
     Views: Record<never, never>;

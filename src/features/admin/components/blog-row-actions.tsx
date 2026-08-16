@@ -1,7 +1,7 @@
 "use client";
 
 import { useOptimistic, useState, useTransition } from "react";
-import { Archive, RotateCcw, Trash2 } from "lucide-react";
+import { Archive, Copy, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,6 +15,7 @@ import {
 import {
   archiveBlogArticle,
   deleteBlogArticle,
+  duplicateBlogArticle,
   moveBlogArticleToReview,
   publishBlogArticle,
   restoreBlogArticle,
@@ -22,9 +23,11 @@ import {
   type BlogActionState,
 } from "@/lib/actions/blog";
 import type {
+  AppRole,
   BlogArticleRow,
   CategoryRow,
   ContentStatus,
+  MediaLibraryRow,
 } from "@/types/database";
 import { BlogArticleDialog } from "./blog-article-dialog";
 import styles from "./admin-blog.module.css";
@@ -34,12 +37,22 @@ interface Props {
   readonly canDelete: boolean;
   readonly canEdit: boolean;
   readonly categories: readonly Pick<CategoryRow, "id" | "name" | "slug">[];
+  readonly authors: readonly {
+    readonly id: string;
+    readonly display_name: string | null;
+    readonly role: AppRole;
+  }[];
+  readonly media: readonly MediaLibraryRow[];
+  readonly galleryIds: readonly string[];
 }
 export function BlogRowActions({
   article,
   canDelete,
   canEdit,
   categories,
+  authors,
+  media,
+  galleryIds,
 }: Props) {
   const [status, setStatus] = useOptimistic(article.status);
   const [pending, startTransition] = useTransition();
@@ -57,6 +70,9 @@ export function BlogRowActions({
       <BlogArticleDialog
         article={article}
         categories={categories}
+        authors={authors}
+        media={media}
+        galleryIds={galleryIds}
         mode="edit"
       />
       {status === "draft" ? (
@@ -80,6 +96,15 @@ export function BlogRowActions({
           Publish
         </Button>
       ) : null}
+      {status === "scheduled" ? (
+        <Button
+          disabled={pending}
+          onClick={() => run("published", () => publishBlogArticle(article.id))}
+          size="sm"
+        >
+          Publish now
+        </Button>
+      ) : null}
       {status === "published" ? (
         <Button
           disabled={pending}
@@ -90,6 +115,19 @@ export function BlogRowActions({
           Unpublish
         </Button>
       ) : null}
+      <Button
+        aria-label={`Duplicate ${article.title}`}
+        disabled={pending}
+        onClick={() =>
+          startTransition(async () =>
+            setMessage((await duplicateBlogArticle(article.id)).message),
+          )
+        }
+        size="icon"
+        variant="ghost"
+      >
+        <Copy aria-hidden="true" />
+      </Button>
       {status === "archived" ? (
         <Button
           disabled={pending}

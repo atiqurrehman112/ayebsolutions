@@ -32,6 +32,7 @@ const statuses: Readonly<Record<ContentStatus, string>> = {
   draft: "Draft",
   published: "Published",
   review: "In review",
+  scheduled: "Scheduled",
 };
 const approvals: Readonly<Record<TestimonialApprovalStatus, string>> = {
   approved: "Approved",

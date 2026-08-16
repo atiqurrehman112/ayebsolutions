@@ -31,6 +31,12 @@ export const blogArticleSchema = z.strictObject({
   published_at: z.iso.datetime().nullable().optional(),
   meta_title: z.string().trim().max(70).nullable().optional(),
   meta_description: z.string().trim().max(180).nullable().optional(),
+  canonical_url: z.url().max(500).nullable().optional(),
+  open_graph_media_id: identifierSchema.nullable().optional(),
+  featured_media_id: identifierSchema.nullable().optional(),
+  author_name: z.string().trim().max(160).nullable().optional(),
+  allow_comments: z.boolean().default(false),
+  scheduled_at: z.iso.datetime().nullable().optional(),
 });
 
 export const blogArticleUpdateSchema =

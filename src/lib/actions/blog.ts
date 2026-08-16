@@ -1,9 +1,11 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+import { headers } from "next/headers";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/auth/auth";
+import { company } from "@/config/company";
 import { getPermissions } from "@/lib/auth/permissions";
 import { createDatabaseClient } from "@/lib/database";
 import { BlogRepository } from "@/lib/database/repositories/blog-repository";
@@ -32,6 +34,13 @@ async function requireBlogPermission(operation: "delete" | "write") {
       "Your viewer role has read-only article access.",
     );
   }
+  const requestHeaders = await headers();
+  const origin = requestHeaders.get("origin");
+  const host =
+    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  if (origin && host && new URL(origin).host !== host)
+    throw new BlogPermissionError("The request origin could not be verified.");
+  return user;
   if (operation === "delete" && user.role !== "admin") {
     throw new BlogPermissionError(
       "Only administrators can permanently delete articles.",
@@ -52,24 +61,67 @@ function commaList(value: FormDataEntryValue | null) {
 
 function formValues(formData: FormData) {
   const excerpt = String(formData.get("excerpt") ?? "");
-  const readingTime = String(formData.get("reading_time_minutes") ?? "").trim();
+  const contentText = String(formData.get("content") ?? "");
+  const title = String(formData.get("title") ?? "").trim();
+  const slugInput = String(formData.get("slug") ?? "").trim();
+  const slug =
+    slugInput ||
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+  const readingTime = Math.max(
+    1,
+    Math.ceil(contentText.trim().split(/\s+/).filter(Boolean).length / 220),
+  );
   const status = formData.get("status");
+  const scheduledAt = String(formData.get("scheduled_at") ?? "").trim();
   return {
-    title: formData.get("title"),
-    slug: formData.get("slug"),
+    title,
+    slug,
     description: excerpt,
     excerpt,
-    content: { body: String(formData.get("content") ?? "") } satisfies Json,
+    content: { body: contentText } satisfies Json,
     category_id: formData.get("category_id") || null,
-    reading_time_minutes: readingTime ? Number(readingTime) : null,
+    reading_time_minutes: readingTime,
     difficulty: null,
     keywords: commaList(formData.get("tags")),
     is_featured: formData.get("is_featured") === "on",
     status,
-    published_at: status === "published" ? new Date().toISOString() : null,
+    published_at:
+      status === "published"
+        ? new Date().toISOString()
+        : status === "scheduled" && scheduledAt
+          ? new Date(scheduledAt).toISOString()
+          : null,
     meta_title: formData.get("meta_title") || null,
     meta_description: formData.get("meta_description") || null,
+    canonical_url:
+      formData.get("canonical_url") ||
+      new URL(`/blog/${slug}`, company.url).toString(),
+    featured_media_id: formData.get("featured_media_id") || null,
+    open_graph_media_id: formData.get("open_graph_media_id") || null,
+    author_name: formData.get("author_name") || null,
+    allow_comments: formData.get("allow_comments") === "on",
+    scheduled_at:
+      status === "scheduled" && scheduledAt
+        ? new Date(scheduledAt).toISOString()
+        : null,
   };
+}
+function galleryIds(formData: FormData) {
+  const content = String(formData.get("content") ?? "");
+  const inlineIds = [
+    ...content.matchAll(/\[(?:image|video):([0-9a-f-]{36}):/gi),
+  ]
+    .map((match) => match[1])
+    .filter((value): value is string => Boolean(value));
+  return [
+    ...new Set([
+      ...formData.getAll("gallery_media_ids").map(String),
+      ...inlineIds,
+    ]),
+  ].filter((value) => z.uuid().safeParse(value).success);
 }
 
 function validationFailure(
@@ -114,9 +166,9 @@ export async function createBlogArticle(
     return validationFailure(parsed.error.flatten().fieldErrors);
   try {
     await requireBlogPermission("write");
-    const article = await new BlogRepository(
-      await createDatabaseClient(),
-    ).create(parsed.data);
+    const repository = new BlogRepository(await createDatabaseClient());
+    const article = await repository.create(parsed.data);
+    await repository.syncGallery(article.id, galleryIds(formData));
     revalidateBlog(article.slug);
     return { message: "Article created successfully.", status: "success" };
   } catch (error) {
@@ -138,9 +190,19 @@ export async function updateBlogArticle(
     await requireBlogPermission("write");
     const repository = new BlogRepository(await createDatabaseClient());
     const previous = await repository.findById(id);
+    const autosave = formData.get("intent") === "autosave";
+    if (autosave && previous?.status !== "draft")
+      return {
+        message: "Autosave is available for drafts only.",
+        status: "error",
+      };
     const article = await repository.update(id, parsed.data);
+    await repository.syncGallery(id, galleryIds(formData));
     revalidateBlog(previous?.slug, article.slug);
-    return { message: "Article updated successfully.", status: "success" };
+    return {
+      message: autosave ? "Draft autosaved." : "Article updated successfully.",
+      status: "success",
+    };
   } catch (error) {
     return actionFailure(error);
   }
@@ -200,4 +262,23 @@ export async function restoreBlogArticle(id: string) {
 }
 export async function moveBlogArticleToReview(id: string) {
   return lifecycle(id, "review");
+}
+export async function duplicateBlogArticle(
+  id: string,
+): Promise<BlogActionState> {
+  try {
+    const user = await requireBlogPermission("write");
+    const article = await new BlogRepository(
+      await createDatabaseClient(),
+    ).duplicate(z.uuid().parse(id), user.id);
+    if (!article)
+      return {
+        message: "The requested article was not found.",
+        status: "error",
+      };
+    revalidateBlog(article.slug);
+    return { message: "Article duplicated as a draft.", status: "success" };
+  } catch (error) {
+    return actionFailure(error);
+  }
 }

@@ -30,15 +30,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = article.meta_title ?? article.title;
   const description = article.meta_description ?? article.description;
   const path = `/blog/${article.slug}`;
-  const image = context.featuredMedia;
+  const image = context.openGraphMedia ?? context.featuredMedia;
   const imageUrl = mediaSeoUrl(image);
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: article.canonical_url ?? path },
     openGraph: {
       type: "article",
-      url: path,
+      url: article.canonical_url ?? path,
       title,
       description,
       siteName: settings?.configuration.site_name,
