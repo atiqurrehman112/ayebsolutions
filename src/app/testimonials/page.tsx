@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { company } from "@/config/company";
+import { getPublicSiteSettings } from "@/lib/site-settings/public-site-settings";
 import { TestimonialsPage } from "@/features/testimonials";
 import type { PublicTestimonialSort } from "@/lib/database/repositories/testimonials-repository";
 import {
@@ -7,7 +7,8 @@ import {
   getPublishedTestimonialsPage,
 } from "@/lib/testimonials/public-testimonials";
 export const revalidate = 300;
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
   const title = "Testimonials";
   const description =
     "Read approved, consent-verified feedback published by Ayeb Solutions.";
@@ -20,7 +21,7 @@ export function generateMetadata(): Metadata {
       url: "/testimonials",
       title,
       description,
-      siteName: company.name,
+      siteName: settings?.configuration.site_name,
     },
     twitter: {
       card: "summary",
@@ -40,9 +41,10 @@ const sorts: readonly PublicTestimonialSort[] = [
   "newest",
 ];
 export default async function TestimonialsRoute({ searchParams }: Props) {
-  const [params, industries] = await Promise.all([
+  const [params, industries, settings] = await Promise.all([
     searchParams,
     getPublishedTestimonialIndustries(),
+    getPublicSiteSettings(),
   ]);
   const requestedSize = Number(first(params.pageSize));
   const pageSize = requestedSize === 24 ? 24 : requestedSize === 48 ? 48 : 12;
@@ -66,8 +68,12 @@ export default async function TestimonialsRoute({ searchParams }: Props) {
     <TestimonialsPage
       filters={filters}
       industries={industries}
-      siteName={company.name}
-      siteUrl={company.url}
+      siteName={settings?.configuration.site_name ?? "Digital product studio"}
+      siteUrl={
+        settings?.configuration.canonical_base_url ??
+        process.env.NEXT_PUBLIC_SITE_URL ??
+        "http://localhost:3000"
+      }
       testimonials={testimonials}
     />
   );

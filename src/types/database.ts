@@ -214,6 +214,56 @@ export interface FounderProfileRow
   readonly status: "draft" | "published";
 }
 
+export interface SiteConfigurationRow
+  extends AuditColumns, Record<string, unknown> {
+  readonly site_name: string;
+  readonly tagline: string;
+  readonly short_description: string | null;
+  readonly long_description: string | null;
+  readonly site_url: string;
+  readonly canonical_base_url: string;
+  readonly default_language: string;
+  readonly timezone: string;
+  readonly logo_media_id: string | null;
+  readonly white_logo_media_id: string | null;
+  readonly favicon_media_id: string | null;
+  readonly default_share_media_id: string | null;
+  readonly contact_email: string | null;
+  readonly secondary_email: string | null;
+  readonly contact_phone: string | null;
+  readonly whatsapp: string | null;
+  readonly address: string | null;
+  readonly google_maps_url: string | null;
+  readonly business_hours: string | null;
+  readonly linkedin_url: string | null;
+  readonly github_url: string | null;
+  readonly facebook_url: string | null;
+  readonly instagram_url: string | null;
+  readonly x_url: string | null;
+  readonly youtube_url: string | null;
+  readonly default_meta_title: string;
+  readonly default_meta_description: string;
+  readonly default_keywords: readonly string[];
+  readonly open_graph_media_id: string | null;
+  readonly twitter_media_id: string | null;
+  readonly google_analytics_id: string | null;
+  readonly google_tag_manager_id: string | null;
+  readonly meta_pixel_id: string | null;
+  readonly microsoft_clarity_id: string | null;
+  readonly footer_copyright: string;
+  readonly footer_description: string | null;
+  readonly footer_cta: string | null;
+  readonly footer_button_text: string | null;
+  readonly footer_button_link: string | null;
+  readonly announcement_enabled: boolean;
+  readonly announcement_text: string | null;
+  readonly announcement_button_text: string | null;
+  readonly announcement_button_url: string | null;
+  readonly maintenance_mode: boolean;
+  readonly maintenance_message: string;
+  readonly status: ContentStatus;
+}
+
 export interface ContactLeadRow extends AuditColumns, Record<string, unknown> {
   readonly name: string;
   readonly email: string;
@@ -340,6 +390,11 @@ export type FounderProfileInsert = InsertShape<
   "full_name" | "role_title" | "professional_headline" | "biography"
 >;
 export type FounderProfileUpdate = UpdateShape<FounderProfileRow>;
+export type SiteConfigurationInsert = InsertShape<
+  SiteConfigurationRow,
+  "site_name" | "tagline" | "site_url" | "canonical_base_url"
+>;
+export type SiteConfigurationUpdate = UpdateShape<SiteConfigurationRow>;
 export type ContactLeadInsert = InsertShape<
   ContactLeadRow,
   "name" | "email" | "project_type" | "message"
@@ -414,6 +469,11 @@ export interface Database {
         FounderProfileRow,
         FounderProfileInsert,
         FounderProfileUpdate
+      >;
+      site_configuration: TableDefinition<
+        SiteConfigurationRow,
+        SiteConfigurationInsert,
+        SiteConfigurationUpdate
       >;
       contact_leads: TableDefinition<
         ContactLeadRow,

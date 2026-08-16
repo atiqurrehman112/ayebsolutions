@@ -6,6 +6,7 @@ import {
   Mail,
   MenuSquare,
   MessageSquareQuote,
+  Settings,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -39,6 +40,7 @@ const navigation: readonly AdminNavigationItem[] = [
   { label: "Blog", href: "/admin/blog", icon: BookOpen },
   { label: "Team", href: "/admin/team", icon: Users },
   { label: "Founder", href: "/admin/founder", icon: Users },
+  { label: "Site Settings", href: "/admin/site-settings", icon: Settings },
   {
     label: "Testimonials",
     href: "/admin/testimonials",

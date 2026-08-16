@@ -122,8 +122,9 @@
 - [x] Testimonials management (Supabase CRUD integration)
 - [x] Media library (Cloudinary and Supabase CRUD integration)
 - [x] Contact leads (Supabase CRM and Resend email history)
-- [x] Static SEO and company configuration (Settings CMS removed in CP3)
+- [x] Global Site Settings singleton CMS with Media Library branding and public integration (Sprint 13D)
 - [x] Team management
+- [x] Founder singleton management
 
 ## Quality
 

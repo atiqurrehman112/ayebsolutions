@@ -31,10 +31,9 @@ import { CTALayout } from "@/components/layout/templates";
 import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
 import { Button } from "@/components/ui/button";
-import { company } from "@/config/company";
 import { cn } from "@/lib/utils";
 import { mediaSeoUrl } from "@/lib/media/media";
-import type { MediaLibraryRow } from "@/types/database";
+import type { MediaLibraryRow, SiteConfigurationRow } from "@/types/database";
 import { ContactForm } from "./contact-form";
 import styles from "./contact-page.module.css";
 
@@ -49,38 +48,46 @@ interface ContactMethod extends IconItem {
   readonly href?: string;
 }
 
-const contactMethods: readonly ContactMethod[] = [
-  {
-    title: "Email",
-    description:
-      "Use email when you already have a written brief, technical context, or supporting questions to share.",
-    action: company.email,
-    href: `mailto:${company.email}`,
-    icon: Mail,
-  },
-  {
-    title: "WhatsApp",
-    description:
-      "A verified public WhatsApp number is not currently listed. Begin securely through the inquiry form.",
-    action: "Start with the form",
-    href: "#contact-form",
-    icon: MessageCircle,
-  },
-  {
-    title: "Location",
-    description:
-      "We work remotely from Pakistan with businesses and project teams across time zones.",
-    action: company.location,
-    icon: MapPin,
-  },
-  {
-    title: "Business Hours",
-    description:
-      "Consultations and working sessions are scheduled around confirmed project availability.",
-    action: "By appointment",
-    icon: Clock3,
-  },
-] as const;
+function getContactMethods(
+  settings: SiteConfigurationRow | null,
+): readonly ContactMethod[] {
+  return [
+    {
+      title: "Email",
+      description:
+        "Use email when you already have a written brief, technical context, or supporting questions to share.",
+      action: settings?.contact_email ?? "Use the inquiry form",
+      href: settings?.contact_email
+        ? `mailto:${settings.contact_email}`
+        : "#contact-form",
+      icon: Mail,
+    },
+    {
+      title: "WhatsApp",
+      description:
+        "A verified public WhatsApp number is not currently listed. Begin securely through the inquiry form.",
+      action: settings?.whatsapp ?? "Start with the form",
+      href: settings?.whatsapp
+        ? `https://wa.me/${settings.whatsapp.replace(/\D/g, "")}`
+        : "#contact-form",
+      icon: MessageCircle,
+    },
+    {
+      title: "Location",
+      description:
+        "We work remotely from Pakistan with businesses and project teams across time zones.",
+      action: settings?.address ?? "Remote consultations",
+      icon: MapPin,
+    },
+    {
+      title: "Business Hours",
+      description:
+        "Consultations and working sessions are scheduled around confirmed project availability.",
+      action: settings?.business_hours ?? "By appointment",
+      icon: Clock3,
+    },
+  ] as const;
+}
 
 const consultationBenefits: readonly IconItem[] = [
   {
@@ -260,7 +267,8 @@ const contactFaqs = [
   },
   {
     question: "What is the best way to contact Ayeb Solutions today?",
-    answer: `Use the secure project inquiry form, email ${company.email}, or follow the Book Consultation link. The form validates and stores inquiries before attempting confirmation and notification emails.`,
+    answer:
+      "Use the secure project inquiry form, the published primary email, or the Book Consultation link. The form validates and stores inquiries before attempting confirmation and notification emails.",
   },
 ] as const;
 
@@ -457,7 +465,11 @@ function BenefitsSection() {
   );
 }
 
-function ContactMethodsSection() {
+function ContactMethodsSection({
+  settings,
+}: {
+  readonly settings: SiteConfigurationRow | null;
+}) {
   return (
     <section
       aria-labelledby="contact-methods-heading"
@@ -471,7 +483,7 @@ function ContactMethodsSection() {
           description="Choose the channel that suits the context. The project form is the best place to share requirements, while email works well for an existing brief."
         />
         <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {contactMethods.map(
+          {getContactMethods(settings).map(
             ({ title, description, action, href, icon: Icon }) => (
               <Card
                 key={title}
@@ -700,10 +712,17 @@ function FaqSection() {
 
 function ContactPage({
   heroMedia,
+  settings = null,
 }: {
   readonly heroMedia?: MediaLibraryRow | null;
+  readonly settings?: SiteConfigurationRow | null;
 }) {
-  const pageUrl = new URL("/contact", company.url).toString();
+  const siteUrl =
+    settings?.canonical_base_url ??
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "http://localhost:3000";
+  const siteName = settings?.site_name ?? "Digital product studio";
+  const pageUrl = new URL("/contact", siteUrl).toString();
   const contactPageSchema = {
     "@context": "https://schema.org",
     "@type": "ContactPage",
@@ -712,12 +731,12 @@ function ContactPage({
       "Contact Ayeb Solutions about web development, custom software, AI automation, design, integration, or maintenance.",
     url: pageUrl,
     image: mediaSeoUrl(heroMedia),
-    isPartOf: { "@type": "WebSite", name: company.name, url: company.url },
+    isPartOf: { "@type": "WebSite", name: siteName, url: siteUrl },
     about: {
       "@type": "Organization",
-      name: company.name,
-      url: company.url,
-      email: company.email,
+      name: siteName,
+      url: siteUrl,
+      email: settings?.contact_email,
     },
   } as const;
   const webPageSchema = {
@@ -730,7 +749,7 @@ function ContactPage({
     primaryImageOfPage: mediaSeoUrl(heroMedia)
       ? { "@type": "ImageObject", url: mediaSeoUrl(heroMedia) }
       : undefined,
-    isPartOf: { "@type": "WebSite", name: company.name, url: company.url },
+    isPartOf: { "@type": "WebSite", name: siteName, url: siteUrl },
   } as const;
   const faqSchema = {
     "@context": "https://schema.org",
@@ -744,11 +763,12 @@ function ContactPage({
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: company.name,
-    legalName: company.legalName,
-    url: company.url,
-    email: company.email,
-    description: company.description,
+    name: siteName,
+    url: siteUrl,
+    email: settings?.contact_email,
+    telephone: settings?.contact_phone,
+    address: settings?.address,
+    description: settings?.long_description ?? settings?.short_description,
   } as const;
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -758,7 +778,7 @@ function ContactPage({
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: company.url,
+        item: siteUrl,
       },
       {
         "@type": "ListItem",
@@ -773,7 +793,7 @@ function ContactPage({
     <>
       <Hero heroMedia={heroMedia} />
       <BenefitsSection />
-      <ContactMethodsSection />
+      <ContactMethodsSection settings={settings} />
       <ContactFormSection />
       <TimelineSection />
       <TrustSection />
@@ -795,7 +815,13 @@ function ContactPage({
         actions={
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" variant="secondary">
-              <a href={`mailto:${company.email}`}>
+              <a
+                href={
+                  settings?.contact_email
+                    ? `mailto:${settings.contact_email}`
+                    : "#contact-form"
+                }
+              >
                 Email Ayeb Solutions
                 <Mail className="size-4" aria-hidden="true" />
               </a>

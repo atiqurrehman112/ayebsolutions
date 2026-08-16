@@ -8,6 +8,7 @@ import {
   Mail,
   MessageSquareQuote,
   ShieldAlert,
+  Settings,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -67,6 +68,13 @@ const destinations: readonly DashboardDestination[] = [
       "Managed assets, metadata, usage context, and Cloudinary delivery state.",
     href: "/admin/media",
     icon: ImageIcon,
+  },
+  {
+    title: "Site Settings",
+    description:
+      "Global identity, contact, search, sharing, footer, and platform configuration.",
+    href: "/admin/site-settings",
+    icon: Settings,
   },
 ] as const;
 

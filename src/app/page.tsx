@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { StructuredData } from "@/components/seo/structured-data";
-import { company } from "@/config/company";
 import { homepage } from "@/config/homepage";
 import { marketingServices } from "@/config/marketing";
-import { siteConfig } from "@/config/site";
 import {
   BlogPreviewSection,
   FinalCtaSection,
@@ -18,29 +16,37 @@ import {
 import { getPublishedBlogPage } from "@/lib/blog/public-blog";
 import { getHomepageTestimonials } from "@/lib/homepage/homepage-data";
 import { getPublishedPortfolioPage } from "@/lib/portfolio/public-portfolio";
+import { getPublicSiteSettings } from "@/lib/site-settings/public-site-settings";
 
 export const revalidate = 300;
-export const metadata: Metadata = {
-  title: siteConfig.name,
-  description: siteConfig.description,
-  keywords: [...siteConfig.keywords],
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    url: "/",
-    title: siteConfig.name,
-    description: siteConfig.description,
-    siteName: company.name,
-  },
-  twitter: {
-    card: "summary",
-    title: siteConfig.name,
-    description: siteConfig.description,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
+  const config = settings?.configuration;
+  const title = config?.default_meta_title ?? "Digital product studio";
+  const description =
+    config?.default_meta_description ?? "Modern digital product engineering.";
+  return {
+    title,
+    description,
+    keywords: config?.default_keywords ? [...config.default_keywords] : [],
+    alternates: { canonical: "/" },
+    openGraph: {
+      type: "website",
+      url: "/",
+      title,
+      description,
+      siteName: config?.site_name,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function HomePage() {
-  const [portfolio, blog, testimonials] = await Promise.all([
+  const [portfolio, blog, testimonials, settings] = await Promise.all([
     getPublishedPortfolioPage({
       featured: true,
       pageSize: 6,
@@ -63,21 +69,27 @@ export default async function HomePage() {
       totalPages: 0,
     })),
     getHomepageTestimonials(6).catch(() => []),
+    getPublicSiteSettings(),
   ]);
+  const config = settings?.configuration;
+  const siteUrl =
+    config?.canonical_base_url ??
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "http://localhost:3000";
   const organization = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: company.name,
-    url: company.url,
-    email: company.email,
+    name: config?.site_name,
+    url: siteUrl,
+    email: config?.contact_email,
   } as const;
   const website = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: company.name,
-    url: company.url,
-    description: company.description,
-    inLanguage: "en",
+    name: config?.site_name,
+    url: siteUrl,
+    description: config?.short_description,
+    inLanguage: config?.default_language ?? "en",
   } as const;
   return (
     <>

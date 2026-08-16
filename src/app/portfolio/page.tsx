@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { company } from "@/config/company";
+import { getPublicSiteSettings } from "@/lib/site-settings/public-site-settings";
 import { PortfolioPage } from "@/features/portfolio";
 import {
   getPublishedPortfolioFilters,
@@ -8,7 +8,8 @@ import {
 import type { PublicPortfolioSort } from "@/lib/database/repositories/portfolio-repository";
 
 export const revalidate = 300;
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
   const title = "Portfolio — Published digital work";
   const description =
     "Explore published web, SaaS, automation, integration, and product design work from Ayeb Solutions.";
@@ -21,7 +22,7 @@ export function generateMetadata(): Metadata {
       url: "/portfolio",
       title,
       description,
-      siteName: company.name,
+      siteName: settings?.configuration.site_name,
     },
     twitter: {
       card: "summary",
@@ -42,9 +43,10 @@ const sorts: readonly PublicPortfolioSort[] = [
   "alphabetical",
 ];
 export default async function PortfolioRoute({ searchParams }: Props) {
-  const [params, filterOptions] = await Promise.all([
+  const [params, filterOptions, settings] = await Promise.all([
     searchParams,
     getPublishedPortfolioFilters(),
+    getPublicSiteSettings(),
   ]);
   const requestedSize = Number(first(params.pageSize));
   const pageSize = requestedSize === 24 ? 24 : requestedSize === 48 ? 48 : 12;
@@ -69,7 +71,11 @@ export default async function PortfolioRoute({ searchParams }: Props) {
       categories={filterOptions.categories}
       filters={filters}
       projects={projects}
-      siteUrl={company.url}
+      siteUrl={
+        settings?.configuration.canonical_base_url ??
+        process.env.NEXT_PUBLIC_SITE_URL ??
+        "http://localhost:3000"
+      }
       tags={filterOptions.tags}
     />
   );

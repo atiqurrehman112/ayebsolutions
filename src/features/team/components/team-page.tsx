@@ -31,7 +31,7 @@ import { StructuredData } from "@/components/seo/structured-data";
 import { SiteBreadcrumbs } from "@/components/shell/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
-import { company } from "@/config/company";
+import type { SiteConfigurationRow } from "@/types/database";
 import type { PublicTeamMember } from "@/lib/team/public-team";
 import type { PublicFounderProfile } from "@/lib/founder/public-founder";
 import { cn } from "@/lib/utils";
@@ -41,6 +41,7 @@ import styles from "./team-page.module.css";
 interface TeamPageProps {
   readonly founder: PublicFounderProfile | null;
   readonly members: readonly PublicTeamMember[];
+  readonly settings: SiteConfigurationRow | null;
 }
 
 interface Principle {
@@ -723,8 +724,13 @@ function ValuesSection() {
   );
 }
 
-export function TeamPage({ founder, members }: TeamPageProps) {
-  const pageUrl = new URL("/team", company.url).toString();
+export function TeamPage({ founder, members, settings }: TeamPageProps) {
+  const siteUrl =
+    settings?.canonical_base_url ??
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "http://localhost:3000";
+  const siteName = settings?.site_name ?? "Digital product studio";
+  const pageUrl = new URL("/team", siteUrl).toString();
   return (
     <>
       <Hero />
@@ -776,13 +782,13 @@ export function TeamPage({ founder, members }: TeamPageProps) {
           url: pageUrl,
           isPartOf: {
             "@type": "WebSite",
-            name: company.name,
-            url: company.url,
+            name: siteName,
+            url: siteUrl,
           },
           about: {
             "@type": "Organization",
-            name: company.name,
-            url: company.url,
+            name: siteName,
+            url: siteUrl,
           },
         }}
       />
@@ -790,10 +796,9 @@ export function TeamPage({ founder, members }: TeamPageProps) {
         data={{
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: company.name,
-          legalName: company.legalName,
-          url: company.url,
-          email: company.email,
+          name: siteName,
+          url: siteUrl,
+          email: settings?.contact_email,
           founder: founder
             ? {
                 "@type": "Person",
@@ -814,8 +819,8 @@ export function TeamPage({ founder, members }: TeamPageProps) {
             description: founder.short_introduction,
             worksFor: {
               "@type": "Organization",
-              name: company.name,
-              url: company.url,
+              name: siteName,
+              url: siteUrl,
             },
             url: `${pageUrl}#founder`,
             email: founder.email ?? undefined,
@@ -844,7 +849,7 @@ export function TeamPage({ founder, members }: TeamPageProps) {
               "@type": "ListItem",
               position: 1,
               name: "Home",
-              item: company.url,
+              item: siteUrl,
             },
             { "@type": "ListItem", position: 2, name: "Team", item: pageUrl },
           ],

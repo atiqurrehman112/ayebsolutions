@@ -7,3 +7,4 @@ export * from "./services-repository";
 export * from "./testimonials-repository";
 export * from "./team-repository";
 export * from "./founder-repository";
+export * from "./site-settings-repository";

@@ -5,7 +5,7 @@ import { createHmac } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 
-import { company } from "@/config/company";
+import { getPublicSiteSettings } from "@/lib/site-settings/public-site-settings";
 import { createServiceRoleDatabaseClient } from "@/lib/database/client";
 import {
   ContactLeadsRepository,
@@ -50,26 +50,29 @@ function digest(value: string) {
   return createHmac("sha256", secret).update(value).digest("hex");
 }
 
-function emailCopy(input: {
-  readonly budget: string | null;
-  readonly company: string | null;
-  readonly email: string;
-  readonly message: string;
-  readonly name: string;
-  readonly phone: string | null;
-  readonly service: string;
-  readonly timeline: string | null;
-}) {
+function emailCopy(
+  input: {
+    readonly budget: string | null;
+    readonly company: string | null;
+    readonly email: string;
+    readonly message: string;
+    readonly name: string;
+    readonly phone: string | null;
+    readonly service: string;
+    readonly timeline: string | null;
+  },
+  brandName: string,
+) {
   const acknowledgement = [
     `Hello ${input.name},`,
     "",
-    "Thank you for contacting Ayeb Solutions. Your project inquiry has been received and added to our review queue.",
+    `Thank you for contacting ${brandName}. Your project inquiry has been received and added to our review queue.`,
     "",
     `Service: ${input.service}`,
     "",
     "We will review the context you shared before recommending an appropriate next step. Response timing depends on availability and inquiry complexity.",
     "",
-    "Ayeb Solutions",
+    brandName,
   ].join("\n");
   const notification = [
     "A new website inquiry was received.",
@@ -128,39 +131,37 @@ export async function submitContactForm(
       payloadHash,
     });
 
-    const copy = emailCopy(input);
-    const deliveries = await Promise.allSettled([
-      sendLeadEmail({
-        body: copy.acknowledgement,
-        recipient: input.email,
-        subject: "We received your Ayeb Solutions inquiry",
-      }),
-      sendLeadEmail({
-        body: copy.notification,
-        recipient: company.email,
-        replyTo: input.email,
-        subject: `New project inquiry: ${input.service}`,
-      }),
-    ]);
-    const records = [
+    const settings = await getPublicSiteSettings();
+    const brandName = settings?.configuration.site_name ?? "the team";
+    const copy = emailCopy(input, brandName);
+    const notificationRecipient = settings?.configuration.contact_email;
+    const messages = [
       {
         body: copy.acknowledgement,
         emailType: "acknowledgement",
         recipient: input.email,
-        subject: "We received your Ayeb Solutions inquiry",
+        subject: `We received your ${brandName} inquiry`,
       },
-      {
-        body: copy.notification,
-        emailType: "internal_notification",
-        recipient: company.email,
-        subject: `New project inquiry: ${input.service}`,
-      },
+      ...(notificationRecipient
+        ? [
+            {
+              body: copy.notification,
+              emailType: "internal_notification",
+              recipient: notificationRecipient,
+              replyTo: input.email,
+              subject: `New project inquiry: ${input.service}`,
+            },
+          ]
+        : []),
     ] as const;
+    const deliveries = await Promise.allSettled(
+      messages.map((message) => sendLeadEmail(message)),
+    );
     await Promise.allSettled(
       deliveries.map((delivery, index) =>
         delivery.status === "fulfilled"
           ? repository.recordEmail({
-              ...records[index]!,
+              ...messages[index]!,
               leadId,
               providerId: delivery.value,
               sentBy: null,

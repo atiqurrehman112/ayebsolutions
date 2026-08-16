@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { company } from "@/config/company";
+import { getPublicSiteSettings } from "@/lib/site-settings/public-site-settings";
 import { BlogArticlePage } from "@/features/blog";
 import {
   getPublishedArticle,
@@ -21,7 +21,10 @@ export async function generateStaticParams() {
 }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const data = await getPublishedArticle(slug);
+  const [data, settings] = await Promise.all([
+    getPublishedArticle(slug),
+    getPublicSiteSettings(),
+  ]);
   if (!data) return {};
   const { article, context } = data;
   const title = article.meta_title ?? article.title;
@@ -38,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: path,
       title,
       description,
-      siteName: company.name,
+      siteName: settings?.configuration.site_name,
       publishedTime: article.published_at ?? undefined,
       modifiedTime: article.updated_at,
       authors: article.author_name ? [article.author_name] : undefined,
@@ -57,7 +60,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 export default async function ArticleRoute({ params }: Props) {
   const { slug } = await params;
-  const data = await getPublishedArticle(slug);
+  const [data, settings] = await Promise.all([
+    getPublishedArticle(slug),
+    getPublicSiteSettings(),
+  ]);
   if (!data) notFound();
   return (
     <BlogArticlePage
@@ -65,8 +71,12 @@ export default async function ArticleRoute({ params }: Props) {
       article={data.article}
       context={data.context}
       related={data.related}
-      siteName={company.name}
-      siteUrl={company.url}
+      siteName={settings?.configuration.site_name ?? "Digital product studio"}
+      siteUrl={
+        settings?.configuration.canonical_base_url ??
+        process.env.NEXT_PUBLIC_SITE_URL ??
+        "http://localhost:3000"
+      }
     />
   );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { company } from "@/config/company";
+import { getPublicSiteSettings } from "@/lib/site-settings/public-site-settings";
 import { BlogPage } from "@/features/blog";
 import type { PublicBlogSort } from "@/lib/database/repositories/blog-repository";
 import {
@@ -8,7 +8,8 @@ import {
 } from "@/lib/blog/public-blog";
 
 export const revalidate = 300;
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
   const title = "Insights & Resources";
   const description =
     "Published guidance from Ayeb Solutions on software, AI automation, design, integrations, and sustainable digital growth.";
@@ -21,7 +22,7 @@ export function generateMetadata(): Metadata {
       url: "/blog",
       title,
       description,
-      siteName: company.name,
+      siteName: settings?.configuration.site_name,
     },
     twitter: {
       card: "summary",
@@ -37,9 +38,10 @@ const first = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
 const sorts: readonly PublicBlogSort[] = ["newest", "oldest", "featured"];
 export default async function BlogRoute({ searchParams }: Props) {
-  const [params, filterOptions] = await Promise.all([
+  const [params, filterOptions, settings] = await Promise.all([
     searchParams,
     getPublishedBlogFilters(),
+    getPublicSiteSettings(),
   ]);
   const requestedSize = Number(first(params.pageSize));
   const pageSize = requestedSize === 24 ? 24 : requestedSize === 48 ? 48 : 12;
@@ -64,7 +66,11 @@ export default async function BlogRoute({ searchParams }: Props) {
       articles={articles}
       categories={filterOptions.categories}
       filters={filters}
-      siteUrl={company.url}
+      siteUrl={
+        settings?.configuration.canonical_base_url ??
+        process.env.NEXT_PUBLIC_SITE_URL ??
+        "http://localhost:3000"
+      }
       tags={filterOptions.tags}
     />
   );

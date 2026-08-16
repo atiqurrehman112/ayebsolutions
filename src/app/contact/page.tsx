@@ -1,30 +1,34 @@
 import type { Metadata } from "next";
 
 import { ContactPage } from "@/features/contact";
-import { company } from "@/config/company";
+import { getPublicSiteSettings } from "@/lib/site-settings/public-site-settings";
 
 const title = "Contact Ayeb Solutions";
 const description =
   "Tell Ayeb Solutions about your website, software, AI automation, design, integration, or maintenance project and explore an appropriate next step.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/contact" },
-  openGraph: {
-    type: "website",
-    url: "/contact",
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSiteSettings();
+  return {
     title,
     description,
-    siteName: company.name,
-  },
-  twitter: {
-    card: "summary",
-    title,
-    description,
-  },
-};
+    alternates: { canonical: "/contact" },
+    openGraph: {
+      type: "website",
+      url: "/contact",
+      title,
+      description,
+      siteName: settings?.configuration.site_name,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+  };
+}
 
-export default function ContactRoute() {
-  return <ContactPage heroMedia={null} />;
+export default async function ContactRoute() {
+  const settings = await getPublicSiteSettings();
+  return <ContactPage heroMedia={null} settings={settings?.configuration} />;
 }

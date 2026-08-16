@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { company } from "@/config/company";
+import { getPublicSiteSettings } from "@/lib/site-settings/public-site-settings";
 import { PortfolioProjectPage } from "@/features/portfolio";
 import {
   getPublishedPortfolioSlugs,
@@ -21,7 +21,10 @@ export async function generateStaticParams() {
 }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const data = await getPublishedProject(slug);
+  const [data, settings] = await Promise.all([
+    getPublishedProject(slug),
+    getPublicSiteSettings(),
+  ]);
   if (!data) return {};
   const { project, context } = data;
   const title = project.meta_title ?? project.title;
@@ -38,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: path,
       title,
       description,
-      siteName: company.name,
+      siteName: settings?.configuration.site_name,
       publishedTime: project.published_at ?? undefined,
       modifiedTime: project.updated_at,
       images: imageUrl
@@ -55,7 +58,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 export default async function PortfolioProjectRoute({ params }: Props) {
   const { slug } = await params;
-  const data = await getPublishedProject(slug);
+  const [data, settings] = await Promise.all([
+    getPublishedProject(slug),
+    getPublicSiteSettings(),
+  ]);
   if (!data) notFound();
   return (
     <PortfolioProjectPage
@@ -63,8 +69,12 @@ export default async function PortfolioProjectRoute({ params }: Props) {
       gallery={data.context.gallery}
       project={data.project}
       related={data.related}
-      siteName={company.name}
-      siteUrl={company.url}
+      siteName={settings?.configuration.site_name ?? "Digital product studio"}
+      siteUrl={
+        settings?.configuration.canonical_base_url ??
+        process.env.NEXT_PUBLIC_SITE_URL ??
+        "http://localhost:3000"
+      }
       tags={data.context.tags}
     />
   );
