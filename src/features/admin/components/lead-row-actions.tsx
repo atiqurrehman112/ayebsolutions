@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Archive, Eye, Mail, RotateCcw, Trash2 } from "lucide-react";
+import {
+  Archive,
+  Eye,
+  Mail,
+  MailOpen,
+  RotateCcw,
+  Star,
+  Trash2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +28,7 @@ import {
   changeLeadStatus,
   deleteLead,
   restoreLead,
+  setLeadImportant,
   sendLeadMessage,
 } from "@/lib/actions/contact-leads";
 import type {
@@ -36,14 +45,15 @@ interface Props {
   >[];
   readonly canDelete: boolean;
   readonly canEdit: boolean;
+  readonly canManageNotes: boolean;
   readonly context: LeadContext;
   readonly lead: ContactLeadRow;
 }
 const statuses: readonly LeadStatus[] = [
   "new",
-  "contacted",
-  "qualified",
-  "proposal_sent",
+  "read",
+  "in_progress",
+  "replied",
   "won",
   "lost",
   "archived",
@@ -53,6 +63,7 @@ export function LeadRowActions({
   assignees,
   canDelete,
   canEdit,
+  canManageNotes,
   context,
   lead,
 }: Props) {
@@ -88,7 +99,10 @@ export function LeadRowActions({
           <div className={styles.details}>
             <dl>
               <Detail term="Email" value={lead.email} />
-              <Detail term="Project type" value={lead.project_type} />
+              <Detail term="Phone" value={lead.phone || "Not provided"} />
+              <Detail term="Company" value={lead.company || "Not provided"} />
+              <Detail term="Service requested" value={lead.project_type} />
+              <Detail term="Subject" value={lead.subject || "Not provided"} />
               <Detail term="Timeline" value={lead.timeline || "Not provided"} />
               <Detail
                 term="Budget"
@@ -97,6 +111,24 @@ export function LeadRowActions({
                 }
               />
               <Detail term="Source" value={lead.source} />
+              <Detail term="Country" value={lead.country || "Not available"} />
+              <Detail
+                term="IP fingerprint"
+                value={lead.ip_hash || "Not available"}
+              />
+              <Detail
+                term="Referrer"
+                value={lead.referrer || "Not available"}
+              />
+              <Detail
+                term="User agent"
+                value={lead.user_agent || "Not available"}
+              />
+              <Detail
+                term="Created"
+                value={new Date(lead.created_at).toLocaleString()}
+              />
+              <Detail term="Status" value={lead.status.replaceAll("_", " ")} />
               <Detail
                 term="Last contacted"
                 value={
@@ -171,7 +203,7 @@ export function LeadRowActions({
             ) : null}
             <section>
               <h3>Internal notes</h3>
-              {canEdit ? (
+              {canManageNotes ? (
                 <form
                   action={(formData) =>
                     run(() =>
@@ -189,7 +221,11 @@ export function LeadRowActions({
                   </Button>
                 </form>
               ) : (
-                <p>{lead.notes || "No notes recorded."}</p>
+                <p>
+                  {canManageNotes
+                    ? lead.notes || "No notes recorded."
+                    : "Internal notes are restricted to administrators."}
+                </p>
               )}
             </section>
             <section>
@@ -288,6 +324,47 @@ export function LeadRowActions({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {canEdit ? (
+        <Button
+          aria-label={
+            lead.is_important
+              ? `Remove important mark from ${lead.name}`
+              : `Mark ${lead.name} important`
+          }
+          disabled={pending}
+          onClick={() =>
+            run(() => setLeadImportant(lead.id, !lead.is_important))
+          }
+          size="icon"
+          variant="ghost"
+        >
+          <Star
+            aria-hidden="true"
+            fill={lead.is_important ? "currentColor" : "none"}
+          />
+        </Button>
+      ) : null}
+      {canEdit && lead.status === "new" ? (
+        <Button
+          aria-label={`Mark ${lead.name} read`}
+          disabled={pending}
+          onClick={() => run(() => changeLeadStatus(lead.id, "read"))}
+          size="icon"
+          variant="ghost"
+        >
+          <MailOpen aria-hidden="true" />
+        </Button>
+      ) : canEdit && lead.status === "read" ? (
+        <Button
+          aria-label={`Mark ${lead.name} unread`}
+          disabled={pending}
+          onClick={() => run(() => changeLeadStatus(lead.id, "new"))}
+          size="icon"
+          variant="ghost"
+        >
+          <Mail aria-hidden="true" />
+        </Button>
+      ) : null}
       {canEdit ? (
         lead.status === "archived" ? (
           <Button

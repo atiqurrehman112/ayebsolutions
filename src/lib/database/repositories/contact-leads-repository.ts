@@ -22,6 +22,8 @@ export interface LeadQuery {
   readonly query?: string;
   readonly sort?: LeadSort;
   readonly status?: LeadStatus;
+  readonly service?: string;
+  readonly budget?: string;
 }
 export interface LeadContext {
   readonly emails: readonly LeadEmailHistoryRow[];
@@ -39,6 +41,9 @@ export interface PublicLeadSubmission {
   readonly phone: string | null;
   readonly service: string;
   readonly timeline: string | null;
+  readonly country: string | null;
+  readonly referrer: string | null;
+  readonly userAgent: string | null;
 }
 export class PublicLeadSubmissionError extends Error {
   constructor(readonly reason: "duplicate" | "rate_limit") {
@@ -66,6 +71,15 @@ export class ContactLeadsRepository extends LeadRepository<
       .maybeSingle();
     this.throwIfError(error);
     return data;
+  }
+  async findByIds(ids: readonly string[]) {
+    if (!ids.length) return [];
+    const { data, error } = await this.client
+      .from("contact_leads")
+      .select("*")
+      .in("id", [...ids]);
+    this.throwIfError(error);
+    return data ?? [];
   }
   async create(input: ContactLeadInsert) {
     const { data, error } = await this.client
@@ -97,6 +111,12 @@ export class ContactLeadsRepository extends LeadRepository<
       throw new PublicLeadSubmissionError("duplicate");
     this.throwIfError(error);
     if (!data) throw new Error("The inquiry could not be created.");
+    await this.update(data, {
+      country: input.country,
+      ip_hash: input.ipHash,
+      referrer: input.referrer,
+      user_agent: input.userAgent,
+    }).catch(() => undefined);
     return data;
   }
   async update(id: string, input: ContactLeadUpdate) {
@@ -136,6 +156,24 @@ export class ContactLeadsRepository extends LeadRepository<
     });
   }
 
+  async updateMany(ids: readonly string[], input: ContactLeadUpdate) {
+    if (!ids.length) return;
+    const { error } = await this.client
+      .from("contact_leads")
+      .update(input)
+      .in("id", [...ids]);
+    this.throwIfError(error);
+  }
+
+  async deleteMany(ids: readonly string[]) {
+    if (!ids.length) return;
+    const { error } = await this.client
+      .from("contact_leads")
+      .delete()
+      .in("id", [...ids]);
+    this.throwIfError(error);
+  }
+
   async findPage(
     options: LeadQuery = {},
   ): Promise<PaginatedResult<ContactLeadRow>> {
@@ -153,6 +191,8 @@ export class ContactLeadsRepository extends LeadRepository<
       );
     if (options.status) query = query.eq("status", options.status);
     if (options.priority) query = query.eq("priority", options.priority);
+    if (options.service) query = query.eq("project_type", options.service);
+    if (options.budget) query = query.eq("budget_range", options.budget);
     if (options.assignedTo)
       query =
         options.assignedTo === "unassigned"
@@ -175,6 +215,26 @@ export class ContactLeadsRepository extends LeadRepository<
       .range(from, to);
     this.throwIfError(error);
     return this.paginateResult(data ?? [], count, page, pageSize);
+  }
+  async findFilterOptions() {
+    const { data, error } = await this.client
+      .from("contact_leads")
+      .select("project_type,budget_range");
+    this.throwIfError(error);
+    return {
+      budgets: [
+        ...new Set(
+          (data ?? [])
+            .map((item) => item.budget_range)
+            .filter((value): value is string => Boolean(value)),
+        ),
+      ].sort(),
+      services: [
+        ...new Set(
+          (data ?? []).map((item) => item.project_type).filter(Boolean),
+        ),
+      ].sort(),
+    };
   }
   async findAssignees(): Promise<
     readonly Pick<ProfileRow, "display_name" | "id" | "role">[]
@@ -227,6 +287,25 @@ export class ContactLeadsRepository extends LeadRepository<
       to_status: toStatus,
       changed_by: userId,
     });
+    this.throwIfError(error);
+  }
+  async recordStatuses(
+    changes: readonly {
+      readonly leadId: string;
+      readonly fromStatus: LeadStatus;
+      readonly toStatus: LeadStatus;
+    }[],
+    userId: string,
+  ) {
+    if (!changes.length) return;
+    const { error } = await this.client.from("lead_status_history").insert(
+      changes.map((change) => ({
+        changed_by: userId,
+        from_status: change.fromStatus,
+        lead_id: change.leadId,
+        to_status: change.toStatus,
+      })),
+    );
     this.throwIfError(error);
   }
   async recordEmail(input: {

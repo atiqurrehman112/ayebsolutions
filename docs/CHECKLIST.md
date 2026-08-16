@@ -122,6 +122,7 @@
 - [x] Testimonials management (Supabase CRUD integration)
 - [x] Media library (Cloudinary and Supabase CRUD integration)
 - [x] Contact leads (Supabase CRM and Resend email history)
+- [x] Production Contact Leads CRM lifecycle, read state, important flags, request context, and bulk actions (Sprint 14A)
 - [x] Global Site Settings singleton CMS with Media Library branding and public integration (Sprint 13D)
 - [x] Team management
 - [x] Founder singleton management

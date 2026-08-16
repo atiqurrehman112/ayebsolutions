@@ -1,13 +1,7 @@
 export type ContentStatus = "draft" | "review" | "published" | "archived";
 type ProfileStatus = "active" | "suspended" | "invited";
 export type LeadStatus =
-  | "new"
-  | "contacted"
-  | "qualified"
-  | "proposal_sent"
-  | "won"
-  | "lost"
-  | "archived";
+  "new" | "read" | "in_progress" | "replied" | "won" | "lost" | "archived";
 export type AppRole = "admin" | "editor" | "viewer";
 type CategoryKind = "portfolio" | "blog" | "service";
 type MediaVisibility = "public" | "private";
@@ -284,6 +278,13 @@ export interface ContactLeadRow extends AuditColumns, Record<string, unknown> {
   readonly notes: string | null;
   readonly last_contacted_at: string | null;
   readonly status_changed_at: string;
+  readonly is_important: boolean;
+  readonly read_at: string | null;
+  readonly replied_at: string | null;
+  readonly country: string | null;
+  readonly ip_hash: string | null;
+  readonly referrer: string | null;
+  readonly user_agent: string | null;
 }
 export interface LeadStatusHistoryRow extends Record<string, unknown> {
   readonly id: string;

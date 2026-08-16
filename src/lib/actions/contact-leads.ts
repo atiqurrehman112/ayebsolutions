@@ -97,7 +97,13 @@ export async function changeLeadStatus(
     const lead = await repo.findById(parsed.id);
     if (!lead) return { message: "The lead was not found.", status: "error" };
     if (lead.status !== parsed.status) {
-      await repo.setStatus(parsed.id, parsed.status);
+      const timestamp = new Date().toISOString();
+      await repo.update(parsed.id, {
+        status: parsed.status,
+        status_changed_at: timestamp,
+        read_at: parsed.status === "new" ? null : (lead.read_at ?? timestamp),
+        replied_at: parsed.status === "replied" ? timestamp : lead.replied_at,
+      });
       await repo.recordStatus(parsed.id, lead.status, parsed.status, user.id);
     }
     refresh();
@@ -125,6 +131,84 @@ export async function addLeadNote(
 export async function restoreLead(id: string) {
   return changeLeadStatus(id, "new");
 }
+export async function setLeadImportant(
+  id: string,
+  important: boolean,
+): Promise<LeadActionState> {
+  try {
+    await access(true);
+    const parsed = z
+      .object({ id: z.uuid(), important: z.boolean() })
+      .parse({ id, important });
+    await (
+      await repository()
+    ).update(parsed.id, { is_important: parsed.important });
+    refresh();
+    return {
+      message: parsed.important
+        ? "Lead marked important."
+        : "Important mark removed.",
+      status: "success",
+    };
+  } catch (error) {
+    return failure(error);
+  }
+}
+
+const bulkIntentSchema = z.enum([
+  "archive",
+  "restore",
+  "read",
+  "unread",
+  "replied",
+  "star",
+  "unstar",
+  "delete",
+]);
+export async function bulkLeadAction(formData: FormData): Promise<void> {
+  const intent = bulkIntentSchema.parse(formData.get("intent"));
+  const parsedIds = z
+    .array(z.uuid())
+    .min(1)
+    .max(100)
+    .safeParse(formData.getAll("leadId"));
+  if (!parsedIds.success) return;
+  const ids = parsedIds.data;
+  const user = await access(intent === "delete");
+  const repo = await repository();
+  if (intent === "delete") await repo.deleteMany(ids);
+  else if (intent === "star" || intent === "unstar")
+    await repo.updateMany(ids, { is_important: intent === "star" });
+  else {
+    const status: z.infer<typeof leadStatusSchema> =
+      intent === "archive"
+        ? "archived"
+        : intent === "restore" || intent === "unread"
+          ? "new"
+          : intent === "read"
+            ? "read"
+            : "replied";
+    const leads = await repo.findByIds(ids);
+    const timestamp = new Date().toISOString();
+    await repo.updateMany(ids, {
+      status,
+      status_changed_at: timestamp,
+      read_at: status === "new" ? null : timestamp,
+      replied_at: status === "replied" ? timestamp : undefined,
+    });
+    await repo.recordStatuses(
+      leads
+        .filter((lead) => lead.status !== status)
+        .map((lead) => ({
+          leadId: lead.id,
+          fromStatus: lead.status,
+          toStatus: status,
+        })),
+      user.id,
+    );
+  }
+  refresh();
+}
 export async function deleteLead(id: string): Promise<LeadActionState> {
   try {
     await access(true);
@@ -143,6 +227,8 @@ export async function sendLeadMessage(
     const user = await access();
     const parsed = leadReplySchema.parse(input);
     const repo = await repository();
+    const lead = await repo.findById(parsed.id);
+    if (!lead) return { message: "The lead was not found.", status: "error" };
     const providerId = await sendLeadEmail({
       body: parsed.body,
       recipient: parsed.recipient,
@@ -157,9 +243,16 @@ export async function sendLeadMessage(
       sentBy: user.id,
       subject: parsed.subject,
     });
+    const timestamp = new Date().toISOString();
     await repo.update(parsed.id, {
-      last_contacted_at: new Date().toISOString(),
+      last_contacted_at: timestamp,
+      read_at: lead.read_at ?? timestamp,
+      replied_at: timestamp,
+      status: "replied",
+      status_changed_at: timestamp,
     });
+    if (lead.status !== "replied")
+      await repo.recordStatus(parsed.id, lead.status, "replied", user.id);
     refresh();
     return { message: "Email sent and recorded.", status: "success" };
   } catch (error) {

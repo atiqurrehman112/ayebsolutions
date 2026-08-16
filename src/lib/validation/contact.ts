@@ -2,9 +2,9 @@ import { z } from "zod";
 
 export const leadStatusSchema = z.enum([
   "new",
-  "contacted",
-  "qualified",
-  "proposal_sent",
+  "read",
+  "in_progress",
+  "replied",
   "won",
   "lost",
   "archived",

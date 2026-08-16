@@ -21,9 +21,9 @@ interface Props {
 }
 const statuses: readonly LeadStatus[] = [
   "new",
-  "contacted",
-  "qualified",
-  "proposal_sent",
+  "read",
+  "in_progress",
+  "replied",
   "won",
   "lost",
   "archived",
@@ -61,25 +61,37 @@ export default async function AdminContactLeadsRoute({ searchParams }: Props) {
     query: first(params.q)?.trim() || undefined,
     sort: sorts.includes(sortValue) ? sortValue : ("newest" as const),
     status: statuses.includes(statusValue) ? statusValue : undefined,
+    service: first(params.service) || undefined,
+    budget: first(params.budget) || undefined,
   };
-  const [leads, assignees] = await Promise.all([
+  const [leads, assignees, filterOptions] = await Promise.all([
     repository.findPage({
       ...filters,
       page: Math.max(1, Number(first(params.page)) || 1),
     }),
     repository.findAssignees(),
+    repository.findFilterOptions(),
   ]);
   const context = await repository.findContext(
     leads.data.map((lead) => lead.id),
   );
+  const visibleLeads =
+    user.role === "admin"
+      ? leads
+      : {
+          ...leads,
+          data: leads.data.map((lead) => ({ ...lead, notes: null })),
+        };
   return (
     <AdminContactLeads
       assignees={assignees}
       canDelete={user.role === "admin"}
       canEdit={getPermissions(user.role).canManageContent}
+      canManageNotes={user.role === "admin"}
       context={context}
       filters={filters}
-      leads={leads}
+      leads={visibleLeads}
+      filterOptions={filterOptions}
     />
   );
 }

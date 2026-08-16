@@ -3,6 +3,15 @@ import { Inbox, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/overlays";
 import type { PaginatedResult } from "@/lib/database/repositories/base-repository";
 import type {
   LeadContext,
@@ -11,6 +20,7 @@ import type {
 } from "@/lib/database/repositories/contact-leads-repository";
 import type { ContactLeadRow, LeadStatus, ProfileRow } from "@/types/database";
 import { LeadRowActions } from "./lead-row-actions";
+import { bulkLeadAction } from "@/lib/actions/contact-leads";
 import styles from "./admin-contact-leads.module.css";
 
 export interface LeadFilters {
@@ -22,6 +32,8 @@ export interface LeadFilters {
   readonly query?: string;
   readonly sort: LeadSort;
   readonly status?: LeadStatus;
+  readonly service?: string;
+  readonly budget?: string;
 }
 interface Props {
   readonly assignees: readonly Pick<
@@ -30,17 +42,22 @@ interface Props {
   >[];
   readonly canDelete: boolean;
   readonly canEdit: boolean;
+  readonly canManageNotes: boolean;
   readonly context: Readonly<Record<string, LeadContext>>;
   readonly filters: LeadFilters;
   readonly leads: PaginatedResult<ContactLeadRow>;
+  readonly filterOptions: {
+    readonly budgets: readonly string[];
+    readonly services: readonly string[];
+  };
 }
 const statusLabels: Readonly<Record<LeadStatus, string>> = {
   archived: "Archived",
-  contacted: "Contacted",
+  read: "Read",
   lost: "Lost",
   new: "New",
-  proposal_sent: "Proposal sent",
-  qualified: "Qualified",
+  replied: "Replied",
+  in_progress: "In progress",
   won: "Won",
 };
 const priorities: readonly LeadPriority[] = ["low", "medium", "high", "urgent"];
@@ -56,9 +73,11 @@ export function AdminContactLeads({
   assignees,
   canDelete,
   canEdit,
+  canManageNotes,
   context,
   filters,
   leads,
+  filterOptions,
 }: Props) {
   const names = new Map(
     assignees.map((profile) => [
@@ -133,6 +152,18 @@ export function AdminContactLeads({
             value={filters.priority}
           />
           <Filter
+            label="Service"
+            name="service"
+            options={filterOptions.services.map((item) => [item, item])}
+            value={filters.service}
+          />
+          <Filter
+            label="Budget"
+            name="budget"
+            options={filterOptions.budgets.map((item) => [item, item])}
+            value={filters.budget}
+          />
+          <Filter
             label="Assigned user"
             name="assignedTo"
             options={[
@@ -185,69 +216,186 @@ export function AdminContactLeads({
           </div>
         </form>
         {leads.data.length ? (
-          <div className={styles.tableWrap}>
-            <table>
-              <caption className="sr-only">
-                Contact leads matching the current filters
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">Lead</th>
-                  <th scope="col">Project</th>
-                  <th scope="col">Priority</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Assigned</th>
-                  <th scope="col">Received</th>
-                  <th scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leads.data.map((lead) => (
-                  <tr key={lead.id}>
-                    <th scope="row">
-                      <strong>{lead.name}</strong>
-                      <span>{lead.company || lead.email}</span>
-                    </th>
-                    <td>
-                      <strong>{lead.subject || lead.project_type}</strong>
-                      <span>{lead.source}</span>
-                    </td>
-                    <td>
-                      <Badge
-                        variant={
-                          lead.priority === "urgent" ? "warning" : "outline"
-                        }
-                      >
-                        {lead.priority}
-                      </Badge>
-                    </td>
-                    <td>
-                      <Badge variant="secondary">
-                        {statusLabels[lead.status]}
-                      </Badge>
-                    </td>
-                    <td>
-                      {lead.assigned_to
-                        ? (names.get(lead.assigned_to) ?? "Unknown user")
-                        : "Unassigned"}
-                    </td>
-                    <td>{date.format(new Date(lead.created_at))}</td>
-                    <td>
-                      <LeadRowActions
-                        assignees={assignees}
-                        canDelete={canDelete}
-                        canEdit={canEdit}
-                        context={
-                          context[lead.id] ?? { emails: [], statuses: [] }
-                        }
-                        lead={lead}
-                      />
-                    </td>
+          <>
+            {canEdit ? (
+              <>
+                <form action={bulkLeadAction} id="bulk-leads-form" />
+                <div
+                  className={styles.bulkActions}
+                  aria-label="Bulk lead actions"
+                >
+                  <span>Selected leads</span>
+                  <Button
+                    form="bulk-leads-form"
+                    name="intent"
+                    value="read"
+                    variant="outline"
+                  >
+                    Mark read
+                  </Button>
+                  <Button
+                    form="bulk-leads-form"
+                    name="intent"
+                    value="unread"
+                    variant="outline"
+                  >
+                    Mark unread
+                  </Button>
+                  <Button
+                    form="bulk-leads-form"
+                    name="intent"
+                    value="replied"
+                    variant="outline"
+                  >
+                    Mark replied
+                  </Button>
+                  <Button
+                    form="bulk-leads-form"
+                    name="intent"
+                    value="star"
+                    variant="outline"
+                  >
+                    Star
+                  </Button>
+                  <Button
+                    form="bulk-leads-form"
+                    name="intent"
+                    value="unstar"
+                    variant="outline"
+                  >
+                    Unstar
+                  </Button>
+                  <Button
+                    form="bulk-leads-form"
+                    name="intent"
+                    value="archive"
+                    variant="outline"
+                  >
+                    Archive
+                  </Button>
+                  <Button
+                    form="bulk-leads-form"
+                    name="intent"
+                    value="restore"
+                    variant="outline"
+                  >
+                    Restore
+                  </Button>
+                  {canDelete ? (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="destructive">Delete</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            Delete selected leads permanently?
+                          </DialogTitle>
+                          <DialogDescription>
+                            This removes every selected inquiry and its status
+                            and email history. This action cannot be undone.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <Button
+                            form="bulk-leads-form"
+                            name="intent"
+                            value="delete"
+                            variant="destructive"
+                          >
+                            Delete selected leads
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  ) : null}
+                </div>
+              </>
+            ) : null}
+            <div className={styles.tableWrap}>
+              <table>
+                <caption className="sr-only">
+                  Contact leads matching the current filters
+                </caption>
+                <thead>
+                  <tr>
+                    {canEdit ? (
+                      <th scope="col">
+                        <span className="sr-only">Select</span>
+                      </th>
+                    ) : null}
+                    <th scope="col">Lead</th>
+                    <th scope="col">Project</th>
+                    <th scope="col">Priority</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Assigned</th>
+                    <th scope="col">Received</th>
+                    <th scope="col">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {leads.data.map((lead) => (
+                    <tr key={lead.id}>
+                      {canEdit ? (
+                        <td>
+                          <input
+                            aria-label={`Select ${lead.name}`}
+                            form="bulk-leads-form"
+                            name="leadId"
+                            type="checkbox"
+                            value={lead.id}
+                          />
+                        </td>
+                      ) : null}
+                      <th scope="row">
+                        <strong>
+                          {lead.is_important ? "★ " : ""}
+                          {lead.name}
+                        </strong>
+                        <span>{lead.company || lead.email}</span>
+                      </th>
+                      <td>
+                        <strong>{lead.subject || lead.project_type}</strong>
+                        <span>{lead.source}</span>
+                      </td>
+                      <td>
+                        <Badge
+                          variant={
+                            lead.priority === "urgent" ? "warning" : "outline"
+                          }
+                        >
+                          {lead.priority}
+                        </Badge>
+                      </td>
+                      <td>
+                        <Badge variant="secondary">
+                          {statusLabels[lead.status]}
+                        </Badge>
+                      </td>
+                      <td>
+                        {lead.assigned_to
+                          ? (names.get(lead.assigned_to) ?? "Unknown user")
+                          : "Unassigned"}
+                      </td>
+                      <td>{date.format(new Date(lead.created_at))}</td>
+                      <td>
+                        <LeadRowActions
+                          assignees={assignees}
+                          canDelete={canDelete}
+                          canEdit={canEdit}
+                          canManageNotes={canManageNotes}
+                          context={
+                            context[lead.id] ?? { emails: [], statuses: [] }
+                          }
+                          lead={lead}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : (
           <div className={styles.empty}>
             <Inbox aria-hidden="true" />

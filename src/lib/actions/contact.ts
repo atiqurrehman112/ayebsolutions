@@ -39,9 +39,15 @@ async function requestIdentity() {
     throw new Error("invalid_origin");
   }
   const forwarded = requestHeaders.get("x-forwarded-for")?.split(",")[0];
-  return (
-    requestHeaders.get("cf-connecting-ip") ?? forwarded?.trim() ?? "unknown"
-  );
+  const bounded = (value: string | null, maximum: number) =>
+    value?.trim().slice(0, maximum) || null;
+  return {
+    country: bounded(requestHeaders.get("cf-ipcountry"), 100),
+    ip:
+      requestHeaders.get("cf-connecting-ip") ?? forwarded?.trim() ?? "unknown",
+    referrer: bounded(requestHeaders.get("referer"), 1_000),
+    userAgent: bounded(requestHeaders.get("user-agent"), 1_000),
+  };
 }
 
 function digest(value: string) {
@@ -117,7 +123,7 @@ export async function submitContactForm(
   }
 
   try {
-    const ip = await requestIdentity();
+    const request = await requestIdentity();
     const input = parsed.data;
     const repository = new ContactLeadsRepository(
       createServiceRoleDatabaseClient(),
@@ -127,8 +133,11 @@ export async function submitContactForm(
     );
     const leadId = await repository.createPublicSubmission({
       ...input,
-      ipHash: digest(ip),
+      country: request.country,
+      ipHash: digest(request.ip),
       payloadHash,
+      referrer: request.referrer,
+      userAgent: request.userAgent,
     });
 
     const settings = await getPublicSiteSettings();
