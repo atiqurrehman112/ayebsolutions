@@ -255,6 +255,12 @@ The Founder is a dedicated singleton rather than a Team member. Migration `20260
 
 Migration `202608160001_expand_founder_profile.sql` extends the singleton without rewriting its history. It preserves existing founder copy while adding a dedicated short introduction, location, configurable featured badge, display order, SEO title/description, and an OpenGraph Media Library relationship. The Admin editor remains the only client boundary and adds safe structured-biography authoring, live preview, unsaved-change protection, explicit draft/publish/unpublish intents, and responsive Media Library selection. The public loader resolves the fixed set of Founder media concurrently, and `/team` reuses its tagged result for metadata and page composition so there is no presentation-layer Supabase access or per-item query loop.
 
+## Sprint 15B Public Blog Experience
+
+The public `/blog` and `/blog/[slug]` routes remain Server Component-first consumers of `BlogRepository`, with five-minute ISR and the shared `blog` and `media` cache tags. Listing search, category/tag filtering, sorting, pagination, featured presentation, recent content, and editorial popular/trending rails all use one published-content boundary. Editorial rails are explicitly derived from CMS featured state and publication recency because no readership analytics are fabricated. Article rendering transforms the constrained Sprint 15A content format into semantic React elements, including tables, code, quotes, callouts, media, buttons, galleries, a generated table of contents, and adjacent and related navigation.
+
+Public visibility is deliberately stricter than the admin scheduling workflow: only rows whose status is exactly `published` are available through public repository methods, anonymous RLS, gallery RLS, sitemap, RSS, listing, or slug routes. Scheduled, draft, review, and archived rows remain private until an authorized publishing action changes their status to `published`. Migration `202608160010_public_blog_published_only.sql` enforces the same rule at PostgreSQL policy level.
+
 Create a folder under `src/features/<feature-name>` and colocate its components, actions, validation schemas, types, and tests. Expose only its intended public API from an `index.ts` file.
 
 ## Design system boundaries

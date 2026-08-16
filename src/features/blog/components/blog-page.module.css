@@ -113,6 +113,28 @@
     ),
     hsl(var(--card));
 }
+.editorialRail {
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      hsl(var(--primary) / 0.1),
+      transparent 16rem
+    ),
+    hsl(var(--card));
+}
+.miniArticle {
+  display: block;
+  transition:
+    border-color 240ms ease,
+    box-shadow 240ms ease,
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.miniArticle:hover,
+.miniArticle:focus-visible {
+  border-color: hsl(var(--foreground) / 0.22);
+  box-shadow: 0 22px 48px -38px hsl(var(--foreground) / 0.55);
+  transform: translateY(-3px);
+}
 .finalCta {
   position: relative;
   overflow: hidden;
@@ -151,6 +173,10 @@
   .articleCard,
   .articleCta svg {
     transition: none;
+  }
+  .miniArticle:hover,
+  .miniArticle:focus-visible {
+    transform: none;
   }
   .articleCard {
     opacity: 1;

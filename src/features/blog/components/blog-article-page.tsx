@@ -381,6 +381,22 @@ export function BlogArticlePage({
                       }
                     />
                   ) : null}
+                  {article.updated_at !== article.published_at ? (
+                    <Meta
+                      icon={
+                        <CalendarDays className="size-4" aria-hidden="true" />
+                      }
+                      term="Updated"
+                      value={
+                        <time dateTime={article.updated_at}>
+                          {new Intl.DateTimeFormat("en", {
+                            dateStyle: "long",
+                            timeZone: "UTC",
+                          }).format(new Date(article.updated_at))}
+                        </time>
+                      }
+                    />
+                  ) : null}
                   {article.reading_time_minutes ? (
                     <Meta
                       icon={<Clock className="size-4" aria-hidden="true" />}

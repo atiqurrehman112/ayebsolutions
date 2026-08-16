@@ -47,6 +47,16 @@ export const getPublishedBlogFilters = unstable_cache(
   { revalidate: 300, tags: ["blog", "media"] },
 );
 
+export const getPublishedBlogHighlights = unstable_cache(
+  async () => {
+    const repo = repository();
+    if (!repo) return { popular: [], recent: [], trending: [] };
+    return repo.findPublishedHighlights();
+  },
+  ["published-blog-highlights"],
+  { revalidate: 300, tags: ["blog", "media"] },
+);
+
 export const getPublishedArticle = unstable_cache(
   async (slug: string) => {
     const repo = repository();

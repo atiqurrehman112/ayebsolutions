@@ -4,6 +4,7 @@ import { BlogPage } from "@/features/blog";
 import type { PublicBlogSort } from "@/lib/database/repositories/blog-repository";
 import {
   getPublishedBlogFilters,
+  getPublishedBlogHighlights,
   getPublishedBlogPage,
 } from "@/lib/blog/public-blog";
 
@@ -38,10 +39,11 @@ const first = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
 const sorts: readonly PublicBlogSort[] = ["newest", "oldest", "featured"];
 export default async function BlogRoute({ searchParams }: Props) {
-  const [params, filterOptions, settings] = await Promise.all([
+  const [params, filterOptions, settings, highlights] = await Promise.all([
     searchParams,
     getPublishedBlogFilters(),
     getPublicSiteSettings(),
+    getPublishedBlogHighlights(),
   ]);
   const requestedSize = Number(first(params.pageSize));
   const pageSize = requestedSize === 24 ? 24 : requestedSize === 48 ? 48 : 12;
@@ -66,6 +68,7 @@ export default async function BlogRoute({ searchParams }: Props) {
       articles={articles}
       categories={filterOptions.categories}
       filters={filters}
+      highlights={highlights}
       siteUrl={
         settings?.configuration.canonical_base_url ??
         process.env.NEXT_PUBLIC_SITE_URL ??

@@ -40,6 +40,12 @@ export interface PublicBlogArticle extends BlogArticleRow {
   readonly featuredMedia: MediaLibraryRow | null;
 }
 
+export interface PublicBlogHighlights {
+  readonly popular: readonly PublicBlogArticle[];
+  readonly recent: readonly PublicBlogArticle[];
+  readonly trending: readonly PublicBlogArticle[];
+}
+
 function normalizeSearchTerm(query: string) {
   return query
     .trim()
@@ -248,9 +254,7 @@ export class BlogRepository extends ContentRepository<
     let request = this.client
       .from("blog_articles")
       .select("*", { count: "exact" })
-      .or(
-        `status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()})`,
-      );
+      .eq("status", "published");
     if (term) request = request.ilike("search_text", `%${term}%`);
     if (options.categoryId)
       request = request.eq("category_id", options.categoryId);
@@ -282,9 +286,7 @@ export class BlogRepository extends ContentRepository<
       .from("blog_articles")
       .select("*")
       .eq("slug", slug)
-      .or(
-        `status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()})`,
-      )
+      .eq("status", "published")
       .maybeSingle();
     this.throwIfError(error);
     return data;
@@ -294,9 +296,7 @@ export class BlogRepository extends ContentRepository<
     const { data, error } = await this.client
       .from("blog_articles")
       .select("slug,updated_at")
-      .or(
-        `status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()})`,
-      )
+      .eq("status", "published")
       .order("slug");
     this.throwIfError(error);
     return data ?? [];
@@ -317,14 +317,35 @@ export class BlogRepository extends ContentRepository<
     const { data, error } = await this.client
       .from("blog_articles")
       .select("keywords")
-      .or(
-        `status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()})`,
-      )
+      .eq("status", "published")
       .order("published_at", { ascending: false, nullsFirst: false });
     this.throwIfError(error);
     return [...new Set((data ?? []).flatMap((article) => article.keywords))]
       .sort((left, right) => left.localeCompare(right))
       .map((name) => ({ id: name, name, slug: name }));
+  }
+
+  async findPublishedHighlights(limit = 8): Promise<PublicBlogHighlights> {
+    const { data, error } = await this.client
+      .from("blog_articles")
+      .select("*")
+      .eq("status", "published")
+      .order("is_featured", { ascending: false })
+      .order("published_at", { ascending: false, nullsFirst: false })
+      .limit(limit);
+    this.throwIfError(error);
+    const articles = await this.attachFeaturedMedia(data ?? []);
+    const featured = articles.filter((article) => article.is_featured);
+    const editorialPicks = featured.length ? featured : articles;
+    return {
+      popular: editorialPicks.slice(0, 3),
+      recent: [...articles]
+        .sort((left, right) =>
+          (right.published_at ?? "").localeCompare(left.published_at ?? ""),
+        )
+        .slice(0, 4),
+      trending: articles.slice(0, 4),
+    };
   }
 
   async findPublicContext(article: BlogArticleRow): Promise<PublicBlogContext> {
@@ -391,15 +412,13 @@ export class BlogRepository extends ContentRepository<
       .eq("article_id", articleId);
     this.throwIfError(deleteError);
     if (!mediaIds.length) return;
-    const { error } = await this.client
-      .from("blog_article_media")
-      .insert(
-        mediaIds.map((mediaId, index) => ({
-          article_id: articleId,
-          media_id: mediaId,
-          sort_order: index,
-        })),
-      );
+    const { error } = await this.client.from("blog_article_media").insert(
+      mediaIds.map((mediaId, index) => ({
+        article_id: articleId,
+        media_id: mediaId,
+        sort_order: index,
+      })),
+    );
     this.throwIfError(error);
   }
 
@@ -428,9 +447,7 @@ export class BlogRepository extends ContentRepository<
     let request = this.client
       .from("blog_articles")
       .select("*")
-      .or(
-        `status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()})`,
-      )
+      .eq("status", "published")
       .neq("id", article.id);
     if (article.category_id)
       request = request.eq("category_id", article.category_id);
@@ -448,9 +465,7 @@ export class BlogRepository extends ContentRepository<
       this.client
         .from("blog_articles")
         .select("title,slug")
-        .or(
-          `status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()})`,
-        )
+        .eq("status", "published")
         .lt("published_at", article.published_at)
         .order("published_at", { ascending: false })
         .limit(1)
@@ -458,9 +473,7 @@ export class BlogRepository extends ContentRepository<
       this.client
         .from("blog_articles")
         .select("title,slug")
-        .or(
-          `status.eq.published,and(status.eq.scheduled,published_at.lte.${new Date().toISOString()})`,
-        )
+        .eq("status", "published")
         .gt("published_at", article.published_at)
         .order("published_at", { ascending: true })
         .limit(1)

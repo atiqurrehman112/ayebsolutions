@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -6,9 +6,11 @@ import {
   BookOpen,
   CalendarDays,
   Clock,
+  Flame,
   Search,
   SlidersHorizontal,
   Sparkles,
+  Star,
 } from "lucide-react";
 import { Container, Eyebrow } from "@/components/layout/primitives";
 import { CTALayout } from "@/components/layout/templates";
@@ -20,6 +22,7 @@ import { Badge } from "@/components/ui/status";
 import type { PaginatedResult } from "@/lib/database/repositories/base-repository";
 import type {
   PublicBlogArticle,
+  PublicBlogHighlights,
   PublicBlogSort,
 } from "@/lib/database/repositories/blog-repository";
 import { mediaSeoUrl } from "@/lib/media/media";
@@ -43,6 +46,7 @@ interface Props {
   readonly articles: PaginatedResult<PublicBlogArticle>;
   readonly categories: readonly FilterItem[];
   readonly filters: BlogFilters;
+  readonly highlights: PublicBlogHighlights;
   readonly siteUrl: string;
   readonly tags: readonly FilterItem[];
 }
@@ -69,6 +73,7 @@ export function BlogPage({
   articles,
   categories,
   filters,
+  highlights,
   siteUrl,
   tags,
 }: Props) {
@@ -310,6 +315,84 @@ export function BlogPage({
           </Container>
         </section>
 
+        {highlights.popular.length ||
+        highlights.trending.length ||
+        highlights.recent.length ? (
+          <section
+            className="border-b bg-muted/15 py-14 sm:py-20"
+            aria-labelledby="editorial-guides-heading"
+          >
+            <Container className="max-w-[100rem]">
+              <div className="grid gap-8 lg:grid-cols-[1.15fr_.85fr] lg:gap-12">
+                <div>
+                  <Eyebrow>Editorial guides</Eyebrow>
+                  <h2
+                    id="editorial-guides-heading"
+                    className="mt-4 text-balance text-3xl font-bold tracking-tight sm:text-4xl"
+                  >
+                    Start with the strongest signals.
+                  </h2>
+                  <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">
+                    Popular and trending selections are based on published
+                    editorial features—not fabricated readership metrics.
+                  </p>
+                  {highlights.popular.length ? (
+                    <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                      {highlights.popular.slice(0, 2).map((article) => (
+                        <MiniArticleLink
+                          article={article}
+                          icon={<Star className="size-4" aria-hidden="true" />}
+                          key={article.id}
+                          label="Popular editorial pick"
+                        />
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+                <aside
+                  className={`${styles.editorialRail} rounded-2xl border bg-card p-6 sm:p-8`}
+                  aria-label="Trending and recent articles"
+                >
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Flame className="size-4" aria-hidden="true" />
+                    Trending editorial picks
+                  </div>
+                  <ol className="mt-5 divide-y">
+                    {highlights.trending.slice(0, 3).map((article, index) => (
+                      <li key={article.id}>
+                        <Link
+                          className="focus-ring flex min-h-16 items-center gap-4 rounded-lg py-3"
+                          href={`/blog/${article.slug}`}
+                        >
+                          <span className="font-mono text-xs text-muted-foreground">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          <span className="line-clamp-2 text-sm font-semibold leading-6">
+                            {article.title}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ol>
+                  {highlights.recent.length ? (
+                    <div className="mt-6 border-t pt-6">
+                      <span className="text-xs font-semibold uppercase tracking-[.14em] text-muted-foreground">
+                        Most recent
+                      </span>
+                      <Link
+                        className="focus-ring mt-3 block rounded-lg text-lg font-semibold leading-7 hover:text-primary"
+                        href={`/blog/${highlights.recent[0]?.slug}`}
+                      >
+                        {highlights.recent[0]?.title}
+                      </Link>
+                    </div>
+                  ) : null}
+                </aside>
+              </div>
+            </Container>
+          </section>
+        ) : null}
+
         <section
           id="article-library"
           className="scroll-mt-28 border-b py-18 sm:py-24"
@@ -440,6 +523,35 @@ export function BlogPage({
       />
       <StructuredData data={schema} />
     </>
+  );
+}
+
+function MiniArticleLink({
+  article,
+  icon,
+  label,
+}: {
+  readonly article: PublicBlogArticle;
+  readonly icon: ReactNode;
+  readonly label: string;
+}) {
+  return (
+    <Link
+      className={`${styles.miniArticle} focus-ring group rounded-2xl border bg-card p-5`}
+      href={`/blog/${article.slug}`}
+    >
+      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.12em] text-muted-foreground">
+        {icon}
+        {label}
+      </span>
+      <strong className="mt-4 block text-balance text-lg leading-7">
+        {article.title}
+      </strong>
+      <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold">
+        Read article
+        <ArrowRight className="size-4" aria-hidden="true" />
+      </span>
+    </Link>
   );
 }
 
