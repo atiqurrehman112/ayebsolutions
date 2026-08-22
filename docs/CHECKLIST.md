@@ -182,4 +182,4 @@ The project is complete only when every checkbox above is checked.
 - [ ] Execute authorized Cloudinary and Resend production acceptance
 - [ ] Complete interactive browser console, hydration, keyboard, responsive, dark-mode, and reduced-motion acceptance
 - [ ] Decide and separately scope Categories, Tags, and Users admin pages
-- [ ] Confirm the pushed revision is Ready in Vercel production
+- [x] Confirm the pushed revision is Ready in Vercel production

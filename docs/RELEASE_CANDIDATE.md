@@ -24,7 +24,7 @@ The source and database reconstruction are release-capable, but production opera
 - Categories, Tags, and Users admin pages in the requested inventory are not implemented.
 - Interactive browser console, hydration, keyboard, responsive viewport, and screen-reader smoke tests were unavailable.
 - Production Cloudinary mutation and Resend inbox delivery were not executed with disposable authorized resources.
-- Vercel project is not locally linked; deployment status must be confirmed after the Git push through the Vercel dashboard or an authenticated CLI session.
+- The stabilization revision deployed successfully to Vercel production and the canonical domain passed the post-deployment HTTP smoke test. This gate is complete, while the authenticated acceptance gates above remain open.
 
 ## Release procedure
 
