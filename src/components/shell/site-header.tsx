@@ -26,16 +26,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/overlays";
-import { announcementConfig } from "@/config/shell";
 import {
   consultationLink,
   featuredNavigation,
   megaMenuSections,
   primaryNavigation,
-  solutionsDropdown,
+  solutionNavigation,
 } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import type { NavigationSection, ShellLink } from "@/types/global-settings";
+import type { PublicSiteSettings } from "@/lib/site-settings/public-site-settings";
 
 function isActivePath(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -180,7 +180,7 @@ function SolutionsMenu({ pathname }: { readonly pathname: string }) {
         sideOffset={12}
         className="w-[26rem] p-2"
       >
-        {solutionsDropdown.map((item) => (
+        {solutionNavigation.map((item) => (
           <MegaMenuLink key={item.href} item={item} />
         ))}
       </DropdownMenuContent>
@@ -188,14 +188,18 @@ function SolutionsMenu({ pathname }: { readonly pathname: string }) {
   );
 }
 
-function DesktopNavigation() {
+function DesktopNavigation({
+  links = primaryNavigation,
+}: {
+  readonly links?: readonly ShellLink[];
+}) {
   const pathname = usePathname();
   return (
     <nav
       aria-label="Primary navigation"
       className="hidden items-center xl:flex"
     >
-      {primaryNavigation.map((item) => {
+      {links.map((item) => {
         if (item.label === "Services")
           return <ServicesMegaMenu key={item.href} pathname={pathname} />;
         if (item.label === "Solutions")
@@ -243,10 +247,16 @@ function MobileSection({
   );
 }
 
-function MobileNavigation() {
+function MobileNavigation({
+  brandName,
+  links = primaryNavigation,
+}: {
+  readonly brandName?: string;
+  readonly links?: readonly ShellLink[];
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const simpleLinks = primaryNavigation.filter(
+  const simpleLinks = links.filter(
     (item) => item.label !== "Services" && item.label !== "Solutions",
   );
   return (
@@ -274,7 +284,9 @@ function MobileNavigation() {
           <DrawerTitle>
             <Logo linked={false} />
           </DrawerTitle>
-          <DrawerDescription>Navigate Ayeb Solutions</DrawerDescription>
+          <DrawerDescription>
+            Navigate {brandName ?? "the website"}
+          </DrawerDescription>
         </DrawerHeader>
         <nav
           aria-label="Mobile navigation"
@@ -320,7 +332,11 @@ function MobileNavigation() {
   );
 }
 
-function SiteHeader() {
+function SiteHeader({
+  settings,
+}: {
+  readonly settings: PublicSiteSettings | null;
+}) {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     function update() {
@@ -333,7 +349,20 @@ function SiteHeader() {
 
   return (
     <div className="sticky top-0 z-sticky">
-      <AnnouncementBar config={announcementConfig} />
+      {settings?.configuration.announcement_enabled &&
+      settings.configuration.announcement_text ? (
+        <AnnouncementBar
+          config={{
+            enabled: true,
+            id: `site-${settings.configuration.updated_at}`,
+            message: settings.configuration.announcement_text,
+            actionLabel:
+              settings.configuration.announcement_button_text ?? undefined,
+            actionHref:
+              settings.configuration.announcement_button_url ?? undefined,
+          }}
+        />
+      ) : null}
       <header
         className={cn(
           "border-b transition-all duration-normal ease-standard",
@@ -343,15 +372,22 @@ function SiteHeader() {
         )}
       >
         <div className="mx-auto flex h-[var(--header-height)] w-full max-w-[min(87.5rem,100vw)] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <Logo />
+          <Logo
+            name={settings?.configuration.site_name}
+            media={
+              settings?.configuration.logo_media_id
+                ? settings.media[settings.configuration.logo_media_id]
+                : null
+            }
+          />
           <DesktopNavigation />
           <div className="flex items-center gap-0.5">
-            <GlobalSearch />
+            <GlobalSearch brandName={settings?.configuration.site_name} />
             <ThemeSwitcher />
             <Button asChild size="sm" className="ml-1 hidden xl:inline-flex">
               <Link href={consultationLink.href}>{consultationLink.label}</Link>
             </Button>
-            <MobileNavigation />
+            <MobileNavigation brandName={settings?.configuration.site_name} />
           </div>
         </div>
       </header>

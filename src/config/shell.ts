@@ -9,7 +9,7 @@ export const announcementConfig = {
   message:
     "Now accepting a limited number of new product and automation engagements.",
   actionLabel: "Book a consultation",
-  actionHref: "/book-consultation",
+  actionHref: "/contact#contact-form",
 } as const satisfies AnnouncementConfig;
 
 export const cookieConsentConfig = {
@@ -17,5 +17,5 @@ export const cookieConsentConfig = {
   title: "Your privacy matters",
   description:
     "We use essential storage to remember preferences. Optional analytics can be enabled with your consent.",
-  policyHref: "/legal/cookies",
+  policyHref: "/cookies",
 } as const satisfies CookieConsentConfig;

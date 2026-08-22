@@ -1,0 +1,186 @@
+.hero {
+  background:
+    radial-gradient(
+      circle at 82% 16%,
+      hsl(var(--primary) / 0.14),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 8% 82%,
+      hsl(var(--foreground) / 0.06),
+      transparent 28rem
+    ),
+    linear-gradient(145deg, hsl(var(--background)), hsl(var(--muted) / 0.24));
+}
+
+.hero::before {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--foreground) / 0.045) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+  content: "";
+  pointer-events: none;
+}
+
+.filterPanel {
+  background: linear-gradient(
+    145deg,
+    hsl(var(--card)),
+    hsl(var(--card) / 0.78)
+  );
+}
+
+.filter {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.filter > span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.filter input,
+.filter select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.8rem;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.7rem;
+}
+
+.filter div {
+  position: relative;
+}
+.filter div svg {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.8rem;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+}
+.filter div input {
+  padding-left: 2.35rem;
+}
+.filter input:focus-visible,
+.filter select:focus-visible {
+  outline: 3px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+.projectCard {
+  grid-column: span 4;
+  opacity: 0;
+  animation: reveal 600ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--reveal-delay)
+    forwards;
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 280ms ease,
+    box-shadow 280ms ease;
+}
+
+.wideCard {
+  grid-column: span 8;
+}
+.projectCard:hover,
+.projectCard:focus-within {
+  border-color: hsl(var(--foreground) / 0.24);
+  box-shadow: 0 30px 70px -45px hsl(var(--foreground) / 0.55);
+  transform: translateY(-5px);
+}
+
+.mediaLink {
+  border-radius: 1rem 1rem 0 0;
+}
+.projectVisual {
+  min-height: 13rem;
+  background:
+    radial-gradient(
+      circle at 80% 12%,
+      hsl(var(--primary) / 0.14),
+      transparent 11rem
+    ),
+    linear-gradient(145deg, hsl(var(--muted) / 0.5), hsl(var(--background)));
+  transition: transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.projectCard:hover .projectVisual,
+.projectCard:focus-within .projectVisual {
+  transform: scale(1.025);
+}
+.openProject {
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+.projectCard:hover .openProject,
+.projectCard:focus-within .openProject {
+  opacity: 1;
+  transform: none;
+}
+.cardCta svg {
+  transition: transform 220ms ease;
+}
+.cardCta:hover svg {
+  transform: translateX(0.2rem);
+}
+
+.emptyState {
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      hsl(var(--primary) / 0.08),
+      transparent 20rem
+    ),
+    hsl(var(--card));
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 1279px) {
+  .projectCard,
+  .wideCard {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .projectCard {
+    opacity: 1;
+    animation: none;
+    transition: none;
+  }
+  .projectCard:hover,
+  .projectCard:focus-within,
+  .projectCard:hover .projectVisual,
+  .projectCard:focus-within .projectVisual,
+  .projectCard:hover .openProject,
+  .projectCard:focus-within .openProject,
+  .cardCta:hover svg {
+    transform: none;
+  }
+  .projectVisual,
+  .openProject,
+  .cardCta svg {
+    transition: none;
+  }
+}

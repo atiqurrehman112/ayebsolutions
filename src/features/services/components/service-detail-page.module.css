@@ -1,0 +1,192 @@
+.hero {
+  background:
+    radial-gradient(
+      circle at 83% 18%,
+      hsl(var(--primary) / 0.13),
+      transparent 33rem
+    ),
+    radial-gradient(
+      circle at 6% 86%,
+      hsl(var(--foreground) / 0.05),
+      transparent 27rem
+    ),
+    linear-gradient(to bottom, hsl(var(--muted) / 0.2), transparent 68%);
+}
+
+.hero::after {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    hsl(var(--foreground) / 0.13) 0.7px,
+    transparent 0.7px
+  );
+  background-size: 1.3rem 1.3rem;
+  mask-image: radial-gradient(circle at 82% 42%, black, transparent 48%);
+  content: "";
+  pointer-events: none;
+}
+
+.serviceVisual {
+  background: linear-gradient(
+    145deg,
+    hsl(var(--card) / 0.98),
+    hsl(var(--card) / 0.74)
+  );
+  box-shadow: 0 42px 110px -64px hsl(var(--foreground) / 0.62);
+}
+
+.serviceVisual::after {
+  position: absolute;
+  right: -7rem;
+  bottom: -8rem;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 50%;
+  background: hsl(var(--primary) / 0.07);
+  filter: blur(1rem);
+  content: "";
+  pointer-events: none;
+}
+
+.benefitCard {
+  animation: detail-reveal 620ms var(--delay) both;
+  box-shadow: 0 24px 65px -56px hsl(var(--foreground) / 0.52);
+  transition:
+    transform 240ms ease,
+    border-color 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.benefitCard:hover,
+.benefitCard:focus-within,
+.customerCard:hover,
+.customerCard:focus-within,
+.relatedCard:hover,
+.relatedCard:focus-within {
+  border-color: hsl(var(--foreground) / 0.22);
+  box-shadow: 0 34px 74px -56px hsl(var(--foreground) / 0.62);
+  transform: translateY(-4px);
+}
+
+.customerCard,
+.relatedCard {
+  box-shadow: 0 24px 65px -58px hsl(var(--foreground) / 0.48);
+  transition:
+    transform 240ms ease,
+    border-color 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.processSection {
+  background:
+    radial-gradient(
+      circle at 88% 15%,
+      hsl(var(--primary-foreground) / 0.1),
+      transparent 30rem
+    ),
+    hsl(var(--primary));
+}
+
+@media (min-width: 1280px) {
+  .processStep:not(:last-child)::after {
+    position: absolute;
+    top: 2.5rem;
+    left: calc(100% + 0.25rem);
+    z-index: 2;
+    width: calc(0.5rem - 2px);
+    height: 1px;
+    background: hsl(var(--primary-foreground) / 0.25);
+    content: "";
+  }
+}
+
+.techCard,
+.featureCard {
+  transition:
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.techCard:hover,
+.techCard:focus-within,
+.featureCard:hover,
+.featureCard:focus-within {
+  background: hsl(var(--muted) / 0.3);
+  box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.08);
+}
+
+.portfolioCard {
+  box-shadow: 0 26px 70px -58px hsl(var(--foreground) / 0.55);
+  transition:
+    transform 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.portfolioMedia {
+  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.portfolioCard:hover,
+.portfolioCard:focus-within {
+  border-color: hsl(var(--foreground) / 0.22);
+  box-shadow: 0 36px 80px -58px hsl(var(--foreground) / 0.65);
+  transform: translateY(-4px);
+}
+
+.portfolioCard:hover .portfolioMedia,
+.portfolioCard:focus-within .portfolioMedia {
+  transform: scale(1.025);
+}
+
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.finalCta :global(.rounded-2xl) {
+  background:
+    radial-gradient(
+      circle at 12% 10%,
+      hsl(var(--primary-foreground) / 0.14),
+      transparent 22rem
+    ),
+    hsl(var(--primary));
+}
+
+@keyframes detail-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .benefitCard,
+  .customerCard,
+  .relatedCard,
+  .portfolioCard,
+  .portfolioMedia,
+  .techCard,
+  .featureCard,
+  .disclosure svg {
+    animation: none;
+    transition: none;
+  }
+
+  .benefitCard:hover,
+  .benefitCard:focus-within,
+  .customerCard:hover,
+  .customerCard:focus-within,
+  .relatedCard:hover,
+  .relatedCard:focus-within,
+  .portfolioCard:hover,
+  .portfolioCard:focus-within,
+  .portfolioCard:hover .portfolioMedia,
+  .portfolioCard:focus-within .portfolioMedia {
+    transform: none;
+  }
+}

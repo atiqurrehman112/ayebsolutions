@@ -1,15 +1,15 @@
 import { Github, Linkedin, Twitter } from "lucide-react";
 
 import type { NavigationSection, SocialChannel } from "@/types/global-settings";
+import { solutionNavigation } from "@/config/navigation";
 
 export const footerNavigation = [
   {
     title: "Company",
     links: [
       { label: "About", href: "/about" },
-      { label: "Process", href: "/process" },
+      { label: "Process", href: "/about#process" },
       { label: "Team", href: "/team" },
-      { label: "Careers", href: "/careers" },
       { label: "Contact", href: "/contact" },
     ],
   },
@@ -25,32 +25,23 @@ export const footerNavigation = [
   },
   {
     title: "Solutions",
-    links: [
-      { label: "AI Agents", href: "/solutions/ai-agents" },
-      { label: "Workflow Automation", href: "/solutions/workflow-automation" },
-      { label: "CRM Solutions", href: "/solutions/crm" },
-      {
-        label: "Digital Transformation",
-        href: "/solutions/digital-transformation",
-      },
-    ],
+    links: solutionNavigation.slice(0, 4),
   },
   {
     title: "Resources",
     links: [
-      { label: "Case Studies", href: "/case-studies" },
+      { label: "Case Studies", href: "/portfolio" },
       { label: "Blog", href: "/blog" },
-      { label: "Guides", href: "/resources/guides" },
       { label: "FAQ", href: "/faq" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Privacy", href: "/legal/privacy" },
-      { label: "Terms", href: "/legal/terms" },
-      { label: "Cookies", href: "/legal/cookies" },
-      { label: "Accessibility", href: "/legal/accessibility" },
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
+      { label: "Cookies", href: "/cookies" },
+      { label: "Accessibility", href: "/accessibility" },
     ],
   },
 ] as const satisfies readonly NavigationSection[];

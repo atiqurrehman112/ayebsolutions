@@ -22,7 +22,7 @@ function NewsletterForm() {
         role="status"
         className="rounded-lg border border-success/30 bg-success/10 p-3 text-sm"
       >
-        Thank you for your interest in Ayeb Solutions updates.
+        Thank you for your interest in our updates.
       </p>
     );
   }

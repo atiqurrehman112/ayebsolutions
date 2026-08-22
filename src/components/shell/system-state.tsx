@@ -62,4 +62,3 @@ function SystemState({
 }
 
 export { SystemState };
-export type { SystemStateProps };

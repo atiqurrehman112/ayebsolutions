@@ -1,0 +1,71 @@
+.page {
+  display: grid;
+  min-height: 62rem;
+  place-items: center;
+  padding-block: clamp(1rem, 5vw, 4rem);
+}
+
+.loginPanel {
+  display: grid;
+  width: min(100%, 78rem);
+  min-width: 0;
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+}
+
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-top: 2rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 0.15rem);
+  padding: 1rem;
+  background: hsl(var(--card));
+  font-size: 0.78rem;
+}
+
+.notice p {
+  margin-top: 0.4rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.7;
+}
+
+.formCard {
+  min-width: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 0.75rem);
+  padding: clamp(1.25rem, 4vw, 2rem);
+  background: hsl(var(--card) / 0.94);
+  box-shadow: var(--shadow-elevated);
+  backdrop-filter: blur(12px);
+}
+
+.forgotPassword {
+  display: flex;
+  min-height: 2.75rem;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  cursor: not-allowed;
+}
+
+.forgotPassword span {
+  border: 1px solid hsl(var(--border));
+  border-radius: 999px;
+  padding: 0.1rem 0.4rem;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 1280px) {
+  .loginPanel {
+    grid-template-columns: minmax(0, 1fr) 28rem;
+  }
+}

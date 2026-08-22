@@ -31,3 +31,8 @@ next-env.d.ts
 
 # generated Prisma client
 /src/generated/prisma
+
+.vercel
+
+# Supabase CLI project-link and local runtime state
+/supabase/.temp/

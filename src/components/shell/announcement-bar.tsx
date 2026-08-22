@@ -34,7 +34,7 @@ function AnnouncementBar({ config }: { readonly config: AnnouncementConfig }) {
         {config.actionLabel && config.actionHref ? (
           <Link
             href={config.actionHref}
-            className="inline-flex shrink-0 items-center gap-1 font-semibold underline-offset-4 hover:underline"
+            className="focus-ring inline-flex min-h-11 shrink-0 items-center gap-1 rounded-md font-semibold underline-offset-4 hover:underline"
           >
             {config.actionLabel}
             <ArrowRight className="size-3.5" aria-hidden="true" />

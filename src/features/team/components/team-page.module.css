@@ -1,0 +1,417 @@
+.hero {
+  background:
+    radial-gradient(
+      circle at 82% 18%,
+      hsl(var(--primary) / 0.14),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 7% 92%,
+      hsl(var(--foreground) / 0.06),
+      transparent 28rem
+    ),
+    linear-gradient(145deg, hsl(var(--background)), hsl(var(--muted) / 0.18));
+}
+
+.hero::before {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(hsl(var(--foreground) / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--foreground) / 0.045) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+  content: "";
+  pointer-events: none;
+}
+
+.heroVisual {
+  position: relative;
+  min-height: 15rem;
+  margin-top: clamp(3rem, 7vw, 7rem);
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: 1.5rem;
+  background: hsl(var(--card) / 0.78);
+  box-shadow: 0 44px 110px -72px hsl(var(--foreground) / 0.65);
+  backdrop-filter: blur(1rem);
+  animation: hero-reveal 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.editorBar {
+  display: flex;
+  min-height: 3.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  padding-inline: 1.25rem;
+}
+
+.editorBar > span {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: hsl(var(--foreground) / 0.16);
+}
+
+.editorBar code {
+  margin-left: 0.65rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.7rem;
+}
+
+.codeGrid {
+  display: grid;
+  gap: 0.75rem;
+  padding: clamp(2rem, 5vw, 4.5rem);
+  font-size: clamp(0.85rem, 2vw, 1.15rem);
+}
+
+.codeGrid > div {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.lineNumber {
+  color: hsl(var(--muted-foreground) / 0.55);
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.orbit {
+  position: absolute;
+  top: 50%;
+  right: clamp(2rem, 10vw, 10rem);
+  width: clamp(8rem, 18vw, 14rem);
+  aspect-ratio: 1;
+  border: 1px solid hsl(var(--foreground) / 0.12);
+  border-radius: 50%;
+  animation: orbit 18s linear infinite;
+}
+
+.orbit::before,
+.orbit::after,
+.orbit span {
+  position: absolute;
+  border-radius: 50%;
+  content: "";
+}
+
+.orbit::before {
+  inset: 24%;
+  border: 1px solid hsl(var(--foreground) / 0.1);
+}
+
+.orbit::after {
+  inset: 43%;
+  background: hsl(var(--primary));
+  box-shadow: 0 0 3rem hsl(var(--primary) / 0.35);
+}
+
+.orbit span {
+  width: 0.7rem;
+  height: 0.7rem;
+  background: hsl(var(--foreground) / 0.5);
+}
+
+.orbit span:nth-child(1) {
+  top: -0.35rem;
+  left: 50%;
+}
+.orbit span:nth-child(2) {
+  right: 7%;
+  bottom: 17%;
+}
+.orbit span:nth-child(3) {
+  bottom: 12%;
+  left: 4%;
+}
+
+.founderCard {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: 2rem;
+  background: hsl(var(--card));
+  box-shadow: 0 48px 120px -80px hsl(var(--foreground) / 0.7);
+}
+
+.founderPortrait {
+  position: relative;
+  display: grid;
+  min-height: 32rem;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 50% 38%,
+      hsl(var(--primary-foreground) / 0.15),
+      transparent 24%
+    ),
+    linear-gradient(150deg, hsl(var(--primary)), hsl(var(--primary) / 0.86));
+  color: hsl(var(--primary-foreground));
+}
+
+.founderPortrait::before,
+.founderPortrait::after {
+  position: absolute;
+  border: 1px solid hsl(var(--primary-foreground) / 0.15);
+  border-radius: 50%;
+  content: "";
+}
+
+.founderPortrait::before {
+  width: 22rem;
+  height: 22rem;
+}
+.founderPortrait::after {
+  width: 31rem;
+  height: 31rem;
+}
+
+.founderMonogram {
+  z-index: 1;
+  font-size: clamp(5rem, 12vw, 9rem);
+  font-weight: 750;
+  letter-spacing: -0.09em;
+}
+
+.founderPhoto {
+  position: relative;
+  z-index: 1;
+  width: min(72%, 24rem);
+  aspect-ratio: 4 / 5;
+  border: 1px solid hsl(var(--primary-foreground) / 0.2);
+  border-radius: 1.5rem;
+  object-fit: cover;
+  box-shadow: 0 35px 80px -45px hsl(0 0% 0% / 0.8);
+}
+
+.portraitLabel {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 1;
+  border: 1px solid hsl(var(--primary-foreground) / 0.2);
+  border-radius: 999px;
+  padding: 0.4rem 0.7rem;
+  color: hsl(var(--primary-foreground) / 0.65);
+  font-size: 0.65rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.memberCard {
+  --delay: calc(var(--member-index) * 55ms);
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: 1.5rem;
+  background: hsl(var(--card));
+  box-shadow: 0 24px 64px -54px hsl(var(--foreground) / 0.55);
+  animation: member-reveal 620ms var(--delay) both;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.memberCard:hover,
+.memberCard:focus-within {
+  border-color: hsl(var(--foreground) / 0.24);
+  box-shadow: 0 38px 88px -58px hsl(var(--foreground) / 0.68);
+  transform: translateY(-0.35rem);
+}
+
+.featuredMember {
+  border-color: hsl(var(--foreground) / 0.25);
+  box-shadow: 0 34px 84px -56px hsl(var(--foreground) / 0.7);
+}
+
+.memberPortrait {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: hsl(var(--muted) / 0.45);
+}
+
+.memberPortrait :global(img) {
+  transition: transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.memberCard:hover .memberPortrait :global(img) {
+  transform: scale(1.035);
+}
+
+.memberFallback {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 50% 30%,
+      hsl(var(--foreground) / 0.08),
+      transparent 28%
+    ),
+    linear-gradient(145deg, hsl(var(--muted)), hsl(var(--background)));
+}
+
+.memberFallback span {
+  font-size: clamp(3.5rem, 8vw, 6rem);
+  font-weight: 750;
+  letter-spacing: -0.07em;
+}
+
+.emptyState {
+  display: flex;
+  max-width: 48rem;
+  gap: 1.25rem;
+  margin-top: 3rem;
+  border: 1px dashed hsl(var(--border));
+  border-radius: 1.5rem;
+  background: hsl(var(--card));
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.cultureGrid {
+  display: grid;
+  gap: 1rem;
+}
+
+.cultureCard,
+.valueCard {
+  transition:
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.cultureCard {
+  border: 1px solid hsl(var(--border));
+  border-radius: 1.25rem;
+  background: hsl(var(--card));
+  padding: 1.75rem;
+}
+
+.cultureCard:hover,
+.cultureCard:focus-within {
+  box-shadow: 0 28px 70px -56px hsl(var(--foreground) / 0.6);
+  transform: translateY(-0.25rem);
+}
+
+.valueCard {
+  min-height: 15rem;
+  background: hsl(var(--primary));
+  padding: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.valueCard:hover,
+.valueCard:focus-within {
+  background: hsl(var(--primary-foreground) / 0.06);
+}
+
+.finalCta :global(.rounded-3xl) {
+  background:
+    radial-gradient(
+      circle at 82% 15%,
+      hsl(var(--primary-foreground) / 0.13),
+      transparent 22rem
+    ),
+    hsl(var(--primary));
+}
+
+@media (min-width: 640px) {
+  .cultureGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .founderCard {
+    grid-template-columns: minmax(22rem, 0.78fr) minmax(0, 1.22fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .cultureCard:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 767px) {
+  .orbit {
+    opacity: 0.35;
+    right: -3rem;
+  }
+  .codeGrid {
+    max-width: 90%;
+    overflow: hidden;
+  }
+  .codeGrid code {
+    white-space: nowrap;
+  }
+  .founderPortrait {
+    min-height: 24rem;
+  }
+}
+
+@keyframes hero-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes member-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes orbit {
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+  from {
+    transform: translateY(-50%) rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroVisual,
+  .memberCard,
+  .orbit {
+    animation: none;
+  }
+
+  .orbit {
+    transform: translateY(-50%);
+  }
+
+  .memberCard,
+  .cultureCard,
+  .valueCard,
+  .memberPortrait :global(img) {
+    transition: none;
+  }
+
+  .memberCard:hover,
+  .memberCard:focus-within,
+  .cultureCard:hover,
+  .cultureCard:focus-within,
+  .memberCard:hover .memberPortrait :global(img) {
+    transform: none;
+  }
+}

@@ -1,0 +1,27 @@
+.sectionBackground {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 82% 20%,
+      hsl(var(--primary-foreground) / 0.12),
+      transparent 28rem
+    ),
+    hsl(var(--primary));
+}
+.sectionBackground::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(hsl(var(--primary-foreground) / 0.14) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      hsl(var(--primary-foreground) / 0.14) 1px,
+      transparent 1px
+    );
+  background-size: 3rem 3rem;
+  mask-image: radial-gradient(circle at 70% 50%, black, transparent 70%);
+}

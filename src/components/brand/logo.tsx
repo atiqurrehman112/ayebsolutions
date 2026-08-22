@@ -1,11 +1,15 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { CmsMedia } from "@/components/media/cms-media";
+import type { MediaLibraryRow } from "@/types/database";
 
 interface LogoProps {
   readonly className?: string;
   readonly compact?: boolean;
   readonly linked?: boolean;
+  readonly media?: MediaLibraryRow | null;
+  readonly name?: string;
 }
 
 function LogoMark({ className }: { readonly className?: string }) {
@@ -24,20 +28,36 @@ function LogoMark({ className }: { readonly className?: string }) {
   );
 }
 
-function Logo({ className, compact = false, linked = true }: LogoProps) {
+function Logo({
+  className,
+  compact = false,
+  linked = true,
+  media,
+  name = "Ayeb Solutions",
+}: LogoProps) {
   const content = (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <LogoMark />
+      {media ? (
+        <CmsMedia
+          alt=""
+          className="size-9 rounded-xl object-contain"
+          decorative
+          media={media}
+          sizes="36px"
+        />
+      ) : (
+        <LogoMark />
+      )}
       {!compact ? (
         <span className="text-base font-bold tracking-tight sm:text-lg">
-          Ayeb Solutions
+          {name}
         </span>
       ) : null}
     </span>
   );
 
   return linked ? (
-    <Link href="/" aria-label="Ayeb Solutions home" className="rounded-md">
+    <Link href="/" aria-label={`${name} home`} className="rounded-md">
       {content}
     </Link>
   ) : (
@@ -45,5 +65,4 @@ function Logo({ className, compact = false, linked = true }: LogoProps) {
   );
 }
 
-export { Logo, LogoMark };
-export type { LogoProps };
+export { Logo };

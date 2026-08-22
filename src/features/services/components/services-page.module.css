@@ -1,0 +1,64 @@
+.heroBackground {
+  background:
+    radial-gradient(
+      circle at 82% 22%,
+      hsl(var(--primary) / 0.09),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 12% 84%,
+      hsl(var(--foreground) / 0.045),
+      transparent 28rem
+    );
+}
+
+.heroBackground::after {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.2) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  mask-image: radial-gradient(circle at center, black, transparent 82%);
+  content: "";
+}
+
+.filter {
+  display: grid;
+  min-width: 0;
+  gap: 0.45rem;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.serviceCard {
+  transition:
+    transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.serviceCard:hover,
+.serviceCard:focus-within {
+  border-color: hsl(var(--foreground) / 0.22);
+  box-shadow: 0 24px 60px -42px hsl(var(--foreground) / 0.42);
+  transform: translateY(-3px);
+}
+
+.finalPanel {
+  background:
+    radial-gradient(
+      circle at 12% 10%,
+      hsl(var(--primary-foreground) / 0.14),
+      transparent 22rem
+    ),
+    hsl(var(--primary));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .serviceCard:hover,
+  .serviceCard:focus-within {
+    transform: none;
+  }
+}

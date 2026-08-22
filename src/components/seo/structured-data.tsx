@@ -13,4 +13,3 @@ function StructuredData({ data }: StructuredDataProps) {
 }
 
 export { StructuredData };
-export type { StructuredDataProps };

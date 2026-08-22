@@ -45,7 +45,7 @@ function CookieConsent({ config }: { readonly config: CookieConsentConfig }) {
             {config.description}{" "}
             <Link
               href={config.policyHref}
-              className="font-medium text-foreground underline underline-offset-4"
+              className="focus-ring rounded-sm font-medium text-foreground underline underline-offset-4"
             >
               Cookie policy
             </Link>

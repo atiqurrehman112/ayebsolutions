@@ -1,14 +1,11 @@
 import {
   Blocks,
-  BookOpen,
   Bot,
-  BriefcaseBusiness,
   Building2,
   ChartNoAxesCombined,
   CircleHelp,
   CodeXml,
   Cpu,
-  FileText,
   Globe2,
   Handshake,
   Layers3,
@@ -35,10 +32,60 @@ export const primaryNavigation = [
   { label: "Services", href: "/services" },
   { label: "Solutions", href: "/solutions" },
   { label: "Portfolio", href: "/portfolio" },
-  { label: "Case Studies", href: "/case-studies" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
+] as const satisfies readonly ShellLink[];
+
+export const solutionNavigation = [
+  {
+    label: "AI Agents",
+    href: "/solutions#ai-agents",
+    description: "Purpose-built autonomous assistants.",
+    icon: Cpu,
+  },
+  {
+    label: "Workflow Automation",
+    href: "/solutions#workflow-automation",
+    description: "Connect teams, tools, and data.",
+    icon: Workflow,
+  },
+  {
+    label: "CRM Solutions",
+    href: "/solutions#crm-solutions",
+    description: "Customer operations without friction.",
+    icon: Network,
+  },
+  {
+    label: "Digital Transformation",
+    href: "/solutions#digital-transformation",
+    description: "Modernize systems with confidence.",
+    icon: Rocket,
+  },
+  {
+    label: "For Startups",
+    href: "/solutions#startups",
+    description: "Launch and scale with a focused product team.",
+    icon: Lightbulb,
+  },
+  {
+    label: "For Enterprises",
+    href: "/solutions#enterprises",
+    description: "Secure modernization for complex operations.",
+    icon: ShieldCheck,
+  },
+  {
+    label: "For Local Businesses",
+    href: "/solutions#local-businesses",
+    description: "Digital systems that create practical growth.",
+    icon: Globe2,
+  },
+  {
+    label: "Technology Partnerships",
+    href: "/solutions#technology-partnerships",
+    description: "Flexible delivery for agencies and product teams.",
+    icon: Handshake,
+  },
 ] as const satisfies readonly ShellLink[];
 
 export const megaMenuSections = [
@@ -79,39 +126,14 @@ export const megaMenuSections = [
   },
   {
     title: "Solutions",
-    links: [
-      {
-        label: "AI Agents",
-        href: "/solutions/ai-agents",
-        description: "Purpose-built autonomous assistants.",
-        icon: Cpu,
-      },
-      {
-        label: "Workflow Automation",
-        href: "/solutions/workflow-automation",
-        description: "Connect teams, tools, and data.",
-        icon: Workflow,
-      },
-      {
-        label: "CRM Solutions",
-        href: "/solutions/crm",
-        description: "Customer operations without friction.",
-        icon: Network,
-      },
-      {
-        label: "Digital Transformation",
-        href: "/solutions/digital-transformation",
-        description: "Modernize systems with confidence.",
-        icon: Rocket,
-      },
-    ],
+    links: solutionNavigation,
   },
   {
     title: "Resources",
     links: [
       {
         label: "Case Studies",
-        href: "/case-studies",
+        href: "/portfolio",
         description: "Results from real engagements.",
         icon: ChartNoAxesCombined,
       },
@@ -120,12 +142,6 @@ export const megaMenuSections = [
         href: "/blog",
         description: "Practical product and automation insights.",
         icon: Newspaper,
-      },
-      {
-        label: "Guides",
-        href: "/resources/guides",
-        description: "Actionable technical resources.",
-        icon: BookOpen,
       },
       {
         label: "FAQ",
@@ -146,7 +162,7 @@ export const megaMenuSections = [
       },
       {
         label: "Our Process",
-        href: "/process",
+        href: "/about#process",
         description: "A transparent delivery framework.",
         icon: Blocks,
       },
@@ -156,42 +172,9 @@ export const megaMenuSections = [
         description: "Meet the people behind the work.",
         icon: Users,
       },
-      {
-        label: "Careers",
-        href: "/careers",
-        description: "Build meaningful technology with us.",
-        icon: BriefcaseBusiness,
-      },
     ],
   },
 ] as const satisfies readonly NavigationSection[];
-
-export const solutionsDropdown = [
-  {
-    label: "For Startups",
-    href: "/solutions/startups",
-    description: "Launch and scale with a focused product team.",
-    icon: Lightbulb,
-  },
-  {
-    label: "For Enterprises",
-    href: "/solutions/enterprise",
-    description: "Secure modernization for complex operations.",
-    icon: ShieldCheck,
-  },
-  {
-    label: "For Local Businesses",
-    href: "/solutions/local-business",
-    description: "Digital systems that create practical growth.",
-    icon: Globe2,
-  },
-  {
-    label: "Technology Partnerships",
-    href: "/solutions/partnerships",
-    description: "Flexible delivery for agencies and product teams.",
-    icon: Handshake,
-  },
-] as const satisfies readonly ShellLink[];
 
 export const featuredNavigation = {
   eyebrow: "Featured",
@@ -215,13 +198,10 @@ function uniqueNavigationLinks(links: readonly ShellLink[]): ShellLink[] {
 export const searchNavigation: readonly ShellLink[] = uniqueNavigationLinks([
   ...primaryNavigation,
   ...flattenNavigationSections(megaMenuSections),
-  ...solutionsDropdown,
 ]);
 
 export const consultationLink = {
   label: "Book Consultation",
-  href: "/book-consultation",
+  href: "/contact#contact-form",
   icon: Sparkles,
 } as const satisfies ShellLink;
-
-export const documentIcon = FileText;
