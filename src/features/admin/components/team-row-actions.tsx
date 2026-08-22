@@ -16,8 +16,8 @@ import {
   draftTeamMember,
   publishTeamMember,
   toggleFeaturedTeamMember,
-  type TeamActionState,
 } from "@/lib/actions/team";
+import type { TeamActionState } from "@/lib/actions/action-states";
 import type { MediaLibraryRow, TeamMemberRow } from "@/types/database";
 import { TeamMemberDialog } from "./team-member-dialog";
 import styles from "./admin-team.module.css";

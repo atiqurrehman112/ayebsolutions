@@ -6,17 +6,7 @@ import { getPermissions } from "@/lib/auth/permissions";
 import { createDatabaseClient } from "@/lib/database";
 import { FounderRepository } from "@/lib/database/repositories/founder-repository";
 import { founderProfileSchema } from "@/lib/validation/founder";
-
-export interface FounderActionState {
-  readonly fieldErrors?: Readonly<Record<string, readonly string[]>>;
-  readonly message: string;
-  readonly status: "idle" | "error" | "success";
-}
-
-export const initialFounderActionState: FounderActionState = {
-  message: "",
-  status: "idle",
-};
+import type { FounderActionState } from "./action-states";
 
 const nullable = (value: FormDataEntryValue | null) =>
   String(value ?? "").trim() || null;

@@ -12,17 +12,7 @@ import {
 } from "@/lib/validation/portfolio";
 import type { Json } from "@/types/database";
 import { z } from "zod";
-
-export interface PortfolioActionState {
-  readonly fieldErrors?: Readonly<Record<string, readonly string[]>>;
-  readonly message: string;
-  readonly status: "idle" | "error" | "success";
-}
-
-export const initialPortfolioActionState: PortfolioActionState = {
-  message: "",
-  status: "idle",
-};
+import type { PortfolioActionState } from "./action-states";
 
 class PortfolioPermissionError extends Error {}
 

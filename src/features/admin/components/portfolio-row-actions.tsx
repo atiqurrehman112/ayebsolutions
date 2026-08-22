@@ -21,7 +21,7 @@ import {
   restorePortfolioProject,
   unpublishPortfolioProject,
 } from "@/lib/actions/portfolio";
-import type { PortfolioActionState } from "@/lib/actions/portfolio";
+import type { PortfolioActionState } from "@/lib/actions/action-states";
 import type {
   CategoryRow,
   ContentStatus,

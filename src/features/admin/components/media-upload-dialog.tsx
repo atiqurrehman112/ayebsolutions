@@ -11,10 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/overlays";
-import {
-  initialMediaActionState,
-  uploadMediaAction,
-} from "@/lib/actions/media";
+import { initialMediaActionState } from "@/lib/actions/action-states";
+import { uploadMediaAction } from "@/lib/actions/media";
 import styles from "./admin-media.module.css";
 export function MediaUploadDialog() {
   const [open, setOpen] = useState(false);

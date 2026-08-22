@@ -20,8 +20,8 @@ import {
   restoreTestimonial,
   toggleFeaturedTestimonial,
   unpublishTestimonial,
-  type TestimonialActionState,
 } from "@/lib/actions/testimonials";
+import type { TestimonialActionState } from "@/lib/actions/action-states";
 import type {
   ContentStatus,
   TestimonialApprovalStatus,

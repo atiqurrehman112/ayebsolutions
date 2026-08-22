@@ -5,17 +5,7 @@ import { requireAdmin } from "@/lib/auth/auth";
 import { createDatabaseClient } from "@/lib/database";
 import { SiteSettingsRepository } from "@/lib/database/repositories/site-settings-repository";
 import { siteSettingsSchema } from "@/lib/validation/site-settings";
-
-export interface SiteSettingsActionState {
-  readonly fieldErrors?: Readonly<Record<string, readonly string[]>>;
-  readonly message: string;
-  readonly status: "idle" | "error" | "success";
-}
-
-export const initialSiteSettingsActionState: SiteSettingsActionState = {
-  message: "",
-  status: "idle",
-};
+import type { SiteSettingsActionState } from "./action-states";
 
 const nullable = (value: FormDataEntryValue | null) =>
   String(value ?? "").trim() || null;

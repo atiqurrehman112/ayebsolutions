@@ -1,10 +1,8 @@
 "use client";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  initialSiteSettingsActionState,
-  saveSiteSettings,
-} from "@/lib/actions/site-settings";
+import { initialSiteSettingsActionState } from "@/lib/actions/action-states";
+import { saveSiteSettings } from "@/lib/actions/site-settings";
 import type { MediaLibraryRow, SiteConfigurationRow } from "@/types/database";
 import styles from "./admin-site-settings.module.css";
 

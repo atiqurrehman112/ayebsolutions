@@ -14,17 +14,8 @@ import {
   blogArticleUpdateSchema,
 } from "@/lib/validation/blog";
 import type { Json } from "@/types/database";
+import type { BlogActionState } from "./action-states";
 
-export interface BlogActionState {
-  readonly fieldErrors?: Readonly<Record<string, readonly string[]>>;
-  readonly message: string;
-  readonly status: "idle" | "error" | "success";
-}
-
-export const initialBlogActionState: BlogActionState = {
-  message: "",
-  status: "idle",
-};
 class BlogPermissionError extends Error {}
 
 async function requireBlogPermission(operation: "delete" | "write") {

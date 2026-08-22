@@ -19,10 +19,10 @@ import {
 } from "@/components/ui/overlays";
 import {
   deleteMediaAction,
-  initialMediaActionState,
   renameMediaAction,
   replaceMediaAction,
 } from "@/lib/actions/media";
+import { initialMediaActionState } from "@/lib/actions/action-states";
 import type { MediaLibraryRow } from "@/types/database";
 import styles from "./admin-media.module.css";
 export function MediaItemActions({

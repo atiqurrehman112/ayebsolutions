@@ -13,18 +13,7 @@ import {
 } from "@/lib/database/repositories/contact-leads-repository";
 import { sendLeadEmail } from "@/lib/email/leads";
 import { publicContactSchema } from "@/lib/validation/contact";
-
-export interface ContactFormState {
-  readonly fieldErrors?: Readonly<Record<string, readonly string[]>>;
-  readonly message: string;
-  readonly status: "error" | "idle" | "success";
-  readonly submissionId?: string;
-}
-
-export const initialContactFormState: ContactFormState = {
-  message: "",
-  status: "idle",
-};
+import type { ContactFormState } from "./action-states";
 
 function stringValue(formData: FormData, key: string) {
   return String(formData.get(key) ?? "");

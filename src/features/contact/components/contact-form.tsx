@@ -13,10 +13,8 @@ import {
 import { useActionState, useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  initialContactFormState,
-  submitContactForm,
-} from "@/lib/actions/contact";
+import { initialContactFormState } from "@/lib/actions/action-states";
+import { submitContactForm } from "@/lib/actions/contact";
 import { cn } from "@/lib/utils";
 import styles from "./contact-page.module.css";
 

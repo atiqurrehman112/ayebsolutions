@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/overlays";
 import {
   createPortfolioProject,
-  initialPortfolioActionState,
   updatePortfolioProject,
 } from "@/lib/actions/portfolio";
+import { initialPortfolioActionState } from "@/lib/actions/action-states";
 import type { CategoryRow, PortfolioProjectRow } from "@/types/database";
 import styles from "./admin-portfolio.module.css";
 

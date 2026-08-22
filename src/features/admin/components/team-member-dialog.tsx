@@ -11,11 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/overlays";
-import {
-  createTeamMember,
-  initialTeamActionState,
-  updateTeamMember,
-} from "@/lib/actions/team";
+import { createTeamMember, updateTeamMember } from "@/lib/actions/team";
+import { initialTeamActionState } from "@/lib/actions/action-states";
 import type { MediaLibraryRow, TeamMemberRow } from "@/types/database";
 import styles from "./admin-team.module.css";
 

@@ -10,16 +10,8 @@ import {
   teamMemberSchema,
   teamMemberUpdateSchema,
 } from "@/lib/validation/team";
+import type { TeamActionState } from "./action-states";
 
-export interface TeamActionState {
-  readonly fieldErrors?: Readonly<Record<string, readonly string[]>>;
-  readonly message: string;
-  readonly status: "idle" | "error" | "success";
-}
-export const initialTeamActionState: TeamActionState = {
-  message: "",
-  status: "idle",
-};
 class TeamPermissionError extends Error {}
 
 async function permission(deleteOperation = false) {

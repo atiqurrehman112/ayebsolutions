@@ -1,7 +1,9 @@
 export default function Loading() {
   return (
     <main aria-busy="true">
-      <h1 className="sr-only">Loading Site Settings</h1>
+      <p className="sr-only" role="status">
+        Loading Site Settings
+      </p>
       <p>Loading global configuration…</p>
     </main>
   );

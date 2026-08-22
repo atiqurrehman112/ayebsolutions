@@ -20,8 +20,8 @@ import {
   publishBlogArticle,
   restoreBlogArticle,
   unpublishBlogArticle,
-  type BlogActionState,
 } from "@/lib/actions/blog";
+import type { BlogActionState } from "@/lib/actions/action-states";
 import type {
   AppRole,
   BlogArticleRow,

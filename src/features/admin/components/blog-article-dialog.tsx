@@ -12,11 +12,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/overlays";
-import {
-  createBlogArticle,
-  initialBlogActionState,
-  updateBlogArticle,
-} from "@/lib/actions/blog";
+import { createBlogArticle, updateBlogArticle } from "@/lib/actions/blog";
+import { initialBlogActionState } from "@/lib/actions/action-states";
 import type {
   AppRole,
   BlogArticleRow,

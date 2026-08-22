@@ -9,16 +9,8 @@ import {
   testimonialSchema,
   testimonialUpdateSchema,
 } from "@/lib/validation/testimonials";
+import type { TestimonialActionState } from "./action-states";
 
-export interface TestimonialActionState {
-  readonly fieldErrors?: Readonly<Record<string, readonly string[]>>;
-  readonly message: string;
-  readonly status: "idle" | "error" | "success";
-}
-export const initialTestimonialActionState: TestimonialActionState = {
-  message: "",
-  status: "idle",
-};
 class TestimonialPermissionError extends Error {}
 async function requirePermission(operation: "delete" | "write") {
   const user = await requireAdmin();

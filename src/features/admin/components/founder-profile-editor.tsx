@@ -5,10 +5,8 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { CmsMedia } from "@/components/media/cms-media";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/status";
-import {
-  initialFounderActionState,
-  saveFounderProfile,
-} from "@/lib/actions/founder";
+import { initialFounderActionState } from "@/lib/actions/action-states";
+import { saveFounderProfile } from "@/lib/actions/founder";
 import type { FounderProfileRow, MediaLibraryRow } from "@/types/database";
 import styles from "./admin-founder.module.css";
 

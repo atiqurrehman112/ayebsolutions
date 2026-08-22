@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/overlays";
 import {
   createTestimonial,
-  initialTestimonialActionState,
   updateTestimonial,
 } from "@/lib/actions/testimonials";
+import { initialTestimonialActionState } from "@/lib/actions/action-states";
 import type { TestimonialRow } from "@/types/database";
 import styles from "./admin-testimonials.module.css";
 interface Props {

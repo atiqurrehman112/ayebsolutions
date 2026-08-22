@@ -16,16 +16,8 @@ import {
   mediaMetadataSchema,
   mediaRenameSchema,
 } from "@/lib/validation/media";
+import type { MediaActionState } from "./action-states";
 
-export interface MediaActionState {
-  readonly fieldErrors?: Readonly<Record<string, readonly string[]>>;
-  readonly message: string;
-  readonly status: "idle" | "error" | "success";
-}
-export const initialMediaActionState: MediaActionState = {
-  message: "",
-  status: "idle",
-};
 class MediaPermissionError extends Error {}
 async function requireWrite() {
   const user = await requireAdmin();
