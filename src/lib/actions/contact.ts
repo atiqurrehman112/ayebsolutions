@@ -168,14 +168,12 @@ export async function submitContactForm(
     );
     await Promise.allSettled(
       deliveries.map((delivery, index) =>
-        delivery.status === "fulfilled"
-          ? repository.recordEmail({
-              ...messages[index]!,
-              leadId,
-              providerId: delivery.value,
-              sentBy: null,
-            })
-          : Promise.resolve(),
+        repository.recordEmail({
+          ...messages[index]!,
+          leadId,
+          providerId: delivery.status === "fulfilled" ? delivery.value : null,
+          sentBy: null,
+        }),
       ),
     );
 

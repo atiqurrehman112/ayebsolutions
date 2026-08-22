@@ -161,3 +161,25 @@
 - [ ] Final review completed
 
 The project is complete only when every checkbox above is checked.
+
+## STABILIZATION-1 release gates
+
+- [x] All 28 migrations replay on a brand-new Supabase project
+- [x] Development seed applies without manual SQL
+- [x] Linked migration history matches the repository
+- [x] Linked database dry-run and lint pass
+- [x] Admin/editor/viewer and inactive-profile RLS behavior verified on a clean project
+- [x] Empty CRM analytics returns a complete zero-value contract
+- [x] Contact RPC, initial history, and duplicate protection verified
+- [x] Implemented public routes and XML assets return 200
+- [x] Guest admin routes redirect to Login
+- [x] Rendered internal-link crawl has zero broken destinations
+- [x] Team public cache invalidation corrected
+- [x] Failed email delivery attempts are retained in CRM history
+- [x] Lint, strict TypeScript, production build, and diff validation pass
+- [ ] Provision an approved production Auth user with an active admin profile
+- [ ] Execute authenticated production CMS/CRM CRUD acceptance
+- [ ] Execute authorized Cloudinary and Resend production acceptance
+- [ ] Complete interactive browser console, hydration, keyboard, responsive, dark-mode, and reduced-motion acceptance
+- [ ] Decide and separately scope Categories, Tags, and Users admin pages
+- [ ] Confirm the pushed revision is Ready in Vercel production

@@ -72,7 +72,7 @@ Apply schema migrations:
 supabase db push --linked
 ```
 
-The INFRA-1 audit found two pending migrations on 2026-08-15: Team CMS and Founder Profile CMS. Re-run the dry run because remote state may have changed since the audit.
+STABILIZATION-1 confirmed on 2026-08-23 that all 28 repository migrations match the linked project and that a dry run has no pending migration. Always repeat the check before deployment because remote state can change.
 
 ## Seed policy
 
@@ -81,7 +81,7 @@ The checked-in seed creates development-only draft content and is idempotent. Us
 For an intentionally seeded non-production hosted environment:
 
 ```powershell
-supabase db push --linked --include-seed
+supabase db push --include-all --include-seed
 ```
 
 Do not use `--include-seed` in production unless the draft sample records have been explicitly approved. Schema initialization itself requires no manual SQL editing.
@@ -130,8 +130,8 @@ To verify Media Library after Cloudinary credentials are configured:
 ## Database verification
 
 ```powershell
-supabase migration list --linked
-supabase db push --linked --dry-run
+supabase migration list
+supabase db push --include-all --dry-run
 supabase db lint --linked --level warning
 ```
 
@@ -142,6 +142,8 @@ Expected after setup:
 - database lint reports no schema errors;
 - RLS is enabled and anonymous users can read only published public content;
 - Admin/Editor/Viewer mutations match the documented permission model.
+
+STABILIZATION-1 additionally proved clean-room reconstruction on a disposable empty hosted project: all migrations applied, `db reset --linked --yes` replayed the chain, the seed completed, singleton rows existed, and representative Auth/RLS/contact/analytics checks passed without manual SQL. The disposable project was deleted after verification.
 
 ## Recovery and safety
 
