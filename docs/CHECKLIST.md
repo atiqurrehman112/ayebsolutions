@@ -183,3 +183,20 @@ The project is complete only when every checkbox above is checked.
 - [ ] Complete interactive browser console, hydration, keyboard, responsive, dark-mode, and reduced-motion acceptance
 - [ ] Decide and separately scope Categories, Tags, and Users admin pages
 - [x] Confirm the pushed revision is Ready in Vercel production
+
+## STABILIZATION-2 production acceptance gates
+
+- [x] Production Auth contains one confirmed user with one active admin profile
+- [x] All implemented authenticated admin routes return HTTP 200 for that administrator
+- [x] Production deployment for the acceptance fix is Ready and aliased to the public domain
+- [x] Portfolio, Blog, Team, Founder, and Testimonials production RLS lifecycles were exercised with disposable records and cleaned up
+- [x] Cloudinary plus Media Library persistence lifecycle was exercised with a disposable asset and cleaned up
+- [x] Site Settings mutation path was verified end-to-end against the production database through a locally hosted production build, and test data was restored
+- [x] Contact validation, CRM insert, initial history, two distinct email attempts, admin visibility, and cleanup were verified against production data through a locally hosted production build
+- [x] Server Action runtime exports were corrected for every implemented CMS mutation module
+- [x] Linked migration parity, dry-run, and database lint remain clean
+- [ ] Replace the invalid local anon-role `SUPABASE_SERVICE_ROLE_KEY` value with an approved server-only production service-role/secret key
+- [ ] Confirm production Resend acceptance and real inbox delivery; the available local key returns unauthorized
+- [ ] Complete browser-driven production CRUD, hydration, keyboard, responsive, dark-mode, reduced-motion, and focus-management acceptance
+- [ ] Complete independent catalog-level schema-drift comparison when PostgreSQL tooling is available
+- [ ] Implement Categories, Tags, and Users admin routes only in an explicitly authorized future feature sprint

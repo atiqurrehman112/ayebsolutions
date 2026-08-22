@@ -282,3 +282,9 @@ The complete migration history was replayed on a separate empty Supabase project
 Team actions now invalidate the public `team` cache and `/team` route in addition to the admin workspace. Public contact delivery attempts are always represented in CRM history, including provider failures, while the lead transaction remains independent. Supabase CLI-owned `supabase/.temp` artifacts are outside the source lint boundary.
 
 The implemented protected surface is Dashboard, Portfolio, Blog, Testimonials, Media, Team, Founder, Site Settings, Contact Leads, and CRM Analytics. Categories and Tags are database/editor concepts without standalone admin routes; Users has a profile/role model without a standalone admin route. These boundaries must not be represented as implemented pages until a feature sprint authorizes them.
+
+## STABILIZATION-2 Server Action boundary
+
+Next.js `"use server"` modules export async Server Actions and erased TypeScript types only. Client-facing initial action-state objects live in `src/lib/actions/action-states.ts`; exporting those runtime objects from Server Action modules caused production mutations to fail during module validation even though compilation succeeded. This separation applies to Blog, Contact, Founder, Media, Portfolio, Site Settings, Team, and Testimonials.
+
+Production acceptance uses evidence-specific gates. A successful build or repository-level RLS lifecycle is not treated as proof of an interactive admin workflow, provider delivery, or browser accessibility. Those checks remain blocked until an interactive browser session and valid local/provider credentials are available. The local `SUPABASE_SERVICE_ROLE_KEY` must be a server-only service-role/secret key; an anon-role legacy JWT is not an acceptable substitute.
